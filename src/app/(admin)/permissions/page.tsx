@@ -20,11 +20,43 @@ const PermissionsPage = () => {
       Permission.ROLE_UPDATE,
       Permission.ROLE_DELETE,
     ],
-    'Permission Management': [
-      Permission.PERMISSION_READ,
-      Permission.PERMISSION_CREATE,
-      Permission.PERMISSION_UPDATE,
-      Permission.PERMISSION_DELETE,
+    'Store Management': [
+      Permission.STORE_READ,
+      Permission.STORE_CREATE,
+      Permission.STORE_UPDATE,
+      Permission.STORE_DELETE,
+    ],
+    'Product Management': [
+      Permission.PRODUCT_READ,
+      Permission.PRODUCT_CREATE,
+      Permission.PRODUCT_UPDATE,
+      Permission.PRODUCT_DELETE,
+    ],
+    'Order Management': [
+      Permission.ORDER_READ,
+      Permission.ORDER_CREATE,
+      Permission.ORDER_UPDATE,
+      Permission.ORDER_DELETE,
+    ],
+    'Analytics': [
+      Permission.ANALYTICS_READ,
+      Permission.ANALYTICS_EXPORT,
+    ],
+    'Discount Management': [
+      Permission.DISCOUNT_READ,
+      Permission.DISCOUNT_CREATE,
+      Permission.DISCOUNT_UPDATE,
+      Permission.DISCOUNT_DELETE,
+    ],
+    'Review Management': [
+      Permission.REVIEW_READ,
+      Permission.REVIEW_CREATE,
+      Permission.REVIEW_UPDATE,
+      Permission.REVIEW_DELETE,
+    ],
+    'System Settings': [
+      Permission.SETTINGS_READ,
+      Permission.SETTINGS_UPDATE,
     ],
   };
 

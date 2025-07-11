@@ -30,7 +30,6 @@ export function QRScanner({ onResult, onClose }: QRScannerProps) {
                 defaultZoomValueIfSupported: 2,
                 formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE],
                 rememberLastUsedCamera: true,
-                showScanButton: false,
             },
             false
         );

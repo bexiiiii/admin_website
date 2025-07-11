@@ -121,14 +121,4 @@ export class ProductService {
       throw error;
     }
   }
-
-  static async getAllProducts(): Promise<ProductDTO[]> {
-    try {
-      const response = await api.get('/products');
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      throw error;
-    }
-  }
 }

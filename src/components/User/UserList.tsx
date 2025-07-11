@@ -19,18 +19,17 @@ interface User {
 }
 
 const UserList: React.FC = () => {
-    const { getProfile, loading, error } = useApi();
+    const { loading, error } = useApi();
     const [users, setUsers] = React.useState<User[]>([]);
 
     React.useEffect(() => {
         const fetchUsers = async () => {
-            const response = await getProfile();
-            if (response) {
-                setUsers([response]);
-            }
+            // TODO: Implement actual getUsers API call
+            // For now, use empty array as placeholder
+            setUsers([]);
         };
         fetchUsers();
-    }, [getProfile]);
+    }, []);
 
     if (loading) {
         return (
@@ -66,9 +65,9 @@ const UserList: React.FC = () => {
     const getStatusColor = (status: User['status']) => {
         switch (status) {
             case 'active':
-                return 'success';
+                return 'default';
             case 'inactive':
-                return 'warning';
+                return 'secondary';
             case 'suspended':
                 return 'destructive';
             default:
@@ -79,11 +78,11 @@ const UserList: React.FC = () => {
     const getRoleColor = (role: User['role']) => {
         switch (role) {
             case 'admin':
-                return 'primary';
-            case 'store_owner':
-                return 'info';
-            case 'customer':
                 return 'default';
+            case 'store_owner':
+                return 'secondary';
+            case 'customer':
+                return 'outline';
             default:
                 return 'default';
         }

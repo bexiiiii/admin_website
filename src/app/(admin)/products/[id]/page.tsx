@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Product, ProductFormData, ProductDiscountData } from '@/types/product';
+import { useRouter, useParams } from 'next/navigation';
+import { Product, ProductFormData } from '@/types/product';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,11 +11,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 
-export default function EditProductPage({ params }: { params: { id: string } }) {
+export default function EditProductPage() {
   const router = useRouter();
+  const params = useParams();
+  const productId = params.id as string;
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [showDiscount, setShowDiscount] = useState(false);
   const [formData, setFormData] = useState<ProductFormData>({
     name: '',
     description: '',
@@ -28,29 +29,24 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
 
   useEffect(() => {
     fetchProduct();
-  }, [params.id]);
+  }, [productId]);
 
   const fetchProduct = async () => {
     try {
-      const response = await fetch(`/api/products/${params.id}`);
+      const response = await fetch(`/api/products/${productId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch product');
       }
       const product: Product = await response.json();
       setFormData({
         name: product.name,
-        description: product.description,
-        regularPrice: product.regularPrice,
-        discountPrice: product.discountPrice,
-        discountPercentage: product.discountPercentage,
-        discountStartDate: product.discountStartDate,
-        discountEndDate: product.discountEndDate,
+        description: product.description || '',
+        regularPrice: product.price,
         stockQuantity: product.stockQuantity,
         storeId: product.storeId,
-        category: product.category,
+        category: product.categoryName || '',
         active: product.active,
       });
-      setShowDiscount(product.isDiscounted);
     } catch (error) {
       toast.error('Failed to fetch product');
       console.error('Error fetching product:', error);
@@ -59,12 +55,16 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleUpdateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSaving(true);
+    if (!formData.name || !formData.description) {
+      toast.error('Name and description are required');
+      return;
+    }
 
+    setSaving(true);
     try {
-      const response = await fetch(`/api/products/${params.id}`, {
+      const response = await fetch(`/api/products/${productId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -86,272 +86,84 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === 'regularPrice' || name === 'stockQuantity' ? Number(value) : value,
-    }));
-  };
-
-  const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === 'discountPrice' || name === 'discountPercentage' ? Number(value) : value,
-    }));
-  };
-
-  const handleSetDiscount = async () => {
-    if (!formData.discountPrice || !formData.discountPercentage || 
-        !formData.discountStartDate || !formData.discountEndDate) {
-      toast.error('Please fill in all discount fields');
-      return;
-    }
-
-    setSaving(true);
-    try {
-      const discountData: ProductDiscountData = {
-        discountPrice: formData.discountPrice,
-        discountPercentage: formData.discountPercentage,
-        startDate: formData.discountStartDate,
-        endDate: formData.discountEndDate,
-      };
-
-      const response = await fetch(`/api/products/${params.id}/discount`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(discountData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to set discount');
-      }
-
-      toast.success('Discount set successfully');
-      fetchProduct();
-    } catch (error) {
-      toast.error('Failed to set discount');
-      console.error('Error setting discount:', error);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleRemoveDiscount = async () => {
-    setSaving(true);
-    try {
-      const response = await fetch(`/api/products/${params.id}/discount`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to remove discount');
-      }
-
-      toast.success('Discount removed successfully');
-      setShowDiscount(false);
-      setFormData((prev) => ({
-        ...prev,
-        discountPrice: undefined,
-        discountPercentage: undefined,
-        discountStartDate: undefined,
-        discountEndDate: undefined,
-      }));
-    } catch (error) {
-      toast.error('Failed to remove discount');
-      console.error('Error removing discount:', error);
-    } finally {
-      setSaving(false);
-    }
-  };
-
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
   }
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto p-6">
       <Card>
         <CardHeader>
           <CardTitle>Edit Product</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="category">Category</Label>
-                <Input
-                  id="category"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
+          <form onSubmit={handleUpdateProduct} className="space-y-4">
+            <div>
+              <Label htmlFor="name">Product Name</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="regularPrice">Regular Price</Label>
-                <Input
-                  id="regularPrice"
-                  name="regularPrice"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={formData.regularPrice}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="stockQuantity">Stock Quantity</Label>
-                <Input
-                  id="stockQuantity"
-                  name="stockQuantity"
-                  type="number"
-                  min="0"
-                  value={formData.stockQuantity}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="showDiscount"
-                checked={showDiscount}
-                onCheckedChange={setShowDiscount}
+            <div>
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                required
               />
-              <Label htmlFor="showDiscount">Manage Discount</Label>
             </div>
 
-            {showDiscount && (
-              <div className="space-y-4 border rounded-lg p-4">
-                <h3 className="font-medium">Discount Details</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="discountPrice">Discount Price</Label>
-                    <Input
-                      id="discountPrice"
-                      name="discountPrice"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={formData.discountPrice || ''}
-                      onChange={handleDiscountChange}
-                      required={showDiscount}
-                    />
-                  </div>
+            <div>
+              <Label htmlFor="regularPrice">Price</Label>
+              <Input
+                id="regularPrice"
+                type="number"
+                step="0.01"
+                value={formData.regularPrice}
+                onChange={(e) => setFormData({ ...formData, regularPrice: parseFloat(e.target.value) })}
+                required
+              />
+            </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="discountPercentage">Discount Percentage</Label>
-                    <Input
-                      id="discountPercentage"
-                      name="discountPercentage"
-                      type="number"
-                      min="0"
-                      max="100"
-                      value={formData.discountPercentage || ''}
-                      onChange={handleDiscountChange}
-                      required={showDiscount}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="discountStartDate">Start Date</Label>
-                    <Input
-                      id="discountStartDate"
-                      name="discountStartDate"
-                      type="datetime-local"
-                      value={formData.discountStartDate || ''}
-                      onChange={handleDiscountChange}
-                      required={showDiscount}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="discountEndDate">End Date</Label>
-                    <Input
-                      id="discountEndDate"
-                      name="discountEndDate"
-                      type="datetime-local"
-                      value={formData.discountEndDate || ''}
-                      onChange={handleDiscountChange}
-                      required={showDiscount}
-                    />
-                  </div>
-                </div>
-
-                <div className="flex justify-end space-x-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleRemoveDiscount}
-                    disabled={saving}
-                  >
-                    Remove Discount
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={handleSetDiscount}
-                    disabled={saving}
-                  >
-                    {saving ? 'Saving...' : 'Set Discount'}
-                  </Button>
-                </div>
-              </div>
-            )}
+            <div>
+              <Label htmlFor="stockQuantity">Stock Quantity</Label>
+              <Input
+                id="stockQuantity"
+                type="number"
+                value={formData.stockQuantity}
+                onChange={(e) => setFormData({ ...formData, stockQuantity: parseInt(e.target.value) })}
+                required
+              />
+            </div>
 
             <div className="flex items-center space-x-2">
               <Switch
                 id="active"
                 checked={formData.active}
-                onCheckedChange={(checked: boolean) =>
-                  setFormData((prev) => ({ ...prev, active: checked }))
-                }
+                onCheckedChange={(checked) => setFormData({ ...formData, active: checked })}
               />
               <Label htmlFor="active">Active</Label>
             </div>
 
-            <div className="flex justify-end space-x-4">
+            <div className="flex gap-4">
+              <Button type="submit" disabled={saving}>
+                {saving ? 'Saving...' : 'Update Product'}
+              </Button>
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => router.back()}
-                disabled={saving}
+                onClick={() => router.push('/products')}
               >
                 Cancel
-              </Button>
-              <Button type="submit" disabled={saving}>
-                {saving ? 'Saving...' : 'Save Changes'}
               </Button>
             </div>
           </form>
@@ -359,4 +171,4 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
       </Card>
     </div>
   );
-} 
+}

@@ -41,7 +41,7 @@ export default function HealthPage() {
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
-        const response = await systemApi.getSystemMetrics();
+        const response = await systemApi.getMetrics();
         setMetrics(response.data);
       } catch (error) {
         toast({
@@ -161,8 +161,9 @@ export default function HealthPage() {
           <CardContent>
             <LineChartOne
               data={metrics.cpu.history.map(item => ({
-                name: item.time,
-                value: item.usage
+                month: item.time,
+                amount: item.usage,
+                orders: 0
               }))}
             />
           </CardContent>
@@ -175,8 +176,9 @@ export default function HealthPage() {
           <CardContent>
             <LineChartOne
               data={metrics.memory.history.map(item => ({
-                name: item.time,
-                value: item.usage
+                month: item.time,
+                amount: item.usage,
+                orders: 0
               }))}
             />
           </CardContent>
@@ -203,9 +205,9 @@ export default function HealthPage() {
           <CardContent>
             <LineChartOne
               data={metrics.network.history.map(item => ({
-                name: item.time,
-                in: item.in,
-                out: item.out
+                month: item.time,
+                amount: item.in,
+                orders: item.out
               }))}
             />
           </CardContent>

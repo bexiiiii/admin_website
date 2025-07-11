@@ -130,7 +130,7 @@ class ApiService {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
-    this.setToken(response.token);
+    this.setToken(response.accessToken);
     return response;
   }
 
@@ -158,17 +158,18 @@ class ApiService {
   }
 
   public async verifyEmail(token: string): Promise<void> {
-    await this.request(API_ENDPOINTS.AUTH.VERIFY_EMAIL, {
+    // TODO: Add VERIFY_EMAIL endpoint to API_ENDPOINTS
+    await this.request('/auth/verify-email', {
       method: 'POST',
       body: JSON.stringify({ token }),
     });
   }
 
   public async refreshToken(): Promise<AuthResponse> {
-    const response = await this.request<AuthResponse>(API_ENDPOINTS.AUTH.REFRESH_TOKEN, {
+    const response = await this.request<AuthResponse>(API_ENDPOINTS.AUTH.REFRESH, {
       method: 'POST',
     });
-    this.setToken(response.token);
+    this.setToken(response.accessToken);
     return response;
   }
 

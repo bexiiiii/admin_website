@@ -5,30 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { useApi } from '@/hooks/useApi';
-
-interface Order {
-    id: number;
-    orderNumber: string;
-    userId: number;
-    storeId: number;
-    items: Array<{
-        id: number;
-        productId: number;
-        quantity: number;
-        price: number;
-        productName: string;
-    }>;
-    totalAmount: number;
-    paymentMethod: 'CASH' | 'CARD' | 'KASPI';
-    paymentStatus: 'PENDING' | 'PAID' | 'CANCELLED';
-    status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-    createdAt: string;
-    updatedAt: string;
-}
+import { OrderDTO } from '@/types/api';
 
 const OrderList: React.FC = () => {
     const { getOrders, loading, error } = useApi();
-    const [orders, setOrders] = React.useState<Order[]>([]);
+    const [orders, setOrders] = React.useState<OrderDTO[]>([]);
 
     React.useEffect(() => {
         const fetchOrders = async () => {
@@ -71,31 +52,37 @@ const OrderList: React.FC = () => {
         );
     }
 
-    const getStatusColor = (status: Order['status']) => {
+    const getStatusColor = (status: OrderDTO['status']): "secondary" | "destructive" | "default" | "outline" => {
         switch (status) {
-            case 'pending':
-                return 'warning';
-            case 'processing':
+            case 'PENDING':
                 return 'secondary';
-            case 'shipped':
-                return 'primary';
-            case 'delivered':
-                return 'success';
-            case 'cancelled':
+            case 'CONFIRMED':
+                return 'outline';
+            case 'PREPARING':
+                return 'secondary';
+            case 'READY':
+                return 'outline';
+            case 'PICKED_UP':
+                return 'outline';
+            case 'DELIVERED':
+                return 'default';
+            case 'CANCELLED':
                 return 'destructive';
             default:
                 return 'default';
         }
     };
 
-    const getPaymentStatusColor = (status: Order['paymentStatus']) => {
+    const getPaymentStatusColor = (status: OrderDTO['paymentStatus']): "secondary" | "destructive" | "default" | "outline" => {
         switch (status) {
             case 'PENDING':
-                return 'warning';
+                return 'secondary';
             case 'PAID':
-                return 'success';
-            case 'CANCELLED':
+                return 'default';
+            case 'FAILED':
                 return 'destructive';
+            case 'REFUNDED':
+                return 'outline';
             default:
                 return 'default';
         }
@@ -112,9 +99,9 @@ const OrderList: React.FC = () => {
                         <div key={order.id} className="p-4 border rounded-lg">
                                 <div className="flex items-center justify-between mb-2">
                                     <div>
-                                    <h3 className="font-medium">Order #{order.orderNumber}</h3>
+                                    <h3 className="font-medium">Order #{order.id}</h3>
                                         <p className="text-sm text-gray-500">
-                                        {new Date(order.createdAt).toLocaleDateString()}
+                                        {order.orderDate ? new Date(order.orderDate).toLocaleDateString() : 'No date'}
                                         </p>
                                     </div>
                                     <div className="flex gap-2">
@@ -137,9 +124,9 @@ const OrderList: React.FC = () => {
                             <div className="mt-2">
                                 <h4 className="text-sm font-medium mb-1">Items:</h4>
                                 <ul className="text-sm space-y-1">
-                                    {order.items.map((item) => (
-                                        <li key={item.id}>
-                                            {item.productName} x {item.quantity} - ${(item.price * item.quantity).toFixed(2)}
+                                    {order.items.map((item, index) => (
+                                        <li key={item.id || index}>
+                                            {item.productName || 'Unknown Product'} x {item.quantity} - ${item.totalPrice.toFixed(2)}
                                         </li>
                                     ))}
                                 </ul>

@@ -12,7 +12,7 @@ import {
 
 export interface DatePickerProps {
   selected?: Date
-  onChange?: (date: Date | null) => void
+  onChange?: (date: Date | undefined) => void
   className?: string
 }
 
@@ -42,6 +42,7 @@ export function DatePicker({
           selected={selected}
           onSelect={onChange}
           initialFocus
+          required={false}
         />
       </PopoverContent>
     </Popover>

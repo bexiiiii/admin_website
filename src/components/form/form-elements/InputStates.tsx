@@ -33,11 +33,11 @@ export default function InputStates() {
           <Input
             type="email"
             defaultValue={email}
-            error={error}
             onChange={handleEmailChange}
             placeholder="Enter your email"
-            hint={error ? "This is an invalid email address." : ""}
+            className={error ? "border-red-500" : ""}
           />
+          {error && <p className="text-sm text-red-500 mt-1">This is an invalid email address.</p>}
         </div>
 
         {/* Success Input */}
@@ -46,11 +46,11 @@ export default function InputStates() {
           <Input
             type="email"
             defaultValue={email}
-            success={!error}
             onChange={handleEmailChange}
             placeholder="Enter your email"
-            hint={!error ? "Valid email!" : ""}
+            className={!error ? "border-green-500" : ""}
           />
+          {!error && <p className="text-sm text-green-500 mt-1">Valid email!</p>}
         </div>
 
         {/* Disabled Input */}
@@ -61,8 +61,8 @@ export default function InputStates() {
             defaultValue="disabled@example.com"
             disabled={true}
             placeholder="Disabled email"
-            hint="This field is disabled."
           />
+          <p className="text-sm text-gray-500 mt-1">This field is disabled.</p>
         </div>
       </div>
     </ComponentCard>

@@ -27,7 +27,7 @@ interface UserFormData {
     firstName: string;
     lastName: string;
     password?: string;
-    role: 'ROLE_USER' | 'ROLE_ADMIN' | 'ROLE_STORE_OWNER' | 'ROLE_MODERATOR' | 'SUPER_ADMIN';
+    role: 'STORE_OWNER' | 'SUPER_ADMIN' | 'CUSTOMER' | 'STORE_MANAGER';
     active: boolean;
     phone?: string;
     address?: string;
@@ -45,7 +45,7 @@ export default function UsersPage() {
         firstName: '',
         lastName: '',
         password: '',
-        role: 'ROLE_USER',
+        role: 'CUSTOMER',
         active: true,
         phone: '',
         address: ''
@@ -93,7 +93,7 @@ export default function UsersPage() {
                 firstName: '',
                 lastName: '',
                 password: '',
-                role: 'ROLE_USER',
+                role: 'CUSTOMER',
                 active: true,
                 phone: '',
                 address: ''
@@ -178,14 +178,12 @@ export default function UsersPage() {
 
     const getRoleDisplayName = (role: string) => {
         switch (role) {
-            case 'ROLE_USER':
-                return 'User';
-            case 'ROLE_ADMIN':
-                return 'Admin';
-            case 'ROLE_STORE_OWNER':
+            case 'CUSTOMER':
+                return 'Customer';
+            case 'STORE_MANAGER':
+                return 'Store Manager';
+            case 'STORE_OWNER':
                 return 'Store Owner';
-            case 'ROLE_MODERATOR':
-                return 'Moderator';
             case 'SUPER_ADMIN':
                 return 'Super Admin';
             default:
@@ -363,7 +361,7 @@ export default function UsersPage() {
                         firstName: '',
                         lastName: '',
                         password: '',
-                        role: 'ROLE_USER',
+                        role: 'CUSTOMER',
                         active: true,
                         phone: '',
                         address: ''
@@ -386,7 +384,7 @@ export default function UsersPage() {
                                     firstName: '',
                                     lastName: '',
                                     password: '',
-                                    role: 'ROLE_USER',
+                                    role: 'CUSTOMER',
                                     active: true,
                                     phone: '',
                                     address: ''
@@ -467,10 +465,9 @@ export default function UsersPage() {
                                     required
                                     aria-label="Select user role"
                                 >
-                                    <option value="ROLE_USER">User</option>
-                                    <option value="ROLE_ADMIN">Admin</option>
-                                    <option value="ROLE_STORE_OWNER">Store Owner</option>
-                                    <option value="ROLE_MODERATOR">Moderator</option>
+                                    <option value="CUSTOMER">Customer</option>
+                                    <option value="STORE_MANAGER">Store Manager</option>
+                                    <option value="STORE_OWNER">Store Owner</option>
                                     <option value="SUPER_ADMIN">Super Admin</option>
                                 </select>
                             </div>
@@ -503,7 +500,7 @@ export default function UsersPage() {
                                         firstName: '',
                                         lastName: '',
                                         password: '',
-                                        role: 'ROLE_USER',
+                                        role: 'CUSTOMER',
                                         active: true,
                                         phone: '',
                                         address: ''
@@ -533,7 +530,7 @@ export default function UsersPage() {
                         firstName: '',
                         lastName: '',
                         password: '',
-                        role: 'ROLE_USER',
+                        role: 'CUSTOMER',
                         active: true,
                         phone: '',
                         address: ''
@@ -557,7 +554,7 @@ export default function UsersPage() {
                                     firstName: '',
                                     lastName: '',
                                     password: '',
-                                    role: 'ROLE_USER',
+                                    role: 'CUSTOMER',
                                     active: true,
                                     phone: '',
                                     address: ''
@@ -674,10 +671,9 @@ export default function UsersPage() {
                                             required
                                             aria-label="Select user role"
                                         >
-                                            <option value="ROLE_USER">User</option>
-                                            <option value="ROLE_ADMIN">Admin</option>
-                                            <option value="ROLE_STORE_OWNER">Store Owner</option>
-                                            <option value="ROLE_MODERATOR">Moderator</option>
+                                            <option value="CUSTOMER">Customer</option>
+                                            <option value="STORE_MANAGER">Store Manager</option>
+                                            <option value="STORE_OWNER">Store Owner</option>
                                             <option value="SUPER_ADMIN">Super Admin</option>
                                         </select>
                                     </div>
@@ -711,7 +707,7 @@ export default function UsersPage() {
                                                 firstName: '',
                                                 lastName: '',
                                                 password: '',
-                                                role: 'ROLE_USER',
+                                                role: 'CUSTOMER',
                                                 active: true,
                                                 phone: '',
                                                 address: ''

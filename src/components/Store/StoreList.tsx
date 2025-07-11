@@ -5,41 +5,36 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
-import { useApi } from '@/hooks/useApi';
-
-interface Store {
-    id: number;
-    name: string;
-    description: string;
-    address: string;
-    phone: string;
-    email: string;
-    type: string;
-    category: string;
-    location: string;
-    latitude: number;
-    longitude: number;
-    rating: number;
-    imageUrl: string;
-    active: boolean;
-    openingHours: string;
-    createdAt: string;
-    updatedAt: string;
-}
+import { storeApi } from '@/services/api';
+import { StoreDTO } from '@/types/api';
 
 const StoreList: React.FC = () => {
-    const { getStores, loading, error } = useApi();
-    const [stores, setStores] = React.useState<Store[]>([]);
+    const [stores, setStores] = React.useState<StoreDTO[]>([]);
+    const [loading, setLoading] = React.useState(true);
+    const [error, setError] = React.useState<string | null>(null);
 
     React.useEffect(() => {
         const fetchStores = async () => {
-            const response = await getStores();
-            if (response) {
-                setStores(response);
+            try {
+                setLoading(true);
+                const response = await storeApi.getAll();
+                // Handle PageableResponse by extracting content
+                if (response && typeof response === 'object' && 'content' in response) {
+                    setStores(response.content);
+                } else if (Array.isArray(response)) {
+                    setStores(response);
+                } else {
+                    setStores([]);
+                }
+            } catch (err: any) {
+                console.error('Error fetching stores:', err);
+                setError(err.message || 'Failed to fetch stores');
+            } finally {
+                setLoading(false);
             }
         };
         fetchStores();
-    }, [getStores]);
+    }, []);
 
     if (loading) {
         return (
@@ -98,23 +93,29 @@ const StoreList: React.FC = () => {
                     {stores.map((store) => (
                         <div key={store.id} className="p-4 border rounded-lg">
                             <div className="relative h-48 w-full mb-4">
-                                <Image
-                                    src={store.imageUrl}
-                                    alt={store.name}
-                                    fill
-                                    className="object-cover rounded-lg"
-                                />
+                                {store.logo ? (
+                                    <Image
+                                        src={store.logo}
+                                        alt={store.name}
+                                        fill
+                                        className="object-cover rounded-lg"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full bg-gray-100 rounded-lg flex items-center justify-center">
+                                        <span className="text-gray-400">No image</span>
+                                    </div>
+                                )}
                             </div>
                             <div>
                                 <h3 className="font-medium text-lg mb-1">{store.name}</h3>
                                 <p className="text-sm text-gray-500 mb-2">{store.description}</p>
                                 <div className="flex items-center justify-between mb-2">
                                     <Badge variant={store.active ? 'default' : 'destructive'}>
-                                        {store.active ? 'Active' : 'Inactive'}
+                                        {store.status}
                                     </Badge>
                                     <div className="flex items-center">
                                         <span className="text-yellow-500 mr-1">★</span>
-                                        <span>{store.rating.toFixed(1)}</span>
+                                        <span>N/A</span>
                                     </div>
                                 </div>
                                 <div className="text-sm text-gray-500">

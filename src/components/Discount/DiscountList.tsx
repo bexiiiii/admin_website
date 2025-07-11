@@ -5,26 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { useApi } from '@/hooks/useApi';
-
-interface Discount {
-    id: number;
-    code: string;
-    type: 'PERCENTAGE' | 'FIXED_AMOUNT';
-    value: number;
-    startDate: string;
-    endDate: string;
-    minPurchaseAmount?: number;
-    maxDiscountAmount?: number;
-    usageLimit?: number;
-    usageCount: number;
-    isActive: boolean;
-    createdAt: string;
-    updatedAt: string;
-}
+import { DiscountDTO } from '@/types/api';
 
 const DiscountList: React.FC = () => {
     const { getDiscounts, loading, error } = useApi();
-    const [discounts, setDiscounts] = React.useState<Discount[]>([]);
+    const [discounts, setDiscounts] = React.useState<DiscountDTO[]>([]);
 
     React.useEffect(() => {
         const fetchDiscounts = async () => {
@@ -67,7 +52,7 @@ const DiscountList: React.FC = () => {
         );
     }
 
-    const formatDiscountValue = (discount: Discount) => {
+    const formatDiscountValue = (discount: DiscountDTO) => {
         return discount.type === 'PERCENTAGE'
             ? `${discount.value}%`
             : `$${discount.value.toFixed(2)}`;
@@ -93,8 +78,8 @@ const DiscountList: React.FC = () => {
                                         {formatDiscountValue(discount)}
                                     </p>
                                 </div>
-                                <Badge variant={getStatusColor(discount.isActive)}>
-                                    {discount.isActive ? 'Active' : 'Inactive'}
+                                <Badge variant={getStatusColor(discount.status === 'ACTIVE')}>
+                                    {discount.status === 'ACTIVE' ? 'Active' : discount.status === 'EXPIRED' ? 'Expired' : 'Inactive'}
                                 </Badge>
                                     </div>
                             <div className="mt-2 grid grid-cols-2 gap-2 text-sm">
@@ -103,7 +88,7 @@ const DiscountList: React.FC = () => {
                                     <p>End Date: {new Date(discount.endDate).toLocaleDateString()}</p>
                                 </div>
                                 <div>
-                                    <p>Usage: {discount.usageCount}/{discount.usageLimit || '∞'}</p>
+                                    <p>Usage: {discount.usedCount || 0}/{discount.usageLimit || '∞'}</p>
                                     {discount.minPurchaseAmount && (
                                         <p>Min Purchase: ${discount.minPurchaseAmount.toFixed(2)}</p>
                                     )}

@@ -61,7 +61,7 @@ export default function UserAddressCard() {
     setSaving(true);
     try {
       await updateUserProfile({
-        address: formData.address.trim() || null,
+        address: formData.address.trim() || undefined,
       });
 
       await fetchProfile();

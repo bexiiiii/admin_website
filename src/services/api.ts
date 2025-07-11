@@ -410,3 +410,10 @@ export const productApi = {
     update: (id: number, data: any) => api.put(`/products/${id}`, data).then(response => response.data),
     delete: (id: number) => api.delete(`/products/${id}`).then(response => response.data)
 };
+
+// System API
+export const systemApi = {
+    getHealth: () => api.get('/system/health').then(response => response.data),
+    getMetrics: () => api.get('/system/metrics').then(response => response.data),
+    getSystemInfo: () => api.get('/system/info').then(response => response.data)
+};

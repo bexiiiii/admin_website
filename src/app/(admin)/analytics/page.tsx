@@ -336,8 +336,9 @@ export default function AnalyticsPage() {
               <div className="h-[350px]">
                 <LineChartOne 
                   data={(analyticsData.salesByMonth || []).map(item => ({
-                    name: item.month,
-                    value: item.amount
+                    month: item.month,
+                    amount: item.amount,
+                    orders: item.orders || 0
                   }))}
                 />
               </div>

@@ -5,37 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { useApi } from '@/hooks/useApi';
-
-interface CartItem {
-    id: number;
-    productId: number;
-    quantity: number;
-    product: {
-        id: number;
-        name: string;
-    price: number;
-        image?: string;
-    };
-}
-
-interface Cart {
-    id: number;
-    userId: number;
-    items: CartItem[];
-    totalAmount: number;
-    createdAt: string;
-    updatedAt: string;
-    user: {
-        id: number;
-        firstName: string;
-        lastName: string;
-        email: string;
-    };
-}
+import { CartDTO } from '@/types/api';
 
 const CartList: React.FC = () => {
     const { getCart, loading, error } = useApi();
-    const [cart, setCart] = React.useState<Cart | null>(null);
+    const [cart, setCart] = React.useState<CartDTO | null>(null);
 
     React.useEffect(() => {
         const fetchCart = async () => {
@@ -97,36 +71,36 @@ const CartList: React.FC = () => {
                 <CardTitle>Shopping Cart</CardTitle>
             </CardHeader>
             <CardContent>
-                    <div className="space-y-4">
+                <div className="space-y-4">
                     <div className="flex justify-between items-center mb-4">
-                                    <div>
-                            <h3 className="font-medium">Customer</h3>
-                                        <p className="text-sm text-gray-500">
-                                {cart.user.firstName} {cart.user.lastName}
-                                        </p>
-                            <p className="text-sm text-gray-500">{cart.user.email}</p>
+                        <div>
+                            <h3 className="font-medium">Cart ID: {cart.id}</h3>
+                            <p className="text-sm text-gray-500">User ID: {cart.userId}</p>
+                            <p className="text-sm text-gray-500">Total Items: {cart.totalItems}</p>
                         </div>
                         <div>
                             <p className="text-sm font-medium">Total Amount</p>
                             <p className="text-lg font-bold">${cart.totalAmount.toFixed(2)}</p>
                         </div>
-                                    </div>
+                    </div>
                     <div className="space-y-2">
                         {cart.items.map((item) => (
                             <div key={item.id} className="flex items-center justify-between p-3 border rounded-lg">
                                 <div>
-                                    <h4 className="font-medium">{item.product.name}</h4>
+                                    <h4 className="font-medium">{item.productName || `Product ${item.productId}`}</h4>
                                     <p className="text-sm text-gray-500">
                                         Quantity: {item.quantity}
                                     </p>
                                 </div>
                                 <div className="text-right">
                                     <p className="font-medium">
-                                        ${(item.product.price * item.quantity).toFixed(2)}
+                                        ${item.totalPrice.toFixed(2)}
                                     </p>
-                                    <p className="text-sm text-gray-500">
-                                        ${item.product.price.toFixed(2)} each
-                                    </p>
+                                    {item.productPrice && (
+                                        <p className="text-sm text-gray-500">
+                                            ${item.productPrice.toFixed(2)} each
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                         ))}

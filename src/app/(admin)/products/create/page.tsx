@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ProductFormData } from '@/types/product';
+import { ProductFormData, ProductCreateRequest } from '@/types/product';
 import { ProductService } from '@/services/productService';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -49,7 +49,22 @@ export default function CreateProductPage() {
         return;
       }
 
-      await ProductService.createProduct(formData);
+      // Map ProductFormData to ProductCreateRequest
+      const createRequest: ProductCreateRequest = {
+        name: formData.name,
+        description: formData.description,
+        price: formData.regularPrice,
+        originalPrice: formData.regularPrice,
+        discountPercentage: formData.discountPercentage,
+        stockQuantity: formData.stockQuantity,
+        storeId: formData.storeId,
+        categoryId: parseInt(formData.category) || 1, // Convert category string to number
+        images: formData.imageUrl ? [formData.imageUrl] : [],
+        status: 'AVAILABLE', // Default status
+        active: formData.active,
+      };
+
+      await ProductService.createProduct(createRequest);
       toast.success('Product created successfully');
       router.push('/products');
     } catch (error: any) {

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import ApiService from '@/services/api';
-import { NotificationDTO, AnalyticsData, UserDTO, ReviewDTO } from '@/types/api';
-import { userApi } from '@/services/api';
+import { NotificationDTO, AnalyticsData, UserDTO, ReviewDTO, CartDTO, DiscountDTO } from '@/types/api';
+import { userApi, systemApi } from '@/services/api';
 
 export const useNotifications = () => {
     const [notifications, setNotifications] = useState<NotificationDTO[]>([]);
@@ -92,6 +92,36 @@ export const useApi = () => {
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to fetch orders');
             console.error('Error fetching orders:', err);
+            return null;
+        } finally {
+            setLoading(false);
+        }
+    }, [api]);
+
+    const getCart = useCallback(async (): Promise<CartDTO | null> => {
+        try {
+            setLoading(true);
+            setError(null);
+            const response = await api.getCart();
+            return response;
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to fetch cart');
+            console.error('Error fetching cart:', err);
+            return null;
+        } finally {
+            setLoading(false);
+        }
+    }, [api]);
+
+    const getDiscounts = useCallback(async (): Promise<DiscountDTO[] | null> => {
+        try {
+            setLoading(true);
+            setError(null);
+            const response = await api.getAllDiscounts();
+            return response;
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to fetch discounts');
+            console.error('Error fetching discounts:', err);
             return null;
         } finally {
             setLoading(false);
@@ -208,6 +238,8 @@ export const useApi = () => {
         error,
         getAnalytics,
         getOrders,
+        getCart,
+        getDiscounts,
         getUserProfile,
         updateUserProfile,
         updateUserAvatar,
@@ -215,5 +247,36 @@ export const useApi = () => {
         approveReview,
         rejectReview,
         deleteReview
+    };
+};
+
+export const useHealthCheck = <T>() => {
+    const [data, setData] = useState<T | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const fetchHealthData = useCallback(async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const response = await systemApi.getHealth();
+            setData(response as T);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to fetch health data');
+            console.error('Error fetching health data:', err);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchHealthData();
+    }, [fetchHealthData]);
+
+    return {
+        data,
+        loading,
+        error,
+        refetch: fetchHealthData
     };
 };

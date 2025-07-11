@@ -5,28 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { ProductService } from '@/services/productService';
+import { ProductDTO } from '@/types/product';
 import Image from 'next/image';
 
-interface Product {
-    id: number;
-    name: string;
-    description: string;
-    regularPrice: number;
-    stockQuantity: number;
-    category: string;
-    storeId: number;
-    store?: {
-        id: number;
-        name: string;
-    };
-    imageUrl?: string;
-    status: 'ACTIVE' | 'INACTIVE' | 'OUT_OF_STOCK';
-    createdAt: string;
-    updatedAt: string;
-}
-
 const ProductList: React.FC = () => {
-    const [products, setProducts] = React.useState<Product[]>([]);
+    const [products, setProducts] = React.useState<ProductDTO[]>([]);
     const [loading, setLoading] = React.useState(true);
     const [error, setError] = React.useState<string | null>(null);
 
@@ -35,7 +18,14 @@ const ProductList: React.FC = () => {
             try {
                 setLoading(true);
                 const fetchedProducts = await ProductService.getAllProducts();
-                setProducts(fetchedProducts);
+                // Handle PageableResponse by extracting content
+                if (fetchedProducts && typeof fetchedProducts === 'object' && 'content' in fetchedProducts) {
+                    setProducts(fetchedProducts.content);
+                } else if (Array.isArray(fetchedProducts)) {
+                    setProducts(fetchedProducts);
+                } else {
+                    setProducts([]);
+                }
             } catch (err: any) {
                 console.error('Error fetching products:', err);
                 setError(err.message || 'Failed to fetch products');
@@ -46,6 +36,21 @@ const ProductList: React.FC = () => {
 
         fetchProducts();
     }, []);
+
+    const getStatusColor = (status: ProductDTO['status']) => {
+        switch (status) {
+            case 'AVAILABLE':
+                return 'default';
+            case 'PENDING':
+                return 'secondary';
+            case 'OUT_OF_STOCK':
+                return 'destructive';
+            case 'DISCONTINUED':
+                return 'destructive';
+            default:
+                return 'secondary';
+        }
+    };
 
     if (loading) {
         return (
@@ -81,19 +86,6 @@ const ProductList: React.FC = () => {
         );
     }
 
-    const getStatusColor = (status: Product['status']) => {
-        switch (status) {
-            case 'ACTIVE':
-                return 'default';
-            case 'INACTIVE':
-                return 'secondary';
-            case 'OUT_OF_STOCK':
-                return 'destructive';
-            default:
-                return 'default';
-        }
-    };
-
     return (
         <Card>
             <CardHeader>
@@ -110,9 +102,9 @@ const ProductList: React.FC = () => {
                                 className="p-4 border rounded-lg hover:border-gray-300 transition-colors"
                             >
                                 <div className="relative h-48 mb-4">
-                                    {product.imageUrl ? (
+                                    {product.images && product.images.length > 0 ? (
                                         <Image
-                                            src={product.imageUrl}
+                                            src={product.images[0]}
                                             alt={product.name}
                                             fill
                                             className="object-cover rounded-lg"
@@ -134,20 +126,20 @@ const ProductList: React.FC = () => {
                                 </p>
                                 <div className="mt-2">
                                     <p className="text-sm text-gray-600">
-                                        Price: ${product.regularPrice.toFixed(2)}
+                                        Price: ${product.price.toFixed(2)}
                                     </p>
                                     <p className="text-sm text-gray-600">
                                         Stock: {product.stockQuantity}
                                     </p>
                                     <p className="text-sm text-gray-600">
-                                        Category: {product.category}
+                                        Category: {product.categoryName || 'N/A'}
                                     </p>
                                     <p className="text-sm text-gray-600">
-                                        Store: {product.store?.name || 'N/A'}
+                                        Store: {product.storeName || 'N/A'}
                                     </p>
                                 </div>
                                 <div className="mt-2 text-xs text-gray-400">
-                                    Updated: {new Date(product.updatedAt).toLocaleDateString()}
+                                    Updated: {product.updatedAt ? new Date(product.updatedAt).toLocaleDateString() : 'N/A'}
                                 </div>
                             </div>
                         ))}
@@ -158,4 +150,4 @@ const ProductList: React.FC = () => {
     );
 };
 
-export default ProductList; 
+export default ProductList;

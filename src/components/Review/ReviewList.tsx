@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useApi } from '@/hooks/useApi';
 import { toast } from 'react-hot-toast';
+import { ReviewDTO } from '@/types/api';
 import {
     Select,
     SelectContent,
@@ -16,27 +17,9 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
-interface Review {
-    id: number;
-    userId: number;
-    productId: number;
-    rating: number;
-    comment: string;
-    status: 'PENDING' | 'APPROVED' | 'REJECTED';
-    createdAt: string;
-    updatedAt: string;
-    user: {
-        firstName: string;
-        lastName: string;
-    };
-    product: {
-        name: string;
-    };
-}
-
 const ReviewList: React.FC = () => {
     const { getReviews, loading, error } = useApi();
-    const [reviews, setReviews] = React.useState<Review[]>([]);
+    const [reviews, setReviews] = React.useState<ReviewDTO[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState<string>('ALL');
 
@@ -50,9 +33,11 @@ const ReviewList: React.FC = () => {
         fetchReviews();
     }, [getReviews]);
 
+    const api = useApi();
+
     const handleApprove = async (reviewId: number) => {
         try {
-            await useApi().approveReview(reviewId);
+            await api.approveReview(reviewId);
             toast.success('Review approved successfully');
             const response = await getReviews();
             if (response) {
@@ -66,7 +51,7 @@ const ReviewList: React.FC = () => {
 
     const handleReject = async (reviewId: number) => {
         try {
-            await useApi().rejectReview(reviewId);
+            await api.rejectReview(reviewId);
             toast.success('Review rejected successfully');
             const response = await getReviews();
             if (response) {
@@ -82,7 +67,7 @@ const ReviewList: React.FC = () => {
         if (!confirm('Are you sure you want to delete this review?')) return;
 
         try {
-            await useApi().deleteReview(reviewId);
+            await api.deleteReview(reviewId);
             toast.success('Review deleted successfully');
             const response = await getReviews();
             if (response) {
@@ -99,7 +84,7 @@ const ReviewList: React.FC = () => {
             review.user.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
             review.user.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
             review.product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            review.comment.toLowerCase().includes(searchQuery.toLowerCase());
+            (review.comment && review.comment.toLowerCase().includes(searchQuery.toLowerCase()));
         
         const matchesStatus = statusFilter === 'ALL' || review.status === statusFilter;
         
@@ -137,7 +122,7 @@ const ReviewList: React.FC = () => {
         );
     }
 
-    const getStatusColor = (status: Review['status']) => {
+    const getStatusColor = (status: ReviewDTO['status']) => {
         switch (status) {
             case 'APPROVED':
                 return 'default';

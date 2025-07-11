@@ -11,12 +11,21 @@ export const metadata: Metadata = {
 };
 
 export default function page() {
+  const sampleData = [
+    { name: 'Jan', value: 100 },
+    { name: 'Feb', value: 120 },
+    { name: 'Mar', value: 80 },
+    { name: 'Apr', value: 140 },
+    { name: 'May', value: 110 },
+    { name: 'Jun', value: 160 },
+  ];
+
   return (
     <div>
       <PageBreadcrumb pageTitle="Bar Chart" />
       <div className="space-y-6">
         <ComponentCard title="Bar Chart 1">
-          <BarChartOne />
+          <BarChartOne data={sampleData} />
         </ComponentCard>
       </div>
     </div>

@@ -351,16 +351,42 @@ export default function ProductsPage() {
             }
 
             // Format the expiry date to include time if it exists
-            const formattedData = {
-                ...formData,
-                expiryDate: formData.expiryDate ? `${formData.expiryDate}T00:00:00.000Z` : null
+            // Convert null values to undefined for API compatibility
+            const formattedData: ProductUpdateRequest = {
+                name: formData.name,
+                description: formData.description,
+                price: formData.price,
+                originalPrice: formData.originalPrice,
+                discountPercentage: formData.discountPercentage,
+                stockQuantity: formData.stockQuantity,
+                storeId: formData.storeId ?? undefined,
+                categoryId: formData.categoryId ?? undefined,
+                images: formData.images.filter(img => img.trim()),
+                expiryDate: formData.expiryDate ? `${formData.expiryDate}T00:00:00.000Z` : undefined,
+                status: formData.status,
+                active: formData.active,
             };
 
             if (selectedProduct) {
                 await ProductService.updateProduct(selectedProduct.id, formattedData);
                 toast.success('Product updated successfully');
             } else {
-                await ProductService.createProduct(formattedData);
+                // For create, we need ProductCreateRequest
+                const createData: ProductCreateRequest = {
+                    name: formData.name,
+                    description: formData.description,
+                    price: formData.price,
+                    originalPrice: formData.originalPrice,
+                    discountPercentage: formData.discountPercentage,
+                    stockQuantity: formData.stockQuantity,
+                    storeId: formData.storeId ?? undefined,
+                    categoryId: formData.categoryId ?? undefined,
+                    images: formData.images.filter(img => img.trim()),
+                    expiryDate: formData.expiryDate ? `${formData.expiryDate}T00:00:00.000Z` : undefined,
+                    status: formData.status,
+                    active: formData.active,
+                };
+                await ProductService.createProduct(createData);
                 toast.success('Product created successfully');
             }
 
