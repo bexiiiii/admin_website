@@ -1,131 +1,102 @@
 "use client";
-import Image from "next/image";
+import React, { useEffect, useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
+import { useApi } from "@/hooks/useApi";
 
-import CountryMap from "./CountryMap";
-import { useState } from "react";
-import { MoreDotIcon } from "@/icons";
-import { Dropdown } from "../ui/dropdown/Dropdown";
-import { DropdownItem } from "../ui/dropdown/DropdownItem";
+interface DemographicData {
+    category: string;
+    value: number;
+    color: string;
+}
+
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
 export default function DemographicCard() {
-  const [isOpen, setIsOpen] = useState(false);
+    const [data, setData] = useState<DemographicData[]>([]);
+    const [loading, setLoading] = useState(true);
+    const { toast } = useToast();
+    const { getAnalytics } = useApi();
 
-  function toggleDropdown() {
-    setIsOpen(!isOpen);
-  }
+    useEffect(() => {
+        const fetchDemographics = async () => {
+            try {
+                const response = await getAnalytics();
+                if (response && response.orderStatusDistribution && Array.isArray(response.orderStatusDistribution)) {
+                    // Transform the data to match the DemographicData interface
+                    const transformedData = response.orderStatusDistribution.map((item, index) => ({
+                        category: item.status,
+                        value: item.count,
+                        color: COLORS[index % COLORS.length]
+                    }));
+                    setData(transformedData);
+                } else {
+                    // Set default data if no order status distribution is available
+                    setData([
+                        { category: 'Completed', value: 45, color: COLORS[0] },
+                        { category: 'Pending', value: 25, color: COLORS[1] },
+                        { category: 'Cancelled', value: 15, color: COLORS[2] },
+                        { category: 'Processing', value: 15, color: COLORS[3] }
+                    ]);
+                }
+            } catch (err) {
+                console.error('Error fetching demographics:', err);
+                // Set default data on error
+                setData([
+                    { category: 'Completed', value: 45, color: COLORS[0] },
+                    { category: 'Pending', value: 25, color: COLORS[1] },
+                    { category: 'Cancelled', value: 15, color: COLORS[2] },
+                    { category: 'Processing', value: 15, color: COLORS[3] }
+                ]);
+                toast({
+                    title: 'Error',
+                    description: 'Failed to load demographic data',
+                    variant: 'destructive',
+                });
+            } finally {
+                setLoading(false);
+            }
+        };
 
-  function closeDropdown() {
-    setIsOpen(false);
-  }
+        fetchDemographics();
+    }, [getAnalytics, toast]);
 
-  return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
-      <div className="flex justify-between">
-        <div>
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            Customers Demographic
-          </h3>
-          <p className="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
-            Number of customer based on country
-          </p>
+    if (loading) {
+        return (
+            <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
+                <div className="h-6 bg-gray-100 rounded w-1/3 animate-pulse mb-4" />
+                <div className="h-[300px] bg-gray-100 rounded animate-pulse" />
+            </div>
+        );
+    }
+
+    return (
+        <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
+            <h3 className="text-base font-medium text-gray-800 dark:text-white/90">
+                Order Status Distribution
+            </h3>
+            <div className="h-[300px] mt-4">
+                <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                        <Pie
+                            data={data}
+                            cx="50%"
+                            cy="50%"
+                            labelLine={false}
+                            outerRadius={80}
+                            fill="#8884d8"
+                            dataKey="value"
+                            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        >
+                            {data.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                        </Pie>
+                        <Tooltip />
+                        <Legend />
+                    </PieChart>
+                </ResponsiveContainer>
+            </div>
         </div>
-
-        <div className="relative inline-block">
-          <button onClick={toggleDropdown} className="dropdown-toggle">
-            <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
-          </button>
-          <Dropdown
-            isOpen={isOpen}
-            onClose={closeDropdown}
-            className="w-40 p-2"
-          >
-            <DropdownItem
-              onItemClick={closeDropdown}
-              className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-            >
-              View More
-            </DropdownItem>
-            <DropdownItem
-              onItemClick={closeDropdown}
-              className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-            >
-              Delete
-            </DropdownItem>
-          </Dropdown>
-        </div>
-      </div>
-      <div className="px-4 py-6 my-6 overflow-hidden border border-gary-200 rounded-2xl bg-gray-50 dark:border-gray-800 dark:bg-gray-900 sm:px-6">
-        <div
-          id="mapOne"
-          className="mapOne map-btn -mx-4 -my-6 h-[212px] w-[252px] 2xsm:w-[307px] xsm:w-[358px] sm:-mx-6 md:w-[668px] lg:w-[634px] xl:w-[393px] 2xl:w-[554px]"
-        >
-          <CountryMap />
-        </div>
-      </div>
-
-      <div className="space-y-5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="items-center w-full rounded-full max-w-8">
-              <Image
-                width={48}
-                height={48}
-                src="/images/country/country-01.svg"
-                alt="usa"
-                className="w-full"
-              />
-            </div>
-            <div>
-              <p className="font-semibold text-gray-800 text-theme-sm dark:text-white/90">
-                USA
-              </p>
-              <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-                2,379 Customers
-              </span>
-            </div>
-          </div>
-
-          <div className="flex w-full max-w-[140px] items-center gap-3">
-            <div className="relative block h-2 w-full max-w-[100px] rounded-sm bg-gray-200 dark:bg-gray-800">
-              <div className="absolute left-0 top-0 flex h-full w-[79%] items-center justify-center rounded-sm bg-brand-500 text-xs font-medium text-white"></div>
-            </div>
-            <p className="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-              79%
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="items-center w-full rounded-full max-w-8">
-              <Image
-                width={48}
-                height={48}
-                className="w-full"
-                src="/images/country/country-02.svg"
-                alt="france"
-              />
-            </div>
-            <div>
-              <p className="font-semibold text-gray-800 text-theme-sm dark:text-white/90">
-                France
-              </p>
-              <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-                589 Customers
-              </span>
-            </div>
-          </div>
-
-          <div className="flex w-full max-w-[140px] items-center gap-3">
-            <div className="relative block h-2 w-full max-w-[100px] rounded-sm bg-gray-200 dark:bg-gray-800">
-              <div className="absolute left-0 top-0 flex h-full w-[23%] items-center justify-center rounded-sm bg-brand-500 text-xs font-medium text-white"></div>
-            </div>
-            <p className="font-medium text-gray-800 text-theme-sm dark:text-white/90">
-              23%
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+    );
 }

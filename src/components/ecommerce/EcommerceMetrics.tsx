@@ -1,56 +1,99 @@
 "use client";
 import React from "react";
-import Badge from "../ui/badge/Badge";
-import { ArrowDownIcon, ArrowUpIcon, BoxIconLine, GroupIcon } from "@/icons";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useApi } from "@/hooks/useApi";
 
-export const EcommerceMetrics = () => {
-  return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6">
-      {/* <!-- Metric Item Start --> */}
-      <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
-        <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
-          <GroupIcon className="text-gray-800 size-6 dark:text-white/90" />
-        </div>
+interface Metrics {
+    totalCustomers: number;
+    totalOrders: number;
+    customerGrowth: number;
+    orderGrowth: number;
+}
 
-        <div className="flex items-end justify-between mt-5">
-          <div>
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              Customers
-            </span>
-            <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
-              3,782
-            </h4>
-          </div>
-          <Badge color="success">
-            <ArrowUpIcon />
-            11.01%
-          </Badge>
-        </div>
-      </div>
-      {/* <!-- Metric Item End --> */}
+const EcommerceMetrics: React.FC = () => {
+    const { getAnalytics, loading, error } = useApi();
+    const [metrics, setMetrics] = React.useState<Metrics | null>(null);
 
-      {/* <!-- Metric Item Start --> */}
-      <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
-        <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
-          <BoxIconLine className="text-gray-800 dark:text-white/90" />
-        </div>
-        <div className="flex items-end justify-between mt-5">
-          <div>
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              Orders
-            </span>
-            <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
-              5,359
-            </h4>
-          </div>
+    React.useEffect(() => {
+        const fetchMetrics = async () => {
+            const response = await getAnalytics();
+            if (response) {
+                setMetrics({
+                    totalCustomers: response.totalUsers,
+                    totalOrders: response.totalOrders,
+                    customerGrowth: 0, // TODO: Calculate from historical data
+                    orderGrowth: 0, // TODO: Calculate from historical data
+                });
+            }
+        };
+        fetchMetrics();
+    }, [getAnalytics]);
 
-          <Badge color="error">
-            <ArrowDownIcon className="text-error-500" />
-            9.05%
-          </Badge>
+    if (loading) {
+        return (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                {[1, 2, 3, 4].map((i) => (
+                    <Card key={i}>
+                        <CardHeader>
+                            <CardTitle>
+                                <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="h-8 w-16 bg-gray-200 rounded animate-pulse" />
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <Card>
+                <CardContent>
+                    <div className="text-red-500">{error}</div>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    if (!metrics) {
+        return (
+            <Card>
+                <CardContent>
+                    <div className="text-gray-500">No metrics available</div>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    return (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Total Customers</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">{metrics.totalCustomers}</div>
+                    <p className="text-xs text-gray-500">
+                        {metrics.customerGrowth > 0 ? '+' : ''}{metrics.customerGrowth}% from last month
+                    </p>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Total Orders</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">{metrics.totalOrders}</div>
+                    <p className="text-xs text-gray-500">
+                        {metrics.orderGrowth > 0 ? '+' : ''}{metrics.orderGrowth}% from last month
+                    </p>
+                </CardContent>
+            </Card>
         </div>
-      </div>
-      {/* <!-- Metric Item End --> */}
-    </div>
-  );
+    );
 };
+
+export default EcommerceMetrics;

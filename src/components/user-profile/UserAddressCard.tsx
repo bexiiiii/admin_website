@@ -1,61 +1,100 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
+import TextArea from "../form/input/TextArea";
+import { useApi } from "@/hooks/useApi";
+import { toast } from "react-hot-toast";
+import { UserDTO } from "@/types/api";
+import { validateLength, ValidationError } from "@/utils/validation";
 
 export default function UserAddressCard() {
   const { isOpen, openModal, closeModal } = useModal();
-  const handleSave = () => {
-    // Handle save logic here
-    console.log("Saving changes...");
-    closeModal();
+  const [profile, setProfile] = useState<UserDTO | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string>('');
+  const [formData, setFormData] = useState({
+    address: "",
+  });
+  const { getUserProfile, updateUserProfile } = useApi();
+
+  useEffect(() => {
+    fetchProfile();
+  }, [getUserProfile]);
+
+  const fetchProfile = async () => {
+    try {
+      const response = await getUserProfile();
+      if (response) {
+        setProfile(response);
+        setFormData({
+          address: response.address || "",
+        });
+      }
+    } catch (err) {
+      console.error("Failed to load profile:", err);
+      toast.error("Failed to load profile");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const handleInputChange = (value: string) => {
+    setFormData(prev => ({ ...prev, address: value }));
+    // Clear error when user starts typing
+    if (error) setError('');
+  };
+
+  const handleSave = async () => {
+    // Validate address length
+    const lengthError = validateLength(formData.address, 'Address', undefined, 500);
+    if (lengthError) {
+      setError(lengthError.message);
+      toast.error(lengthError.message);
+      return;
+    }
+
+    setSaving(true);
+    try {
+      await updateUserProfile({
+        address: formData.address.trim() || null,
+      });
+
+      await fetchProfile();
+      toast.success("Address updated successfully");
+      setError('');
+      closeModal();
+    } catch (err) {
+      console.error("Failed to update address:", err);
+      toast.error("Failed to update address");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
   return (
     <>
       <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
-              Address
+              Address Information
             </h4>
 
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
+            <div className="grid grid-cols-1 gap-4">
               <div>
                 <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  Country
+                  Full Address
                 </p>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  United States
-                </p>
-              </div>
-
-              <div>
-                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  City/State
-                </p>
-                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  Phoenix, Arizona, United States.
-                </p>
-              </div>
-
-              <div>
-                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  Postal Code
-                </p>
-                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  ERT 2489
-                </p>
-              </div>
-
-              <div>
-                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  TAX ID
-                </p>
-                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  AS4568384
+                  {profile?.address || 'No address provided'}
                 </p>
               </div>
             </div>
@@ -91,39 +130,45 @@ export default function UserAddressCard() {
               Edit Address
             </h4>
             <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
-              Update your details to keep your profile up-to-date.
+              Update your address information.
             </p>
           </div>
-          <form className="flex flex-col">
+          <form className="flex flex-col" onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
             <div className="px-2 overflow-y-auto custom-scrollbar">
-              <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+              <div className="space-y-5">
                 <div>
-                  <Label>Country</Label>
-                  <Input type="text" defaultValue="United States" />
+                  <Label>Full Address</Label>
+                  <TextArea
+                    value={formData.address}
+                    onChange={handleInputChange}
+                    placeholder="Enter your complete address (e.g., Street, City, State, Country, Postal Code)"
+                    rows={4}
+                    hint="Include street address, city, state/province, country, and postal code. Maximum 500 characters."
+                    className={error ? 'border-red-500' : ''}
+                  />
+                  {error && (
+                    <p className="mt-1 text-sm text-red-500">{error}</p>
+                  )}
+                  <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    {formData.address.length}/500 characters
+                  </div>
                 </div>
-
-                <div>
-                  <Label>City/State</Label>
-                  <Input type="text" defaultValue="Arizona, United States." />
-                </div>
-
-                <div>
-                  <Label>Postal Code</Label>
-                  <Input type="text" defaultValue="ERT 2489" />
-                </div>
-
-                <div>
-                  <Label>TAX ID</Label>
-                  <Input type="text" defaultValue="AS4568384" />
-                </div>
+                
+                {error && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg dark:bg-red-900/20 dark:border-red-800">
+                    <p className="text-sm text-red-600 dark:text-red-400 font-medium">
+                      {error}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
             <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-              <Button size="sm" variant="outline" onClick={closeModal}>
-                Close
+              <Button size="sm" variant="outline" onClick={closeModal} type="button">
+                Cancel
               </Button>
-              <Button size="sm" onClick={handleSave}>
-                Save Changes
+              <Button size="sm" type="submit" disabled={saving}>
+                {saving ? 'Saving...' : 'Save Changes'}
               </Button>
             </div>
           </form>

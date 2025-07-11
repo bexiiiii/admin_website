@@ -1,18 +1,102 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
+import { useApi } from "@/hooks/useApi";
+import { toast } from "react-hot-toast";
+import { UserDTO } from "@/types/api";
+import { validateUserProfile, ValidationError } from "@/utils/validation";
 
 export default function UserInfoCard() {
   const { isOpen, openModal, closeModal } = useModal();
-  const handleSave = () => {
-    // Handle save logic here
-    console.log("Saving changes...");
-    closeModal();
+  const [profile, setProfile] = useState<UserDTO | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState<ValidationError[]>([]);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    address: "",
+  });
+  const { getUserProfile, updateUserProfile } = useApi();
+
+  useEffect(() => {
+    fetchProfile();
+  }, [getUserProfile]);
+
+  const fetchProfile = async () => {
+    try {
+      const response = await getUserProfile();
+      if (response) {
+        setProfile(response);
+        setFormData({
+          firstName: response.firstName || "",
+          lastName: response.lastName || "",
+          email: response.email || "",
+          phone: response.phone || "",
+          address: response.address || "",
+        });
+      }
+    } catch (err) {
+      console.error("Failed to load profile:", err);
+      toast.error("Failed to load profile");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Clear field-specific errors when user starts typing
+    setErrors(prev => prev.filter(error => error.field !== name));
+  };
+
+  const getFieldError = (fieldName: string): string | undefined => {
+    return errors.find(error => error.field === fieldName)?.message;
+  };
+
+  const handleSave = async () => {
+    // Validate form data
+    const validation = validateUserProfile(formData);
+    
+    if (!validation.isValid) {
+      setErrors(validation.errors);
+      toast.error("Please fix the validation errors");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      await updateUserProfile({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        address: formData.address,
+      });
+
+      await fetchProfile();
+      toast.success("Profile updated successfully");
+      setErrors([]);
+      closeModal();
+    } catch (err) {
+      console.error("Failed to update profile:", err);
+      toast.error("Failed to update profile");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
   return (
     <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
@@ -27,7 +111,7 @@ export default function UserInfoCard() {
                 First Name
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Musharof
+                {profile?.firstName || 'N/A'}
               </p>
             </div>
 
@@ -36,7 +120,7 @@ export default function UserInfoCard() {
                 Last Name
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Chowdhury
+                {profile?.lastName || 'N/A'}
               </p>
             </div>
 
@@ -45,7 +129,7 @@ export default function UserInfoCard() {
                 Email address
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                randomuser@pimjo.com
+                {profile?.email || 'N/A'}
               </p>
             </div>
 
@@ -54,16 +138,16 @@ export default function UserInfoCard() {
                 Phone
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                +09 363 398 46
+                {profile?.phone || 'N/A'}
               </p>
             </div>
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Bio
+                Address
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Team Manager
+                {profile?.address || 'N/A'}
               </p>
             </div>
           </div>
@@ -102,83 +186,110 @@ export default function UserInfoCard() {
               Update your details to keep your profile up-to-date.
             </p>
           </div>
-          <form className="flex flex-col">
+          <form className="flex flex-col" onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
             <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
               <div>
-                <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
-                  Social Links
-                </h5>
-
-                <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                  <div>
-                    <Label>Facebook</Label>
-                    <Input
-                      type="text"
-                      defaultValue="https://www.facebook.com/PimjoHQ"
-                    />
-                  </div>
-
-                  <div>
-                    <Label>X.com</Label>
-                    <Input type="text" defaultValue="https://x.com/PimjoHQ" />
-                  </div>
-
-                  <div>
-                    <Label>Linkedin</Label>
-                    <Input
-                      type="text"
-                      defaultValue="https://www.linkedin.com/company/pimjo"
-                    />
-                  </div>
-
-                  <div>
-                    <Label>Instagram</Label>
-                    <Input
-                      type="text"
-                      defaultValue="https://instagram.com/PimjoHQ"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="mt-7">
                 <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
                   Personal Information
                 </h5>
 
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>First Name</Label>
-                    <Input type="text" defaultValue="Musharof" />
+                    <Label>First Name *</Label>
+                    <Input 
+                      type="text" 
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleInputChange}
+                      placeholder="Enter your first name"
+                      className={getFieldError('firstName') ? 'border-red-500' : ''}
+                    />
+                    {getFieldError('firstName') && (
+                      <p className="mt-1 text-sm text-red-500">{getFieldError('firstName')}</p>
+                    )}
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>Last Name</Label>
-                    <Input type="text" defaultValue="Chowdhury" />
+                    <Label>Last Name *</Label>
+                    <Input 
+                      type="text" 
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleInputChange}
+                      placeholder="Enter your last name"
+                      className={getFieldError('lastName') ? 'border-red-500' : ''}
+                    />
+                    {getFieldError('lastName') && (
+                      <p className="mt-1 text-sm text-red-500">{getFieldError('lastName')}</p>
+                    )}
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>Email Address</Label>
-                    <Input type="text" defaultValue="randomuser@pimjo.com" />
+                    <Label>Email Address *</Label>
+                    <Input 
+                      type="email" 
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      placeholder="Enter your email address"
+                      className={getFieldError('email') ? 'border-red-500' : ''}
+                    />
+                    {getFieldError('email') && (
+                      <p className="mt-1 text-sm text-red-500">{getFieldError('email')}</p>
+                    )}
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
                     <Label>Phone</Label>
-                    <Input type="text" defaultValue="+09 363 398 46" />
+                    <Input 
+                      type="tel" 
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      placeholder="Enter your phone number"
+                      className={getFieldError('phone') ? 'border-red-500' : ''}
+                    />
+                    {getFieldError('phone') && (
+                      <p className="mt-1 text-sm text-red-500">{getFieldError('phone')}</p>
+                    )}
                   </div>
 
                   <div className="col-span-2">
-                    <Label>Bio</Label>
-                    <Input type="text" defaultValue="Team Manager" />
+                    <Label>Address</Label>
+                    <Input 
+                      type="text" 
+                      name="address"
+                      value={formData.address}
+                      onChange={handleInputChange}
+                      placeholder="Enter your address"
+                      className={getFieldError('address') ? 'border-red-500' : ''}
+                    />
+                    {getFieldError('address') && (
+                      <p className="mt-1 text-sm text-red-500">{getFieldError('address')}</p>
+                    )}
                   </div>
                 </div>
+                
+                {errors.length > 0 && (
+                  <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg dark:bg-red-900/20 dark:border-red-800">
+                    <p className="text-sm text-red-600 dark:text-red-400 font-medium mb-2">
+                      Please fix the following errors:
+                    </p>
+                    <ul className="list-disc list-inside text-sm text-red-600 dark:text-red-400">
+                      {errors.map((error, index) => (
+                        <li key={index}>{error.message}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             </div>
             <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-              <Button size="sm" variant="outline" onClick={closeModal}>
-                Close
+              <Button size="sm" variant="outline" onClick={closeModal} type="button">
+                Cancel
               </Button>
-              <Button size="sm" onClick={handleSave}>
-                Save Changes
+              <Button size="sm" type="submit" disabled={saving}>
+                {saving ? 'Saving...' : 'Save Changes'}
               </Button>
             </div>
           </form>
