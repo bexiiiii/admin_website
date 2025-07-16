@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  basePath: '/admin',  // Добавляем путь "/admin" для админки
+  //basePath: '/admin',  // Добавляем путь "/admin" для админки
   async rewrites() {
     return [
       {
