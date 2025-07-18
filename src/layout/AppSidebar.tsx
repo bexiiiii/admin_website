@@ -36,7 +36,10 @@ const navItems: NavItem[] = [
   {
     icon: <GridIcon />,
     name: "Dashboard",
-    subItems: [{ name: "Ecommerce", path: "/", pro: false }],
+    subItems: [
+      { name: "Ecommerce", path: "/", pro: false },
+      { name: "My Store", path: "/my-store-dashboard", pro: false }
+    ],
   },
   {
     icon: <CalenderIcon />,
@@ -77,6 +80,12 @@ const navItems: NavItem[] = [
     icon: <UserIcon />,
     name: "Users",
     path: "/users",
+  },
+  {
+    icon: <UserGroupIcon className="h-6 w-6" />,
+    name: "User-Store Management",
+    path: "/user-store-management",
+    permission: Permission.STORE_UPDATE,
   },
   {
     icon: <BoxIcon />,

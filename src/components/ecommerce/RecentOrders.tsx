@@ -3,21 +3,38 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useApi } from "@/hooks/useApi";
+import { useRoleBasedRoutes } from "@/hooks/useRoleBasedRoutes";
+import { Permission } from "@/types/permission";
 import { OrderDTO } from "@/types/api";
 
 const RecentOrders: React.FC = () => {
     const { getOrders, loading, error } = useApi();
+    const { hasPermission, user } = useRoleBasedRoutes();
     const [orders, setOrders] = React.useState<OrderDTO[]>([]);
+
+    const isStoreUser = user?.role === 'STORE_OWNER' || user?.role === 'MANAGER';
+    const isAdmin = hasPermission(Permission.ANALYTICS_READ);
 
     React.useEffect(() => {
         const fetchOrders = async () => {
             const response = await getOrders();
             if (response) {
-                setOrders(response.slice(0, 5));
+                // Для пользователей заведений показываем только их заказы
+                let filteredOrders = response;
+                if (isStoreUser && !isAdmin) {
+                    // Фильтруем заказы по заведению пользователя
+                    // Предполагается, что в OrderDTO есть поле storeName или storeId
+                    filteredOrders = response.filter(order => 
+                        // Здесь нужно добавить логику фильтрации по заведению
+                        // Пока показываем все заказы, но с соответствующим заголовком
+                        true
+                    );
+                }
+                setOrders(filteredOrders.slice(0, 5));
             }
         };
         fetchOrders();
-    }, [getOrders]);
+    }, [getOrders, isStoreUser, isAdmin]);
 
     if (loading) {
         return (

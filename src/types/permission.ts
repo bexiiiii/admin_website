@@ -29,6 +29,16 @@ export enum Permission {
     ORDER_UPDATE = 'ORDER_UPDATE',
     ORDER_DELETE = 'ORDER_DELETE',
 
+    // Category Management
+    CATEGORY_READ = 'CATEGORY_READ',
+    CATEGORY_CREATE = 'CATEGORY_CREATE',
+    CATEGORY_UPDATE = 'CATEGORY_UPDATE',
+    CATEGORY_DELETE = 'CATEGORY_DELETE',
+
+    // Cart Management
+    CART_READ = 'CART_READ',
+    CART_UPDATE = 'CART_UPDATE',
+
     // Analytics
     ANALYTICS_READ = 'ANALYTICS_READ',
     ANALYTICS_EXPORT = 'ANALYTICS_EXPORT',
@@ -86,6 +96,16 @@ export const PERMISSION_DESCRIPTIONS: Record<Permission, string> = {
     [Permission.ORDER_UPDATE]: 'Редактирование статуса заказов',
     [Permission.ORDER_DELETE]: 'Удаление заказов',
 
+    // Category Management
+    [Permission.CATEGORY_READ]: 'Просмотр списка категорий',
+    [Permission.CATEGORY_CREATE]: 'Создание новых категорий',
+    [Permission.CATEGORY_UPDATE]: 'Редактирование категорий',
+    [Permission.CATEGORY_DELETE]: 'Удаление категорий',
+
+    // Cart Management
+    [Permission.CART_READ]: 'Просмотр корзин пользователей',
+    [Permission.CART_UPDATE]: 'Управление корзинами',
+
     // Analytics
     [Permission.ANALYTICS_READ]: 'Просмотр аналитики и отчетов',
     [Permission.ANALYTICS_EXPORT]: 'Экспорт данных аналитики',
@@ -105,4 +125,4 @@ export const PERMISSION_DESCRIPTIONS: Record<Permission, string> = {
     // System Settings
     [Permission.SETTINGS_READ]: 'Просмотр системных настроек',
     [Permission.SETTINGS_UPDATE]: 'Изменение системных настроек',
-}; 
+};

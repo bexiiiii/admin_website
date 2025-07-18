@@ -4,7 +4,9 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value
   const isAuthPage = request.nextUrl.pathname.startsWith('/signin') || 
-                    request.nextUrl.pathname.startsWith('/signup')
+                    request.nextUrl.pathname.startsWith('/signup') ||
+                    request.nextUrl.pathname.startsWith('/admin/signin') ||
+                    request.nextUrl.pathname.startsWith('/admin/signup')
 
   // If trying to access auth pages while logged in, redirect to dashboard
   if (isAuthPage && token) {

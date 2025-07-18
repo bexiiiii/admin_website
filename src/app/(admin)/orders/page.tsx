@@ -23,7 +23,7 @@ import { OrderDTO } from '@/types/api';
 import { useModal } from '@/hooks/useModal';
 import { CreateOrderModal } from '@/components/modals/CreateOrderModal';
 import { OrderQRModal } from '@/components/modals/OrderQRModal';
-import { QRScannerModal } from '@/components/modals/QRScannerModal';
+import { QROrderDetailsModal } from '@/components/modals/QROrderDetailsModal';
 import { EditOrderModal } from '@/components/modals/EditOrderModal';
 
 const statusColors = {
@@ -389,7 +389,7 @@ export default function OrderManagementPage() {
             )}
 
             {/* QR Scanner Modal */}
-            <QRScannerModal
+            <QROrderDetailsModal
                 isOpen={isQRScannerOpen}
                 onClose={closeQRScanner}
                 onOrderUpdated={fetchOrders}

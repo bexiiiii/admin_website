@@ -1,10 +1,22 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useApi } from "@/hooks/useApi";
-import { toast } from "react-hot-toast";
+import { toast as hotToast } from "react-hot-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import { useToast } from "@/components/ui/use-toast";
 import ChartTab from "@/components/common/ChartTab";
 import LineChartOne from "@/components/charts/line/LineChartOne";
 import BarChartOne from "@/components/charts/bar/BarChartOne";
@@ -13,7 +25,13 @@ import MonthlyTarget from "@/components/ecommerce/MonthlyTarget";
 import AdvancedMetrics from "@/components/analytics/AdvancedMetrics";
 import SalesOverview from "@/components/analytics/SalesOverview";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import { AnalyticsData } from "@/types/api";
+import { StoreOrderStatsTable } from "@/components/stats/StoreOrderStatsTable";
+import { OrderStatsCard } from "@/components/stats/OrderStatsCard";
+import { AnalyticsData, OrderStatsDTO } from "@/types/api";
+import { orderApi } from "@/services/api";
+import { useRoleBasedRoutes } from "@/hooks/useRoleBasedRoutes";
+import { Permission } from "@/types/permission";
+import { RoleGuard, AdminOnly, StoreManagementRoles } from "@/components/auth/RoleGuard";
 import { 
   TrendingUpIcon, 
   TrendingDownIcon, 
@@ -34,12 +52,25 @@ import {
   DownloadIcon
 } from "lucide-react";
 
+interface DailySalesAnalytics {
+    storeId: number;
+    storeName: string;
+    date: string;
+    totalOrders: number;
+    completedOrders: number;
+    canceledOrders: number;
+    totalRevenue: number;
+    completedRevenue: number;
+    canceledRevenue: number;
+}
+
 const defaultAnalyticsData: AnalyticsData = {
   totalSales: 0,
   totalOrders: 0,
   totalProducts: 0,
   totalUsers: 0,
   totalStores: 0,
+  totalRevenue: 0,
   revenue: 0,
   salesByDay: [],
   salesByMonth: [],
@@ -50,16 +81,137 @@ const defaultAnalyticsData: AnalyticsData = {
   paymentMethodDistribution: []
 };
 
+// MetricCard component
+interface MetricCardProps {
+  title: string;
+  value: number;
+  icon: any;
+  growth?: number;
+  color: string;
+  formatValue?: (val: number) => string;
+}
+
+const MetricCard: React.FC<MetricCardProps> = ({ 
+  title, 
+  value, 
+  icon: Icon, 
+  growth, 
+  color,
+  formatValue = (val) => val.toLocaleString()
+}) => (
+  <Card className="relative overflow-hidden bg-white dark:bg-gray-800 border-0 shadow-sm hover:shadow-md transition-all duration-300">
+    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+        {title}
+      </CardTitle>
+      <div className={`p-2 rounded-lg ${color}`}>
+        <Icon className="h-4 w-4 text-white" />
+      </div>
+    </CardHeader>
+    <CardContent>
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="text-2xl font-bold text-gray-900 dark:text-white">
+            {formatValue(value)}
+          </div>
+          {growth !== undefined && (
+            <div className="flex items-center mt-1">
+              {growth >= 0 ? (
+                <ArrowUpIcon className="h-3 w-3 text-green-500 mr-1" />
+              ) : (
+                <ArrowDownIcon className="h-3 w-3 text-red-500 mr-1" />
+              )}
+              <span className={`text-xs font-medium ${
+                growth >= 0 ? 'text-green-600' : 'text-red-600'
+              }`}>
+                {Math.abs(growth).toFixed(1)}%
+              </span>
+              <span className="text-xs text-gray-500 ml-1">vs last period</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+);
+
 export default function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [timeRange, setTimeRange] = useState('7d');
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData>(defaultAnalyticsData);
+  const [orderStats, setOrderStats] = useState<OrderStatsDTO | null>(null);
+  const [dailySalesAnalytics, setDailySalesAnalytics] = useState<DailySalesAnalytics[]>([]);
+  const [salesLoading, setSalesLoading] = useState(false);
+  const [startDate, setStartDate] = useState('2024-01-01');
+  const [endDate, setEndDate] = useState('2024-12-31');
   const { getAnalytics } = useApi();
+  const { hasPermission } = useRoleBasedRoutes();
+  const { toast } = useToast();
 
   useEffect(() => {
     fetchAnalytics();
   }, [getAnalytics]);
+
+  // Removed auto-loading - now only loads when button is clicked
+
+  const fetchDailySalesAnalytics = async () => {
+    setSalesLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:8080/api/analytics/daily-sales?startDate=${startDate}&endDate=${endDate}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch daily sales analytics');
+      }
+
+      const data = await response.json();
+      setDailySalesAnalytics(data);
+    } catch (error) {
+      console.error('Error fetching daily sales analytics:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load daily sales analytics",
+        variant: "destructive",
+      });
+    } finally {
+      setSalesLoading(false);
+    }
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('kk-KZ', {
+      style: 'currency',
+      currency: 'KZT'
+    }).format(amount);
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('kk-KZ');
+  };
+
+  // Подсчет общих показателей для ежедневной аналитики
+  const totalSalesStats = dailySalesAnalytics.reduce((acc, item) => {
+    acc.totalOrders += item.totalOrders;
+    acc.completedOrders += item.completedOrders;
+    acc.canceledOrders += item.canceledOrders;
+    acc.totalRevenue += item.totalRevenue;
+    acc.completedRevenue += item.completedRevenue;
+    acc.canceledRevenue += item.canceledRevenue;
+    return acc;
+  }, {
+    totalOrders: 0,
+    completedOrders: 0,
+    canceledOrders: 0,
+    totalRevenue: 0,
+    completedRevenue: 0,
+    canceledRevenue: 0
+  });
 
   const fetchAnalytics = async (showRefreshing = false) => {
     try {
@@ -69,6 +221,11 @@ export default function AnalyticsPage() {
       
       const response = await getAnalytics();
       console.log('API Response:', response);
+      console.log('totalStores:', response?.totalStores);
+      console.log('totalUsers:', response?.totalUsers);
+      console.log('totalProducts:', response?.totalProducts);
+      console.log('totalOrders:', response?.totalOrders);
+      console.log('totalRevenue:', response?.totalRevenue);
       
       if (response) {
         // Merge the API response with default values to ensure all arrays exist
@@ -89,9 +246,28 @@ export default function AnalyticsPage() {
         console.warn('Invalid API response structure:', response);
         setAnalyticsData(defaultAnalyticsData);
       }
+
+      // Загружаем статистику заказов
+      try {
+        if (hasPermission(Permission.ANALYTICS_READ)) {
+          const stats = await orderApi.getStats();
+          setOrderStats(stats);
+        } else if (hasPermission(Permission.ORDER_READ)) {
+          const stats = await orderApi.getMyStoreStats();
+          setOrderStats(stats);
+        }
+      } catch (orderStatsError) {
+        console.error("Failed to load order stats:", orderStatsError);
+        // Не показываем ошибку пользователю, так как это дополнительная информация
+      }
+      
     } catch (err) {
       console.error("Failed to load analytics:", err);
-      toast.error("Failed to load analytics data");
+      toast({
+        title: "Error",
+        description: "Failed to load analytics data",
+        variant: "destructive",
+      });
       setAnalyticsData(defaultAnalyticsData);
     } finally {
       setLoading(false);
@@ -108,60 +284,9 @@ export default function AnalyticsPage() {
     return ((current - previous) / previous * 100);
   };
 
-  const safeNumber = (value: number | undefined | null): number => {
+  const safeNumber = (value: any): number => {
     return typeof value === 'number' && !isNaN(value) ? value : 0;
   };
-
-  const MetricCard = ({ 
-    title, 
-    value, 
-    icon: Icon, 
-    growth, 
-    color,
-    formatValue = (val) => val.toLocaleString()
-  }: {
-    title: string;
-    value: number;
-    icon: any;
-    growth?: number;
-    color: string;
-    formatValue?: (val: number) => string;
-  }) => (
-    <Card className="relative overflow-hidden bg-white dark:bg-gray-800 border-0 shadow-sm hover:shadow-md transition-all duration-300">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
-          {title}
-        </CardTitle>
-        <div className={`p-2 rounded-lg ${color}`}>
-          <Icon className="h-4 w-4 text-white" />
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">
-              {formatValue(value)}
-            </div>
-            {growth !== undefined && (
-              <div className="flex items-center mt-1">
-                {growth >= 0 ? (
-                  <ArrowUpIcon className="h-3 w-3 text-green-500 mr-1" />
-                ) : (
-                  <ArrowDownIcon className="h-3 w-3 text-red-500 mr-1" />
-                )}
-                <span className={`text-xs font-medium ${
-                  growth >= 0 ? 'text-green-600' : 'text-red-600'
-                }`}>
-                  {Math.abs(growth).toFixed(1)}%
-                </span>
-                <span className="text-xs text-gray-500 ml-1">vs last period</span>
-              </div>
-            )}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
 
   if (loading) {
     return (
@@ -282,10 +407,10 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Key Metrics Grid */}
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           <MetricCard
             title="Total Revenue"
-            value={safeNumber(analyticsData.revenue)}
+            value={safeNumber(analyticsData.totalRevenue || analyticsData.revenue || 0)}
             icon={DollarSignIcon}
             growth={12.5}
             color="bg-green-500"
@@ -297,6 +422,13 @@ export default function AnalyticsPage() {
             icon={ShoppingCartIcon}
             growth={8.2}
             color="bg-blue-500"
+          />
+          <MetricCard
+            title="Total Products"
+            value={safeNumber(analyticsData.totalProducts)}
+            icon={PackageIcon}
+            growth={6.8}
+            color="bg-indigo-500"
           />
           <MetricCard
             title="Total Users"
@@ -313,6 +445,53 @@ export default function AnalyticsPage() {
             color="bg-orange-500"
           />
         </div>
+
+        {/* Order Statistics Cards */}
+        {orderStats && (
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              Order Statistics
+            </h2>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <OrderStatsCard
+                title="Overall Order Statistics"
+                totalOrders={orderStats.totalOrders}
+                successfulOrders={orderStats.successfulOrders}
+                failedOrders={orderStats.failedOrders}
+                pendingOrders={orderStats.pendingOrders}
+                icon={<ShoppingCartIcon className="h-4 w-4" />}
+              />
+              
+              <MetricCard
+                title="Success Rate"
+                value={orderStats.totalOrders > 0 ? (orderStats.successfulOrders / orderStats.totalOrders) * 100 : 0}
+                icon={TrendingUpIcon}
+                color="bg-green-500"
+                formatValue={(val) => `${val.toFixed(1)}%`}
+              />
+              
+              <MetricCard
+                title="Pending Orders"
+                value={orderStats.pendingOrders + orderStats.confirmedOrders + orderStats.preparingOrders + orderStats.readyOrders}
+                icon={ActivityIcon}
+                color="bg-yellow-500"
+                formatValue={(val) => `${val}`}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Store Order Statistics Table (only for admins) */}
+        {hasPermission(Permission.ANALYTICS_READ) && (
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              Store Performance
+            </h2>
+            <AdminOnly>
+              <StoreOrderStatsTable />
+            </AdminOnly>
+          </div>
+        )}
 
         {/* Charts Section */}
         <div className="grid gap-6 lg:grid-cols-7">
@@ -483,10 +662,10 @@ export default function AnalyticsPage() {
         </div>
         <AdvancedMetrics 
           data={{
-            averageOrderValue: analyticsData.revenue / Math.max(analyticsData.totalOrders, 1),
-            conversionRate: 3.2, // This would come from analytics API
-            customerRetention: 68.5, // This would come from analytics API
-            monthlyRecurringRevenue: analyticsData.revenue * 0.7 // Estimated based on revenue
+            averageOrderValue: (analyticsData.totalRevenue || analyticsData.revenue || 0) / Math.max(analyticsData.totalOrders, 1),
+            conversionRate: 0.12, // This would need to be calculated from actual data
+            customerRetention: 0.68, // This would need to be calculated from actual data
+            monthlyRecurringRevenue: (analyticsData.totalRevenue || analyticsData.revenue || 0) * 0.7 // Estimated based on revenue
           }}
         />
 
@@ -501,7 +680,177 @@ export default function AnalyticsPage() {
           <DemographicCard />
           <MonthlyTarget />
         </div>
+
+        {/* Daily Sales Analytics - Only for SUPER_ADMIN */}
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Daily Sales Analytics
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
+                Daily breakdown of sales and orders by store
+              </p>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Label htmlFor="startDate">Start Date</Label>
+                <Input
+                  id="startDate"
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="w-40"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <Label htmlFor="endDate">End Date</Label>
+                <Input
+                  id="endDate"
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="w-40"
+                />
+              </div>
+              <Button 
+                onClick={fetchDailySalesAnalytics} 
+                disabled={salesLoading}
+                className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2"
+              >
+                {salesLoading ? (
+                  <RefreshCwIcon className="h-4 w-4 animate-spin" />
+                ) : (
+                  <ActivityIcon className="h-4 w-4" />
+                )}
+                {salesLoading ? 'Loading...' : 'Load Data'}
+              </Button>
+              <Button 
+                onClick={() => setDailySalesAnalytics([])} 
+                variant="outline"
+                disabled={salesLoading}
+                className="border-gray-300 text-gray-700 hover:bg-gray-50"
+              >
+                Clear
+              </Button>
+            </div>
+          </div>
+
+          {/* Summary Cards for Daily Sales */}
+          {dailySalesAnalytics.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{totalSalesStats.totalOrders}</div>
+                  <div className="text-xs text-muted-foreground">
+                    Completed: {totalSalesStats.completedOrders} | Canceled: {totalSalesStats.canceledOrders}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{formatCurrency(totalSalesStats.totalRevenue)}</div>
+                  <div className="text-xs text-muted-foreground">
+                    From all orders
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Canceled Revenue</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-red-600">{formatCurrency(totalSalesStats.canceledRevenue)}</div>
+                  <div className="text-xs text-muted-foreground">
+                    Lost from canceled orders
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}            {/* Daily Sales Table */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Daily Sales by Store</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Store</TableHead>
+                        <TableHead>Total Orders</TableHead>
+                        <TableHead>Completed</TableHead>
+                        <TableHead>Canceled</TableHead>
+                        <TableHead>Total Revenue</TableHead>
+                        <TableHead>Completed Revenue</TableHead>
+                        <TableHead>Canceled Revenue</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {dailySalesAnalytics.length > 0 ? (
+                        dailySalesAnalytics.map((item, index) => (
+                          <TableRow key={index}>
+                            <TableCell className="font-medium">
+                              {formatDate(item.date)}
+                            </TableCell>
+                            <TableCell>{item.storeName}</TableCell>
+                            <TableCell>
+                              <Badge variant="outline">{item.totalOrders}</Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="default" className="bg-green-100 text-green-800">
+                                {item.completedOrders}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="default" className="bg-red-100 text-red-800">
+                                {item.canceledOrders}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="font-medium">
+                              {formatCurrency(item.totalRevenue)}
+                            </TableCell>
+                            <TableCell className="text-green-600">
+                              {formatCurrency(item.completedRevenue)}
+                            </TableCell>
+                            <TableCell className="text-red-600">
+                              {formatCurrency(item.canceledRevenue)}
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={8} className="text-center py-8">
+                            <div className="flex flex-col items-center gap-2">
+                              <p className="text-gray-500 dark:text-gray-400">
+                                {salesLoading ? 'Loading analytics data...' : 'No data loaded yet.'}
+                              </p>
+                              {!salesLoading && (
+                                <p className="text-sm text-gray-400 dark:text-gray-500">
+                                  Select date range and click &quot;Load Data&quot; to see analytics
+                                </p>
+                              )}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
-    </div>
+    
   );
-} 
+}

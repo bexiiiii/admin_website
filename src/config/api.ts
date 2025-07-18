@@ -17,6 +17,7 @@ export const API_ENDPOINTS = {
   },
   STORES: {
     BASE: '/stores',
+    ACTIVE: '/stores/active',
     MY_STORE: '/api/stores/my-store',
     PRODUCTS: '/api/stores/products',
     ANALYTICS: '/api/stores/analytics',

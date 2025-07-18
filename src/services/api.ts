@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
-import { NotificationDTO, DiscountDTO, AnalyticsData, LoginRequest, AuthResponse, OrderDTO, StoreDTO, StoreCreateRequest, StoreUpdateRequest, PageableResponse, UserDTO, UserCreateRequest, UserUpdateRequest, ReviewDTO, CartDTO, CartAddItemRequest, CartUpdateItemRequest } from '@/types/api';
+import { NotificationDTO, DiscountDTO, AnalyticsData, LoginRequest, AuthResponse, OrderDTO, StoreDTO, StoreCreateRequest, StoreUpdateRequest, PageableResponse, UserDTO, UserCreateRequest, UserUpdateRequest, ReviewDTO, CartDTO, CartAddItemRequest, CartUpdateItemRequest, OrderStatsDTO, StoreOrderStatsDTO } from '@/types/api';
 import { BASE_URL, API_ENDPOINTS, DEFAULT_HEADERS } from '../config/api';
 
 const api = axios.create({
@@ -362,11 +362,28 @@ export const storeApi = {
         }
         return Array.isArray(response.data) ? response.data : [];
     },
+    getActive: async (): Promise<StoreDTO[]> => {
+        const response = await api.get(`${API_ENDPOINTS.STORES.BASE}/active`);
+        return Array.isArray(response.data) ? response.data : [];
+    },
     getById: (id: number) => api.get<StoreDTO>(`${API_ENDPOINTS.STORES.BASE}/${id}`).then(response => response.data),
     getMyStore: () => api.get<StoreDTO>(API_ENDPOINTS.STORES.MY_STORE).then(response => response.data),
     create: (data: StoreCreateRequest) => api.post<StoreDTO>(API_ENDPOINTS.STORES.BASE, data).then(response => response.data),
     update: (id: number, data: StoreUpdateRequest) => api.put<StoreDTO>(`${API_ENDPOINTS.STORES.BASE}/${id}`, data).then(response => response.data),
-    delete: (id: number) => api.delete(`${API_ENDPOINTS.STORES.BASE}/${id}`).then(response => response.data)
+    delete: (id: number) => api.delete(`${API_ENDPOINTS.STORES.BASE}/${id}`).then(response => response.data),
+    
+    // User-Store assignment methods
+    assignUserToStore: (storeId: number, userId: number) => 
+        api.post(`${API_ENDPOINTS.STORES.BASE}/${storeId}/assign-user/${userId}`).then(response => response.data),
+    unassignUserFromStore: (storeId: number, userId: number) => 
+        api.delete(`${API_ENDPOINTS.STORES.BASE}/${storeId}/unassign-user/${userId}`).then(response => response.data),
+    getStoreUsers: async (storeId: number): Promise<PageableResponse<UserDTO> | UserDTO[]> => {
+        const response = await api.get(`${API_ENDPOINTS.STORES.BASE}/${storeId}/users`);
+        if (response.data && typeof response.data === 'object' && 'content' in response.data) {
+            return response.data as PageableResponse<UserDTO>;
+        }
+        return Array.isArray(response.data) ? response.data : [];
+    }
 };
 
 // User API
@@ -399,7 +416,12 @@ export const orderApi = {
     updateStatus: (id: number, status: string) => api.put<OrderDTO>(`${API_ENDPOINTS.ORDERS.BASE}/${id}/status`, { status }).then(response => response.data),
     update: (id: number, data: any) => api.put<OrderDTO>(`${API_ENDPOINTS.ORDERS.BASE}/${id}`, data).then(response => response.data),
     create: (data: any) => api.post<OrderDTO>(API_ENDPOINTS.ORDERS.BASE, data).then(response => response.data),
-    delete: (id: number) => api.delete(`${API_ENDPOINTS.ORDERS.BASE}/${id}`).then(response => response.data)
+    delete: (id: number) => api.delete(`${API_ENDPOINTS.ORDERS.BASE}/${id}`).then(response => response.data),
+    
+    // Статистика заказов
+    getStats: () => api.get<OrderStatsDTO>(`${API_ENDPOINTS.ORDERS.BASE}/stats`).then(response => response.data),
+    getStatsByStore: () => api.get<StoreOrderStatsDTO[]>(`${API_ENDPOINTS.ORDERS.BASE}/stats/by-store`).then(response => response.data),
+    getMyStoreStats: () => api.get<OrderStatsDTO>(`${API_ENDPOINTS.ORDERS.BASE}/stats/my-store`).then(response => response.data)
 };
 
 // Product API  

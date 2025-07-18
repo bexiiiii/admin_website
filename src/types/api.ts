@@ -1,5 +1,35 @@
 // Types for API responses based on backend DTOs
 
+// Order Statistics Types
+export interface OrderStatsDTO {
+    totalOrders: number;
+    successfulOrders: number;
+    failedOrders: number;
+    pendingOrders: number;
+    confirmedOrders: number;
+    preparingOrders: number;
+    readyOrders: number;
+    pickedUpOrders: number;
+    deliveredOrders: number;
+    cancelledOrders: number;
+}
+
+export interface StoreOrderStatsDTO {
+    storeId: number;
+    storeName: string;
+    storeLogo?: string;
+    totalOrders: number;
+    successfulOrders: number;
+    failedOrders: number;
+    pendingOrders: number;
+    confirmedOrders: number;
+    preparingOrders: number;
+    readyOrders: number;
+    pickedUpOrders: number;
+    deliveredOrders: number;
+    cancelledOrders: number;
+}
+
 // User-related types
 export interface UserDTO {
     id: number;
@@ -31,23 +61,24 @@ export interface UserUpdateRequest extends Omit<UserCreateRequest, 'password'> {
 }
 
 export interface AnalyticsData {
-    totalSales: number;
+    totalSales?: number;
     totalOrders: number;
     totalProducts: number;
     totalUsers: number;
     totalStores: number;
-    revenue: number;
-    salesByDay: Array<{
+    totalRevenue: number;
+    revenue?: number; // для обратной совместимости
+    salesByDay?: Array<{
         date: string;
         amount: number;
         orders: number;
     }>;
-    salesByMonth: Array<{
+    salesByMonth?: Array<{
         month: string;
         amount: number;
         orders: number;
     }>;
-    topProducts: Array<{
+    topProducts?: Array<{
         id: number;
         name: string;
         sales: number;
@@ -158,6 +189,7 @@ export interface StoreDTO {
     createdAt: string;
     updatedAt: string;
     user: UserDTO;
+    productCount?: number;
 }
 
 export interface CartDTO {

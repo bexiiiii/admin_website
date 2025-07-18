@@ -19,6 +19,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { storeApi } from '@/services/api';
 import { categoryApi } from '@/services/api/categories';
+import { userApi } from '@/services/api/users';
 import { useModal } from '@/hooks/useModal';
 import { useToast } from "@/components/ui/use-toast";
 import { StoreDTO, PageableResponse, CategoryDTO } from '@/types/api';
@@ -43,6 +44,7 @@ interface StoreFormData {
     closingHours: string;
     category: string;
     active: boolean;
+    managerId?: number;
     user: {
         email: string;
         role: 'STORE_OWNER';
@@ -59,6 +61,7 @@ const STORE_STATUSES = [
 export default function StoresPage() {
     const [stores, setStores] = useState<StoreDTO[]>([]);
     const [categories, setCategories] = useState<CategoryDTO[]>([]);
+    const [availableManagers, setAvailableManagers] = useState<Array<{id: number, email: string, firstName: string, lastName: string}>>([]);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
@@ -129,8 +132,20 @@ export default function StoresPage() {
         try {
             setLoading(true);
             setError('');
-            const response = await storeApi.getAll();
+            // Попробуем сначала получить активные магазины с количеством продуктов
+            let response;
+            try {
+                response = await storeApi.getActive();
+                if (Array.isArray(response)) {
+                    setStores(response as StoreDTO[]);
+                    return;
+                }
+            } catch (activeError) {
+                console.warn('Failed to fetch active stores, falling back to getAll:', activeError);
+            }
             
+            // Если не удалось получить активные, используем старый метод
+            response = await storeApi.getAll();
             if (response && typeof response === 'object' && 'content' in response) {
                 // Пагинированный ответ от Spring Boot
                 const pageableResponse = response as PageableResponse<StoreDTO>;
@@ -144,10 +159,10 @@ export default function StoresPage() {
             }
         } catch (error) {
             console.error('Failed to fetch stores:', error);
-            setError('Не удалось загрузить магазины. Пожалуйста, попробуйте позже.');
+            setError('Не удалось загрузить заведение. Пожалуйста, попробуйте позже.');
             toast({
                 title: 'Ошибка',
-                description: 'Не удалось загрузить магазины. Пожалуйста, попробуйте позже.',
+                description: 'Не удалось загрузить заведение. Пожалуйста, попробуйте позже.',
                 variant: 'destructive',
             });
         } finally {
@@ -172,7 +187,17 @@ export default function StoresPage() {
     useEffect(() => {
         fetchStores();
         fetchCategories();
+        fetchAvailableManagers();
     }, []);
+
+    const fetchAvailableManagers = async () => {
+        try {
+            const managers = await userApi.getAvailableManagers();
+            setAvailableManagers(managers);
+        } catch (error) {
+            console.error('Failed to fetch available managers:', error);
+        }
+    };
 
     const handleDelete = async (id: number) => {
         if (window.confirm('Вы уверены, что хотите удалить этот магазин?')) {
@@ -358,6 +383,7 @@ export default function StoresPage() {
             closingHours: '18:00',
             category: '',
             active: true,
+            managerId: undefined,
             user: {
                 email: '',
                 role: 'STORE_OWNER'
@@ -455,8 +481,11 @@ export default function StoresPage() {
                             <TableRow>
                                 <TableHead>Image</TableHead>
                                 <TableHead>Name</TableHead>
+                                <TableHead>Category</TableHead>
                                 <TableHead>Address</TableHead>
                                 <TableHead>Contact</TableHead>
+                                <TableHead>Products</TableHead>
+                                <TableHead>Hours</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
@@ -464,7 +493,7 @@ export default function StoresPage() {
                         <TableBody>
                             {filteredStores.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={6} className="text-center py-4">
+                                    <TableCell colSpan={9} className="text-center py-4">
                                         No stores found
                                     </TableCell>
                                 </TableRow>
@@ -491,15 +520,19 @@ export default function StoresPage() {
                                                 <p className="font-medium text-gray-900 dark:text-white">
                                                     {store.name}
                                                 </p>
-                                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
                                                     {store.description}
-                                                </p>
-                                                <p className="text-xs text-gray-400">
-                                                    Категория: {store.category}
                                                 </p>
                                             </div>
                                         </TableCell>
-                                        <TableCell>{store.address}</TableCell>
+                                        <TableCell>
+                                            <Badge variant="outline" className="text-xs">
+                                                {store.category}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell>
+                                            <p className="text-sm">{store.address}</p>
+                                        </TableCell>
                                         <TableCell>
                                             <div>
                                                 <p className="text-sm">{store.phone}</p>
@@ -507,6 +540,21 @@ export default function StoresPage() {
                                                 <p className="text-xs text-gray-400">
                                                     Владелец: {store.ownerName}
                                                 </p>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="text-center">
+                                                <p className="font-medium text-lg">
+                                                    {store.productCount || 0}
+                                                </p>
+                                                <p className="text-xs text-gray-500">
+                                                    товаров
+                                                </p>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="text-sm">
+                                                <p>{store.openingHours} - {store.closingHours}</p>
                                             </div>
                                         </TableCell>
                                         <TableCell>
@@ -757,6 +805,29 @@ export default function StoresPage() {
                                     ))}
                                 </select>
                             </div>
+                        </div>
+
+                        {/* Manager Selection */}
+                        <div>
+                            <Label htmlFor="manager">Manager (Optional)</Label>
+                            <select
+                                id="manager"
+                                value={formData.managerId || ''}
+                                onChange={(e) => setFormData(prev => ({ ...prev, managerId: e.target.value ? parseInt(e.target.value) : undefined }))}
+                                className="w-full h-10 px-3 rounded-md border border-gray-300 bg-white dark:bg-gray-800 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer relative z-10"
+                                aria-label="Select manager"
+                                style={{ WebkitAppearance: 'menulist' }}
+                            >
+                                <option value="">No manager</option>
+                                {availableManagers.map((manager) => (
+                                    <option key={manager.id} value={manager.id}>
+                                        {manager.firstName} {manager.lastName} ({manager.email})
+                                    </option>
+                                ))}
+                            </select>
+                            {getFieldError('managerId') && (
+                                <p className="mt-1 text-sm text-red-500">{getFieldError('managerId')}</p>
+                            )}
                         </div>
 
                         {/* Logo URL */}

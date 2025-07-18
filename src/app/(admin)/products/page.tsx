@@ -34,6 +34,8 @@ import { StoreDTO, CategoryDTO, PageableResponse } from '@/types/api';
 import { ValidationError } from '@/utils/validation';
 import { formatCurrency } from '@/utils/currency';
 import { PlusIcon, MagnifyingGlassIcon, PencilIcon, TrashIcon, ChartBarIcon } from '@heroicons/react/24/outline';
+import { RoleGuard } from '@/components/auth/RoleGuard';
+import { Permission } from '@/types/permission';
 
 interface ProductFormData {
     name: string;
@@ -127,6 +129,7 @@ export default function ProductsPage() {
 
     const fetchProducts = async () => {
         try {
+            console.log('Fetching products...');
             setLoading(true);
             let response: PageableResponse<ProductDTO>;
             
@@ -136,6 +139,7 @@ export default function ProductsPage() {
                 response = await ProductService.getAllProducts(currentPage);
             }
             
+            console.log('Products response:', response);
             setProducts(response.content);
             setTotalPages(response.totalPages);
             await fetchStats();
@@ -177,6 +181,7 @@ export default function ProductsPage() {
     };
 
     useEffect(() => {
+        console.log('ProductsPage useEffect triggered');
         setMounted(true);
         fetchProducts();
         fetchStores();
