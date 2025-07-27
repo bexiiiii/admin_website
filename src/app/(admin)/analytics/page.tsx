@@ -173,7 +173,7 @@ export default function AnalyticsPage() {
     setStoresLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('https://foodsave/api/stores', {
+      const response = await fetch('https://foodsave.kz/api/stores', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -207,7 +207,7 @@ export default function AnalyticsPage() {
     setSalesLoading(true);
     try {
       const token = localStorage.getItem('token');
-      let url = `https://foodsave/api/analytics/daily-sales?startDate=${startDate}&endDate=${endDate}`;
+      let url = `https://foodsave.kz/api/analytics/daily-sales?startDate=${startDate}&endDate=${endDate}`;
 
       // For STORE_MANAGER, always use their specific store
       // For others, add store filter if specific store is selected

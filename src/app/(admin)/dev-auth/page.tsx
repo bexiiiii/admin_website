@@ -14,7 +14,7 @@ export default function DevAuthPage() {
   const authenticateAs = async (role: string) => {
     setAuthLoading(true);
     try {
-      const response = await fetch(`https://foodsave/api/auth/dev-login?role=${role}`, {
+      const response = await fetch(`https://foodsave.kz/api/auth/dev-login?role=${role}`, {
         method: 'POST',
       });
       

@@ -1,4 +1,4 @@
-export const BASE_URL = 'https://foodsave/api';
+export const BASE_URL = 'https://foodsave.kz/api';
 
 export const API_ENDPOINTS = {
   AUTH: {

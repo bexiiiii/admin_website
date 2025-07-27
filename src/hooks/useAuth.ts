@@ -42,7 +42,7 @@ export const useAuth = () => {
 
   const login = useCallback(async (email: string, password: string) => {
     try {
-      const response = await fetch('https://foodsave/api/auth/login', {
+      const response = await fetch('https://foodsave.kz/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -78,7 +78,7 @@ export const useAuth = () => {
       if (token) {
         // Попытаемся вызвать logout на бэкенде
         try {
-          await fetch('https://foodsave/api/auth/logout', {
+          await fetch('https://foodsave.kz/api/auth/logout', {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -106,7 +106,7 @@ export const useAuth = () => {
       
       if (token) {
         try {
-          const response = await fetch('https://foodsave/api/auth/me', {
+          const response = await fetch('https://foodsave.kz/api/auth/me', {
             headers: {
               'Authorization': `Bearer ${token}`,
             },
@@ -145,7 +145,7 @@ export const useAuth = () => {
   // Функция для смены роли (для разработки)
   const switchRole = useCallback(async (role: string) => {
     try {
-      const response = await fetch(`https://foodsave/api/auth/dev-login?role=${role}`, {
+      const response = await fetch(`https://foodsave.kz/api/auth/dev-login?role=${role}`, {
         method: 'POST',
       });
       
