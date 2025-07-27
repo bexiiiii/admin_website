@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SearchIcon, FilterIcon, CalendarIcon, PlusIcon, RefreshCwIcon, QrCodeIcon, ScanIcon, PencilIcon } from 'lucide-react';
 import { format } from 'date-fns';
+import ProtectedRoute from '@/components/ProtectedRoute';
 import { orderApi } from '@/services/api';
 import { OrderDTO } from '@/types/api';
 import { useModal } from '@/hooks/useModal';
@@ -30,10 +31,11 @@ const statusColors = {
     PENDING: 'bg-yellow-100 text-yellow-800',
     CONFIRMED: 'bg-blue-100 text-blue-800',
     PREPARING: 'bg-purple-100 text-purple-800',
-    READY: 'bg-green-100 text-green-800',
-    PICKED_UP: 'bg-green-100 text-green-800',
+    READY_FOR_PICKUP: 'bg-green-100 text-green-800',
+    OUT_FOR_DELIVERY: 'bg-indigo-100 text-indigo-800',
     DELIVERED: 'bg-green-100 text-green-800',
-    CANCELLED: 'bg-red-100 text-red-800'
+    CANCELLED: 'bg-red-100 text-red-800',
+    REFUNDED: 'bg-gray-100 text-gray-800'
 };
 
 export default function OrderManagementPage() {
@@ -64,6 +66,15 @@ export default function OrderManagementPage() {
             setLoading(true);
             const response = await orderApi.getAll();
             const ordersData = Array.isArray(response) ? response : [];
+            
+            // Отладка: выводим данные в консоль
+            console.log('Orders data from API:', ordersData);
+            if (ordersData.length > 0) {
+                console.log('First order sample:', ordersData[0]);
+                console.log('First order total type:', typeof ordersData[0].total);
+                console.log('First order createdAt type:', typeof ordersData[0].createdAt);
+            }
+            
             setOrders(ordersData);
 
             // Calculate statistics
@@ -72,8 +83,14 @@ export default function OrderManagementPage() {
                 pendingOrders: ordersData.filter(o => o.status === 'PENDING').length,
                 completedOrders: ordersData.filter(o => ['DELIVERED', 'PICKED_UP'].includes(o.status)).length,
                 cancelledOrders: ordersData.filter(o => o.status === 'CANCELLED').length,
-                totalRevenue: ordersData.reduce((sum, order) => sum + order.totalAmount, 0)
+                totalRevenue: ordersData.reduce((sum, order) => {
+                    const amount = parseFloat(order.total) || 0;
+                    console.log(`Order ${order.id}: total = ${order.total}, parsed = ${amount}`);
+                    return sum + (isNaN(amount) ? 0 : amount);
+                }, 0)
             };
+            
+            console.log('Calculated stats:', stats);
             setStats(stats);
         } catch (error) {
             console.error('Failed to fetch orders:', error);
@@ -95,15 +112,44 @@ export default function OrderManagementPage() {
         }
     };
 
-    const formatDate = (dateString: string) => {
-        return format(new Date(dateString), 'MMM dd, yyyy HH:mm');
+    const formatDate = (dateString: string | null | undefined) => {
+        if (!dateString) {
+            console.log('Empty date string:', dateString);
+            return 'N/A';
+        }
+        
+        try {
+            // Парсим дату из ISO формата (2025-06-26T18:51:03.255075)
+            const date = new Date(dateString);
+            
+            if (isNaN(date.getTime())) {
+                console.log('Invalid date:', dateString);
+                return 'Invalid Date';
+            }
+            
+            // Форматируем дату с временем: "Jun 26, 2025 18:51"
+            return format(date, 'MMM dd, yyyy HH:mm');
+        } catch (error) {
+            console.error('Date formatting error:', error, 'for date:', dateString);
+            return 'Invalid Date';
+        }
     };
 
-    const formatPrice = (price: number) => {
+    const formatPrice = (price: number | string | null | undefined) => {
+        if (price === null || price === undefined) {
+            return '$0.00';
+        }
+        
+        const numericPrice = typeof price === 'string' ? parseFloat(price) : price;
+        
+        if (isNaN(numericPrice)) {
+            return '$0.00';
+        }
+        
         return new Intl.NumberFormat('en-US', {
             style: 'currency',
             currency: 'USD'
-        }).format(price);
+        }).format(numericPrice);
     };
 
     const filteredOrders = orders.filter(order => {
@@ -116,9 +162,9 @@ export default function OrderManagementPage() {
         
         const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
         
-        if (!order.orderDate) return matchesSearch && matchesStatus;
+        if (!order.createdAt) return matchesSearch && matchesStatus;
         
-        const orderDate = new Date(order.orderDate);
+        const orderDate = new Date(order.createdAt);
         const now = new Date();
         const matchesDate = dateFilter === 'all' || 
             (dateFilter === 'today' && orderDate.toDateString() === now.toDateString()) ||
@@ -165,7 +211,8 @@ export default function OrderManagementPage() {
     }
 
     return (
-        <div className="p-6 bg-gray-50 dark:bg-gray-900">
+        <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'STORE_MANAGER', 'STORE_OWNER']}>
+            <div className="p-6 bg-gray-50 dark:bg-gray-900">
             <div className="mb-6 flex justify-between items-center">
                 <div>
                     <h1 className="text-2xl font-semibold text-gray-800 dark:text-white mb-2">Order Management</h1>
@@ -320,7 +367,7 @@ export default function OrderManagementPage() {
                                             </div>
                                         </TableCell>
                                         <TableCell>
-                                            <div className="font-medium">{formatPrice(order.totalAmount)}</div>
+                                            <div className="font-medium">{formatPrice(order.total)}</div>
                                         </TableCell>
                                         <TableCell>
                                             <Badge className={statusColors[order.status]}>
@@ -329,7 +376,7 @@ export default function OrderManagementPage() {
                                         </TableCell>
                                         <TableCell>
                                             <div className="flex flex-col">
-                                                <span className="text-sm">{order.orderDate ? formatDate(order.orderDate) : 'N/A'}</span>
+                                                <span className="text-sm">{order.createdAt ? formatDate(order.createdAt) : 'N/A'}</span>
                                             </div>
                                         </TableCell>
                                         <TableCell className="text-right">
@@ -407,6 +454,7 @@ export default function OrderManagementPage() {
                     onOrderUpdated={fetchOrders}
                 />
             )}
-        </div>
+            </div>
+        </ProtectedRoute>
     );
 } 

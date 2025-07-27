@@ -1,4 +1,4 @@
-export const BASE_URL = 'http://localhost:8080/api';
+export const BASE_URL = 'https://foodsave/api';
 
 export const API_ENDPOINTS = {
   AUTH: {
@@ -33,7 +33,7 @@ export const API_ENDPOINTS = {
     BASE: '/orders',
     MY_ORDERS: '/api/orders/my-orders',
     STORE_ORDERS: '/api/orders/store-orders',
-    UPDATE_STATUS: '/orders/status',
+    UPDATE_STATUS: '/api/orders',
   },
   CART: {
     BASE: '/cart',

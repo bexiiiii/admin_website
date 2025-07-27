@@ -141,7 +141,7 @@ export interface OrderDTO {
     storeAddress?: string;
     storePhone?: string;
     items: OrderItemDTO[];
-    status: 'PENDING' | 'CONFIRMED' | 'PREPARING' | 'READY' | 'PICKED_UP' | 'DELIVERED' | 'CANCELLED';
+    status: 'PENDING' | 'CONFIRMED' | 'PREPARING' | 'READY_FOR_PICKUP' | 'OUT_FOR_DELIVERY' | 'DELIVERED' | 'CANCELLED' | 'REFUNDED';
     deliveryAddress: string;
     contactPhone: string;
     subtotal: number;

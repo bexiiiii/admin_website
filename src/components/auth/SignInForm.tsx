@@ -48,10 +48,17 @@ export default function SignInForm() {
         api.setToken(response.accessToken);
         Cookies.set('token', response.accessToken, { expires: 7 }); // Expires in 7 days
         localStorage.setItem('token', response.accessToken);
-        localStorage.setItem('user', JSON.stringify({ email: response.refreshToken })); // Using refreshToken as email
-        
-        // Redirect to home page
+        // Сохраняем пользователя корректно
+        if (response.user) {
+          localStorage.setItem('user', JSON.stringify(response.user));
+          Cookies.set('userRole', response.user.role, { expires: 7 });
+        }
+        // После логина можно вызвать обновление user context/hook, если используется (например, через props или глобальный state)
+        // Пример: await mutateUser(); // если используется SWR или аналогичный подход
+
+        // Redirect to admin home page (или reload для сброса состояния)
         router.push('/');
+        // window.location.reload(); // если требуется жестко обновить состояние
       } else {
         console.error('Invalid response format:', response); // Debug log
         throw new Error('Invalid response from server');
@@ -217,12 +224,7 @@ export default function SignInForm() {
                       Keep me logged in
                     </span>
                   </div>
-                  <Link
-                    href="/reset-password"
-                    className="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400"
-                  >
-                    Forgot password?
-                  </Link>
+                  
                 </div>
                 <div>
                   <Button 
@@ -237,17 +239,7 @@ export default function SignInForm() {
               </div>
             </form>
 
-            <div className="mt-5">
-              <p className="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
-                Don&apos;t have an account? {""}
-                <Link
-                  href="/signup"
-                  className="text-brand-500 hover:text-brand-600 dark:text-brand-400"
-                >
-                  Sign Up
-                </Link>
-              </p>
-            </div>
+            
           </div>
         </div>
       </div>

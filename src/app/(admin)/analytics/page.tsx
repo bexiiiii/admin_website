@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
+import * as XLSX from 'xlsx';
 import {
     Table,
     TableBody,
@@ -18,6 +19,7 @@ import {
 } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
 import ChartTab from "@/components/common/ChartTab";
+import ProtectedRoute from '@/components/ProtectedRoute';
 import LineChartOne from "@/components/charts/line/LineChartOne";
 import BarChartOne from "@/components/charts/bar/BarChartOne";
 import DemographicCard from "@/components/ecommerce/DemographicCard";
@@ -30,6 +32,7 @@ import { OrderStatsCard } from "@/components/stats/OrderStatsCard";
 import { AnalyticsData, OrderStatsDTO } from "@/types/api";
 import { orderApi } from "@/services/api";
 import { useRoleBasedRoutes } from "@/hooks/useRoleBasedRoutes";
+import { useAuth } from "@/hooks/useAuth";
 import { Permission } from "@/types/permission";
 import { RoleGuard, AdminOnly, StoreManagementRoles } from "@/components/auth/RoleGuard";
 import { 
@@ -145,21 +148,77 @@ export default function AnalyticsPage() {
   const [salesLoading, setSalesLoading] = useState(false);
   const [startDate, setStartDate] = useState('2024-01-01');
   const [endDate, setEndDate] = useState('2024-12-31');
+  const [selectedStoreId, setSelectedStoreId] = useState<string>('all');
+  const [availableStores, setAvailableStores] = useState<{id: number, name: string}[]>([]);
+  const [storesLoading, setStoresLoading] = useState(false);
   const { getAnalytics } = useApi();
   const { hasPermission } = useRoleBasedRoutes();
+  const { user } = useAuth();
   const { toast } = useToast();
 
   useEffect(() => {
     fetchAnalytics();
+    fetchStores();
   }, [getAnalytics]);
 
-  // Removed auto-loading - now only loads when button is clicked
+  // Auto-select first store for managers
+  useEffect(() => {
+    if (user?.role === 'STORE_MANAGER' && availableStores.length > 0 && selectedStoreId === 'all') {
+      setSelectedStoreId(availableStores[0].id.toString());
+    }
+  }, [user?.role, availableStores, selectedStoreId]);
+
+  // Fetch available stores
+  const fetchStores = async () => {
+    setStoresLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('https://foodsave/api/stores', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch stores');
+      }
+
+      const data = await response.json();
+      // Extract stores from paginated response
+      const stores = data.content || data || [];
+      setAvailableStores(stores.map((store: any) => ({
+        id: store.id,
+        name: store.name
+      })));
+    } catch (error) {
+      console.error('Error fetching stores:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load stores list",
+        variant: "destructive",
+      });
+    } finally {
+      setStoresLoading(false);
+    }
+  };
 
   const fetchDailySalesAnalytics = async () => {
     setSalesLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8080/api/analytics/daily-sales?startDate=${startDate}&endDate=${endDate}`, {
+      let url = `https://foodsave/api/analytics/daily-sales?startDate=${startDate}&endDate=${endDate}`;
+
+      // For STORE_MANAGER, always use their specific store
+      // For others, add store filter if specific store is selected
+      if (user?.role === 'STORE_MANAGER' || selectedStoreId !== 'all') {
+        const storeIdToUse = user?.role === 'STORE_MANAGER' 
+          ? availableStores.length > 0 ? availableStores[0].id : selectedStoreId
+          : selectedStoreId;
+        url += `&storeId=${storeIdToUse}`;
+      }
+      
+      const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -171,7 +230,16 @@ export default function AnalyticsPage() {
       }
 
       const data = await response.json();
-      setDailySalesAnalytics(data);
+      
+      // Filter data on frontend if backend doesn't support store filtering yet
+      let filteredData = data;
+      if (selectedStoreId !== 'all') {
+        filteredData = data.filter((item: DailySalesAnalytics) => 
+          item.storeId.toString() === selectedStoreId
+        );
+      }
+      
+      setDailySalesAnalytics(filteredData);
     } catch (error) {
       console.error('Error fetching daily sales analytics:', error);
       toast({
@@ -212,6 +280,117 @@ export default function AnalyticsPage() {
     completedRevenue: 0,
     canceledRevenue: 0
   });
+
+  // Excel export function
+  const exportToExcel = () => {
+    if (dailySalesAnalytics.length === 0) {
+      toast({
+        title: "No Data",
+        description: "No data available to export. Please load data first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Create workbook
+      const workbook = XLSX.utils.book_new();
+      
+      // Helper function to format currency properly
+      const formatCurrencyForExcel = (amount: number) => {
+        return new Intl.NumberFormat('kk-KZ', {
+          style: 'currency',
+          currency: 'KZT'
+        }).format(amount);
+      };
+
+      // Prepare the main data exactly as shown in the table
+      const excelData = [
+        // Header row
+        ['Date', 'Store', 'Total Orders', 'Completed', 'Canceled', 'Total Revenue', 'Completed Revenue', 'Canceled Revenue'],
+        
+        // Data rows - exactly as they appear in the table
+        ...dailySalesAnalytics.map(item => [
+          formatDate(item.date),
+          item.storeName,
+          item.totalOrders,
+          item.completedOrders,
+          item.canceledOrders,
+          formatCurrencyForExcel(item.totalRevenue),
+          formatCurrencyForExcel(item.completedRevenue),
+          formatCurrencyForExcel(item.canceledRevenue)
+        ]),
+        
+        // Empty row for separation
+        ['', '', '', '', '', '', '', ''],
+        
+        // Summary section
+        ['SUMMARY STATISTICS', '', '', '', '', '', '', ''],
+        ['Total Orders:', totalSalesStats.totalOrders, '', '', '', '', '', ''],
+        ['Completed Orders:', totalSalesStats.completedOrders, '', '', '', '', '', ''],
+        ['Canceled Orders:', totalSalesStats.canceledOrders, '', '', '', '', '', ''],
+        ['Total Revenue:', formatCurrencyForExcel(totalSalesStats.totalRevenue), '', '', '', '', '', ''],
+        ['Completed Revenue:', formatCurrencyForExcel(totalSalesStats.completedRevenue), '', '', '', '', '', ''],
+        ['Canceled Revenue:', formatCurrencyForExcel(totalSalesStats.canceledRevenue), '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['Export Parameters:', '', '', '', '', '', '', ''],
+        ['Start Date:', startDate, '', '', '', '', '', ''],
+        ['End Date:', endDate, '', '', '', '', '', ''],
+        ['Store Filter:', selectedStoreId === 'all' ? 'All Stores' : availableStores.find(s => s.id.toString() === selectedStoreId)?.name || 'Unknown', '', '', '', '', '', ''],
+        ['Export Date:', new Date().toLocaleDateString('en-GB'), '', '', '', '', '', '']
+      ];
+
+      // Create worksheet from array of arrays
+      const worksheet = XLSX.utils.aoa_to_sheet(excelData);
+      
+      // Set column widths for better readability
+      const columnWidths = [
+        { wch: 12 }, // Date
+        { wch: 20 }, // Store
+        { wch: 14 }, // Total Orders
+        { wch: 12 }, // Completed
+        { wch: 10 }, // Canceled
+        { wch: 16 }, // Total Revenue
+        { wch: 18 }, // Completed Revenue
+        { wch: 16 }, // Canceled Revenue
+      ];
+      worksheet['!cols'] = columnWidths;
+
+      // Style the header row (make it bold)
+      const headerCells = ['A1', 'B1', 'C1', 'D1', 'E1', 'F1', 'G1', 'H1'];
+      headerCells.forEach(cell => {
+        if (worksheet[cell]) {
+          worksheet[cell].s = {
+            font: { bold: true },
+            fill: { fgColor: { rgb: "E3F2FD" } }
+          };
+        }
+      });
+
+      // Add the worksheet to workbook
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Daily Sales Analytics');
+
+      // Generate filename with current parameters
+      const storeInfo = selectedStoreId === 'all' ? 'All_Stores' : 
+        (availableStores.find(s => s.id.toString() === selectedStoreId)?.name || 'Unknown_Store').replace(/\s+/g, '_');
+      const filename = `Daily_Sales_Analytics_${storeInfo}_${startDate}_to_${endDate}_${new Date().toISOString().split('T')[0]}.xlsx`;
+
+      // Save the file
+      XLSX.writeFile(workbook, filename);
+
+      toast({
+        title: "Экспорт успешен",
+        description: `Данные аналитики экспортированы в файл ${filename}`,
+      });
+    } catch (error) {
+      console.error('Error exporting to Excel:', error);
+      toast({
+        title: "Ошибка экспорта",
+        description: "Не удалось экспортировать данные в Excel. Попробуйте еще раз.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const fetchAnalytics = async (showRefreshing = false) => {
     try {
@@ -353,7 +532,8 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+    <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'STORE_MANAGER', 'STORE_OWNER']}>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -713,9 +893,32 @@ export default function AnalyticsPage() {
                   className="w-40"
                 />
               </div>
+              <div className="flex items-center gap-2">
+                <Label htmlFor="storeSelect">
+                  Store {user?.role === 'STORE_MANAGER' && "(Your Store)"}
+                </Label>
+                <select
+                  id="storeSelect"
+                  value={selectedStoreId}
+                  onChange={(e) => setSelectedStoreId(e.target.value)}
+                  className={`w-48 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    user?.role === 'STORE_MANAGER' ? 'bg-gray-100 cursor-not-allowed' : ''
+                  }`}
+                  disabled={storesLoading || user?.role === 'STORE_MANAGER'}
+                >
+                  {user?.role !== 'STORE_MANAGER' && (
+                    <option value="all">All Stores</option>
+                  )}
+                  {availableStores.map((store) => (
+                    <option key={store.id} value={store.id.toString()}>
+                      {store.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <Button 
                 onClick={fetchDailySalesAnalytics} 
-                disabled={salesLoading}
+                disabled={salesLoading || storesLoading}
                 className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2"
               >
                 {salesLoading ? (
@@ -726,7 +929,24 @@ export default function AnalyticsPage() {
                 {salesLoading ? 'Loading...' : 'Load Data'}
               </Button>
               <Button 
-                onClick={() => setDailySalesAnalytics([])} 
+                onClick={exportToExcel} 
+                disabled={salesLoading || dailySalesAnalytics.length === 0}
+                variant="outline"
+                className="bg-green-50 border-green-300 text-green-700 hover:bg-green-100 flex items-center gap-2"
+              >
+                <DownloadIcon className="h-4 w-4" />
+                Export Excel
+              </Button>
+              <Button 
+                onClick={() => {
+                  setDailySalesAnalytics([]);
+                  // Only reset to 'all' if user is not a STORE_MANAGER
+                  if (user?.role !== 'STORE_MANAGER') {
+                    setSelectedStoreId('all');
+                  } else if (availableStores.length > 0) {
+                    setSelectedStoreId(availableStores[0].id.toString());
+                  }
+                }} 
                 variant="outline"
                 disabled={salesLoading}
                 className="border-gray-300 text-gray-700 hover:bg-gray-50"
@@ -851,6 +1071,6 @@ export default function AnalyticsPage() {
           </div>
         </div>
       </div>
-    
+    </ProtectedRoute>
   );
 }

@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/toaster";
-import { SidebarProvider } from '@/context/SidebarContext';
 import { AuthProvider } from '@/contexts/AuthContext';
 
 const inter = Inter({ subsets: ["latin"] });
@@ -23,10 +22,8 @@ export default function RootLayout({
       <body className={`${inter.className} min-h-screen bg-background antialiased`} suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AuthProvider>
-            <SidebarProvider>
-              {children}
-              <Toaster />
-            </SidebarProvider>
+            {children}
+            <Toaster />
           </AuthProvider>
         </ThemeProvider>
       </body>

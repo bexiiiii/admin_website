@@ -21,6 +21,7 @@ import { useModal } from '@/hooks/useModal';
 import { userApi } from '@/services/api';
 import { UserDTO, UserCreateRequest, UserUpdateRequest } from '@/types/api';
 import Image from 'next/image';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 interface UserFormData {
     email: string;
@@ -228,15 +229,16 @@ export default function UsersPage() {
     }
 
     return (
-        <div className="p-6 bg-gray-50 dark:bg-gray-900">
-            <div className="mb-6 flex items-center justify-between">
-                <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">Users Management</h1>
-                <Button 
-                    className="bg-brand-500 hover:bg-brand-600 text-white"
-                    onClick={() => setIsCreateModalOpen(true)}
-                >
-                    <span className="mr-2">+</span>
-                    Add User
+        <ProtectedRoute allowedRoles={['SUPER_ADMIN']}>
+            <div className="p-6 bg-gray-50 dark:bg-gray-900">
+                <div className="mb-6 flex items-center justify-between">
+                    <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">Users Management</h1>
+                    <Button 
+                        className="bg-brand-500 hover:bg-brand-600 text-white"
+                        onClick={() => setIsCreateModalOpen(true)}
+                    >
+                        <span className="mr-2">+</span>
+                        Add User
                 </Button>
             </div>
 
@@ -728,6 +730,7 @@ export default function UsersPage() {
                     )}
                 </div>
             </Modal>
-        </div>
+            </div>
+        </ProtectedRoute>
     );
 } 

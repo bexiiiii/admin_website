@@ -18,6 +18,7 @@ import {
 import { Modal } from "@/components/ui/modal";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import ProtectedRoute from '@/components/ProtectedRoute';
 import {
   Select,
   SelectContent,
@@ -543,7 +544,8 @@ export default function ProductsPage() {
     };
 
     return (
-        <div className="p-6">
+        <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'STORE_MANAGER', 'STORE_OWNER']}>
+            <div className="p-6">
             <div className="mb-8">
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">Product Management</h1>
                 <p className="text-gray-600">Manage your products, inventory, and pricing</p>
@@ -1082,6 +1084,7 @@ export default function ProductsPage() {
                     </form>
                 </div>
             </Modal>
-        </div>
+            </div>
+        </ProtectedRoute>
     );
 }

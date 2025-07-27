@@ -23,6 +23,7 @@ import {
 } from "../icons/index";
 import { usePermissions } from '@/hooks/usePermissions';
 import { Permission } from "@/types/permission";
+import { useAuth } from '@/hooks/useAuth';
 
 type NavItem = {
   name: string;
@@ -30,6 +31,7 @@ type NavItem = {
   path?: string;
   subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
   permission?: Permission;
+  allowedRoles?: string[];
 };
 
 const navItems: NavItem[] = [
@@ -37,81 +39,113 @@ const navItems: NavItem[] = [
     icon: <GridIcon />,
     name: "Dashboard",
     subItems: [
-      { name: "Ecommerce", path: "/", pro: false },
-      { name: "My Store", path: "/my-store-dashboard", pro: false }
+      { name: "Ecommerce", path: "/", pro: false }
     ],
+    allowedRoles: ["SUPER_ADMIN", "STORE_OWNER", "STORE_MANAGER"],
+  },
+  {
+    icon: <GridIcon />,
+    name: "My Store",
+    path: "/my-store-dashboard",
+    allowedRoles: ["SUPER_ADMIN", "STORE_OWNER"],
+  },
+  {
+    icon: <GridIcon />,
+    name: "Manager Dashboard",
+    path: "/manager-dashboard",
+    allowedRoles: ["STORE_MANAGER"],
   },
   {
     icon: <CalenderIcon />,
     name: "Calendar",
     path: "/calendar",
+    allowedRoles: ["SUPER_ADMIN", "STORE_OWNER"],
   },
   {
     icon: <UserCircleIcon />,
     name: "User Profile",
     path: "/profile",
+    allowedRoles: ["SUPER_ADMIN", "STORE_OWNER", "STORE_MANAGER"],
   },
   {
     icon: <PieChartIcon />,
     name: "Analytics",
     path: "/analytics",
+    allowedRoles: ["SUPER_ADMIN", "STORE_MANAGER", "STORE_OWNER"],
   },
   {
     icon: <BoxIcon />,
     name: "Orders",
     path: "/orders",
+    allowedRoles: ["SUPER_ADMIN", "STORE_MANAGER", "STORE_OWNER"],
   },
   {
     icon: <BoxCubeIcon />,
     name: "Products",
     path: "/products",
+    allowedRoles: ["SUPER_ADMIN", "STORE_MANAGER", "STORE_OWNER"],
   },
   {
     icon: <GridIcon />,
     name: "Categories",
     path: "/categories",
+    allowedRoles: ["SUPER_ADMIN", "STORE_OWNER"],
   },
   {
     icon: <BoxIconLine />,
     name: "Stores",
     path: "/stores",
+    allowedRoles: ["SUPER_ADMIN", "STORE_OWNER"],
   },
   {
     icon: <UserIcon />,
     name: "Users",
     path: "/users",
+    allowedRoles: ["SUPER_ADMIN"],
   },
-  {
-    icon: <UserGroupIcon className="h-6 w-6" />,
-    name: "User-Store Management",
-    path: "/user-store-management",
-    permission: Permission.STORE_UPDATE,
-  },
+  // {
+  //   icon: <UserGroupIcon className="h-6 w-6" />,
+  //   name: "User-Store Management",
+  //   path: "/user-store-management",
+  //   permission: Permission.STORE_UPDATE,
+  //   allowedRoles: ["SUPER_ADMIN", "STORE_OWNER"],
+  // },
   {
     icon: <BoxIcon />,
     name: "Shopping Carts",
     path: "/carts",
+    allowedRoles: ["SUPER_ADMIN", "STORE_OWNER"],
   },
   {
     icon: <TimeIcon />,
     name: "Order History",
     path: "/history",
+    allowedRoles: ["SUPER_ADMIN", "STORE_OWNER"],
   },
   {
     icon: <ListIcon />,
     name: "Notifications",
     path: "/notifications",
+    allowedRoles: ["SUPER_ADMIN", "STORE_OWNER"],
   },
   {
     icon: <PlugInIcon />,
     name: "System Health",
     path: "/health",
+    allowedRoles: ["SUPER_ADMIN"],
   },
   {
     icon: <UserGroupIcon className="h-6 w-6" />,
     name: "Roles",
     path: "/roles",
     permission: Permission.ROLE_READ,
+    allowedRoles: ["SUPER_ADMIN"],
+  },
+  {
+    icon: <UserIcon />,
+    name: "Dev Auth",
+    path: "/dev-auth",
+    allowedRoles: ["SUPER_ADMIN", "STORE_OWNER", "CUSTOMER"],
   },
 ];
 
@@ -119,6 +153,7 @@ const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
   const { hasPermission } = usePermissions();
+  const { user, loading: authLoading } = useAuth();
   const [openSubmenu, setOpenSubmenu] = useState<{
     type: "main" | "others";
     index: number;
@@ -128,11 +163,31 @@ const AppSidebar: React.FC = () => {
 
   const isActive = useCallback((path: string) => path === pathname, [pathname]);
 
+  const isItemVisible = useCallback((nav: NavItem): boolean => {
+    // Проверяем разрешения
+    if (nav.permission && !hasPermission(nav.permission)) {
+      return false;
+    }
+    
+    // Проверяем роли
+    if (nav.allowedRoles && user?.role) {
+      return nav.allowedRoles.includes(user.role);
+    }
+    
+    // Если нет ограничений по ролям, показываем всем
+    return true;
+  }, [hasPermission, user?.role]);
+
+  // Показываем загрузку пока аутентификация не завершена
+  if (authLoading) {
+    return null;
+  }
+
   const renderMenuItems = (items: NavItem[], menuType: "main" | "others") => {
     return (
       <ul className="flex flex-col gap-4">
         {items.map((nav, index) => {
-          if (nav.permission && !hasPermission(nav.permission)) {
+          if (!isItemVisible(nav)) {
             return null;
           }
 

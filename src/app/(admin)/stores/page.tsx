@@ -81,7 +81,7 @@ export default function StoresPage() {
         closingHours: '',
         category: '',
         active: true,
-        status: 'PENDING',
+        status: 'ACTIVE',
         user: {
             email: '',
             role: 'STORE_OWNER'
@@ -378,7 +378,7 @@ export default function StoresPage() {
             phone: '',
             email: '',
             logo: '',
-            status: 'PENDING',
+            status: 'ACTIVE',
             openingHours: '09:00',
             closingHours: '18:00',
             category: '',

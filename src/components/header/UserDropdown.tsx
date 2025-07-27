@@ -1,29 +1,13 @@
 "use client";
 import Image from "next/image";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
-import ApiService from "@/services/api";
-import { useApi } from "@/hooks/useApi";
-
-const api = ApiService.getInstance();
+import { useAuth } from "@/hooks/useAuth";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
-  const { getUserProfile } = useApi();
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const userData = await getUserProfile();
-        setUser(userData);
-      } catch (error) {
-        console.error('Failed to fetch user profile:', error);
-      }
-    };
-    fetchUser();
-  }, [getUserProfile]);
+  const { user, logout } = useAuth();
 
   function toggleDropdown(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     e.stopPropagation();
@@ -36,9 +20,13 @@ export default function UserDropdown() {
 
   const handleLogout = async () => {
     try {
-      await api.logout();
+      await logout();
+      // Redirect to login page
+      window.location.href = '/auth/signin';
     } catch (error) {
       console.error('Logout failed:', error);
+      // Even if logout fails, redirect to login page
+      window.location.href = '/auth/signin';
     }
   };
 

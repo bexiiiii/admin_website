@@ -283,9 +283,9 @@ class ApiService {
   }
 
   public async updateOrderStatus(orderId: string, status: string): Promise<OrderDTO> {
-    return this.request<OrderDTO>(`${API_ENDPOINTS.ORDERS.UPDATE_STATUS}/${orderId}`, {
+    return this.request<OrderDTO>(`${API_ENDPOINTS.ORDERS.UPDATE_STATUS}/${orderId}/status`, {
       method: 'PUT',
-      body: JSON.stringify({ status }),
+      body: JSON.stringify(status),
     });
   }
 

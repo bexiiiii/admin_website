@@ -24,7 +24,7 @@ export function RoleGuard({
 
   // If user is not authenticated, don't show anything
   if (!user) {
-    return fallback;
+    return null;
   }
 
   // Check role requirements

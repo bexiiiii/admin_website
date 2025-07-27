@@ -222,7 +222,7 @@ class ApiService {
     public async updateOrderStatus(id: number, status: OrderDTO['status']): Promise<OrderDTO> {
         return this.request<OrderDTO>(`${API_ENDPOINTS.ORDERS.BASE}/${id}/status`, {
             method: 'PUT',
-            data: { status }
+            data: status
         });
     }
 
@@ -413,7 +413,7 @@ export const userApi = {
 export const orderApi = {
     getAll: () => api.get<OrderDTO[]>(API_ENDPOINTS.ORDERS.BASE).then(response => response.data),
     getById: (id: number) => api.get<OrderDTO>(`${API_ENDPOINTS.ORDERS.BASE}/${id}`).then(response => response.data),
-    updateStatus: (id: number, status: string) => api.put<OrderDTO>(`${API_ENDPOINTS.ORDERS.BASE}/${id}/status`, { status }).then(response => response.data),
+    updateStatus: (id: number, status: string) => api.put<OrderDTO>(`${API_ENDPOINTS.ORDERS.BASE}/${id}/status`, status).then(response => response.data),
     update: (id: number, data: any) => api.put<OrderDTO>(`${API_ENDPOINTS.ORDERS.BASE}/${id}`, data).then(response => response.data),
     create: (data: any) => api.post<OrderDTO>(API_ENDPOINTS.ORDERS.BASE, data).then(response => response.data),
     delete: (id: number) => api.delete(`${API_ENDPOINTS.ORDERS.BASE}/${id}`).then(response => response.data),

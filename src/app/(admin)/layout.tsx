@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SidebarProvider } from '@/context/SidebarContext';
 import ClientLayout from "./ClientLayout";
 
 export const metadata: Metadata = {
@@ -11,5 +12,9 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <ClientLayout>{children}</ClientLayout>;
+  return (
+    <SidebarProvider>
+      <ClientLayout>{children}</ClientLayout>
+    </SidebarProvider>
+  );
 }
