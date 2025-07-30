@@ -52,16 +52,16 @@ interface StoreFormData {
 }
 
 const STORE_STATUSES = [
-    { value: 'PENDING', label: 'Pending', color: 'bg-yellow-100 text-yellow-800' },
-    { value: 'ACTIVE', label: 'Active', color: 'bg-green-100 text-green-800' },
-    { value: 'INACTIVE', label: 'Inactive', color: 'bg-red-100 text-red-800' },
-    { value: 'SUSPENDED', label: 'Suspended', color: 'bg-gray-100 text-gray-800' }
+    { value: 'PENDING', label: 'В ожидании', color: 'bg-yellow-100 text-yellow-800' },
+    { value: 'ACTIVE', label: 'Активен', color: 'bg-green-100 text-green-800' },
+    { value: 'INACTIVE', label: 'Неактивен', color: 'bg-red-100 text-red-800' },
+    { value: 'SUSPENDED', label: 'Приостановлен', color: 'bg-gray-100 text-gray-800' }
 ];
 
 export default function StoresPage() {
     const [stores, setStores] = useState<StoreDTO[]>([]);
     const [categories, setCategories] = useState<CategoryDTO[]>([]);
-    const [availableManagers, setAvailableManagers] = useState<Array<{id: number, email: string, firstName: string, lastName: string}>>([]);
+    const [availableManagers, setAvailableManagers] = useState<Array<{ id: number, email: string, firstName: string, lastName: string }>>([]);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
@@ -97,31 +97,31 @@ export default function StoresPage() {
         const errors: ValidationError[] = [];
 
         if (!formData.name.trim()) {
-            errors.push({ field: 'name', message: 'Store name is required' });
+            errors.push({ field: 'name', message: 'Название заведения обязательно' });
         }
 
         if (!formData.user.email.trim()) {
-            errors.push({ field: 'user.email', message: 'Owner email is required' });
+            errors.push({ field: 'user.email', message: 'Email владельца обязателен' });
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.user.email)) {
-            errors.push({ field: 'user.email', message: 'Invalid email format' });
+            errors.push({ field: 'user.email', message: 'Неверный формат email' });
         }
 
         if (!formData.address.trim()) {
-            errors.push({ field: 'address', message: 'Address is required' });
+            errors.push({ field: 'address', message: 'Адрес обязателен' });
         }
 
         if (!formData.phone.trim()) {
-            errors.push({ field: 'phone', message: 'Phone number is required' });
+            errors.push({ field: 'phone', message: 'Номер телефона обязателен' });
         }
 
         if (!formData.email.trim()) {
-            errors.push({ field: 'email', message: 'Store email is required' });
+            errors.push({ field: 'email', message: 'Email заведения обязателен' });
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            errors.push({ field: 'email', message: 'Invalid email format' });
+            errors.push({ field: 'email', message: 'Неверный формат email' });
         }
 
         if (!formData.category) {
-            errors.push({ field: 'category', message: 'Category is required' });
+            errors.push({ field: 'category', message: 'Категория обязательна' });
         }
 
         setValidationErrors(errors);
@@ -143,7 +143,7 @@ export default function StoresPage() {
             } catch (activeError) {
                 console.warn('Failed to fetch active stores, falling back to getAll:', activeError);
             }
-            
+
             // Если не удалось получить активные, используем старый метод
             response = await storeApi.getAll();
             if (response && typeof response === 'object' && 'content' in response) {
@@ -159,10 +159,10 @@ export default function StoresPage() {
             }
         } catch (error) {
             console.error('Failed to fetch stores:', error);
-            setError('Не удалось загрузить заведение. Пожалуйста, попробуйте позже.');
+            setError('Не удалось загрузить заведения. Пожалуйста, попробуйте позже.');
             toast({
                 title: 'Ошибка',
-                description: 'Не удалось загрузить заведение. Пожалуйста, попробуйте позже.',
+                description: 'Не удалось загрузить заведения. Пожалуйста, попробуйте позже.',
                 variant: 'destructive',
             });
         } finally {
@@ -200,19 +200,19 @@ export default function StoresPage() {
     };
 
     const handleDelete = async (id: number) => {
-        if (window.confirm('Вы уверены, что хотите удалить этот магазин?')) {
+        if (window.confirm('Вы уверены, что хотите удалить это заведение?')) {
             try {
                 await storeApi.delete(id);
                 toast({
                     title: 'Успех',
-                    description: 'Магазин успешно удален',
+                    description: 'Заведение успешно удалено',
                 });
                 fetchStores();
             } catch (error) {
                 console.error('Failed to delete store:', error);
                 toast({
                     title: 'Ошибка',
-                    description: 'Не удалось удалить магазин',
+                    description: 'Не удалось удалить заведение',
                     variant: 'destructive',
                 });
             }
@@ -244,11 +244,11 @@ export default function StoresPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (!validateForm()) {
             toast({
-                title: 'Validation Error',
-                description: 'Please fix the validation errors',
+                title: 'Ошибка валидации',
+                description: 'Пожалуйста, исправьте ошибки валидации',
                 variant: 'destructive',
             });
             return;
@@ -258,13 +258,13 @@ export default function StoresPage() {
         try {
             // Check if store with same name exists (excluding current store when updating)
             const existingStoreByName = stores.find(
-                store => store.name.toLowerCase() === formData.name.toLowerCase() && 
-                (!selectedStore || store.id !== selectedStore.id)
+                store => store.name.toLowerCase() === formData.name.toLowerCase() &&
+                    (!selectedStore || store.id !== selectedStore.id)
             );
             if (existingStoreByName) {
                 toast({
-                    title: 'Error',
-                    description: 'A store with this name already exists',
+                    title: 'Ошибка',
+                    description: 'Заведение с таким названием уже существует',
                     variant: 'destructive',
                 });
                 setSubmitting(false);
@@ -273,13 +273,13 @@ export default function StoresPage() {
 
             // Check if store with same phone exists (excluding current store when updating)
             const existingStoreByPhone = stores.find(
-                store => store.phone === formData.phone && 
-                (!selectedStore || store.id !== selectedStore.id)
+                store => store.phone === formData.phone &&
+                    (!selectedStore || store.id !== selectedStore.id)
             );
             if (existingStoreByPhone) {
                 toast({
-                    title: 'Error',
-                    description: 'A store with this phone number already exists',
+                    title: 'Ошибка',
+                    description: 'Заведение с таким номером телефона уже существует',
                     variant: 'destructive',
                 });
                 setSubmitting(false);
@@ -301,14 +301,14 @@ export default function StoresPage() {
             if (selectedStore) {
                 await storeApi.update(selectedStore.id, formattedData);
                 toast({
-                    title: 'Success',
-                    description: 'Store updated successfully',
+                    title: 'Успех',
+                    description: 'Заведение успешно обновлено',
                 });
             } else {
                 await storeApi.create(formattedData);
                 toast({
-                    title: 'Success',
-                    description: 'Store created successfully',
+                    title: 'Успех',
+                    description: 'Заведение успешно создано',
                 });
             }
 
@@ -318,8 +318,8 @@ export default function StoresPage() {
         } catch (error) {
             console.error('Error saving store:', error);
             toast({
-                title: 'Error',
-                description: 'Failed to save store',
+                title: 'Ошибка',
+                description: 'Не удалось сохранить заведение',
                 variant: 'destructive',
             });
         } finally {
@@ -416,13 +416,13 @@ export default function StoresPage() {
     if (error) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen">
-                <h2 className="text-2xl font-bold text-red-600 mb-4">Error</h2>
+                <h2 className="text-2xl font-bold text-red-600 mb-4">Ошибка</h2>
                 <p className="text-gray-600 mb-4">{error}</p>
                 <button
                     onClick={fetchStores}
                     className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                 >
-                    Retry
+                    Повторить
                 </button>
             </div>
         );
@@ -431,8 +431,8 @@ export default function StoresPage() {
     return (
         <div className="p-6 bg-gray-50 dark:bg-gray-900">
             <div className="mb-6 flex items-center justify-between">
-                <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">Stores Management</h1>
-                <Button 
+                <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">Управление заведениями</h1>
+                <Button
                     className="bg-brand-500 hover:bg-brand-600 text-white"
                     onClick={() => {
                         setSelectedStore(undefined);
@@ -457,7 +457,7 @@ export default function StoresPage() {
                     }}
                 >
                     <span className="mr-2">+</span>
-                    Add Store
+                    Добавить заведение
                 </Button>
             </div>
 
@@ -466,7 +466,7 @@ export default function StoresPage() {
                     <span className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400">🔍</span>
                     <Input
                         type="text"
-                        placeholder="Search stores by name or address..."
+                        placeholder="Поиск по названию или адресу..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="pl-10 bg-white dark:bg-gray-800"
@@ -479,22 +479,22 @@ export default function StoresPage() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Image</TableHead>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Category</TableHead>
-                                <TableHead>Address</TableHead>
-                                <TableHead>Contact</TableHead>
-                                <TableHead>Products</TableHead>
-                                <TableHead>Hours</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
+                                <TableHead>Изображение</TableHead>
+                                <TableHead>Название</TableHead>
+                                <TableHead>Категория</TableHead>
+                                <TableHead>Адрес</TableHead>
+                                <TableHead>Контакты</TableHead>
+                                <TableHead>Товары</TableHead>
+                                <TableHead>Часы работы</TableHead>
+                                <TableHead>Статус</TableHead>
+                                <TableHead className="text-right">Действия</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {filteredStores.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={9} className="text-center py-4">
-                                        No stores found
+                                        Заведения не найдены
                                     </TableCell>
                                 </TableRow>
                             ) : (
@@ -569,7 +569,7 @@ export default function StoresPage() {
                                                     className="ml-2"
                                                 >
                                                     {store.active ? 'Активен' : 'Неактивен'}
-                                            </Badge>
+                                                </Badge>
                                             </div>
                                         </TableCell>
                                         <TableCell className="text-right">
@@ -579,14 +579,14 @@ export default function StoresPage() {
                                                     size="sm"
                                                     onClick={() => handleEdit(store)}
                                                 >
-                                                    Edit
+                                                    Редактировать
                                                 </Button>
                                                 <Button
                                                     variant="destructive"
                                                     size="sm"
                                                     onClick={() => handleDelete(store.id)}
                                                 >
-                                                    Delete
+                                                    Удалить
                                                 </Button>
                                             </div>
                                         </TableCell>
@@ -609,7 +609,7 @@ export default function StoresPage() {
                 <div className="p-3">
                     <div className="flex items-center justify-between mb-3">
                         <h2 className="text-lg font-semibold">
-                            {selectedStore ? 'Edit Store' : 'Add New Store'}
+                            {selectedStore ? 'Редактировать заведение' : 'Добавить новое заведение'}
                         </h2>
                         <Button
                             variant="ghost"
@@ -626,14 +626,14 @@ export default function StoresPage() {
                         {/* Basic Information */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <Label htmlFor="name">Store Name *</Label>
-                                    <Input
-                                        id="name"
-                                        name="name"
+                                <Label htmlFor="name">Название заведения *</Label>
+                                <Input
+                                    id="name"
+                                    name="name"
                                     type="text"
-                                        value={formData.name}
-                                        onChange={handleChange}
-                                    placeholder="Enter store name"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    placeholder="Введите название заведения"
                                     className={getFieldError('name') ? 'border-red-500' : ''}
                                 />
                                 {getFieldError('name') && (
@@ -642,7 +642,7 @@ export default function StoresPage() {
                             </div>
 
                             <div>
-                                <Label htmlFor="user.email">Owner Email *</Label>
+                                <Label htmlFor="user.email">Email владельца *</Label>
                                 <Input
                                     id="user.email"
                                     name="user.email"
@@ -655,119 +655,119 @@ export default function StoresPage() {
                                             email: e.target.value
                                         }
                                     }))}
-                                    placeholder="Enter owner's email"
+                                    placeholder="Введите email владельца"
                                     className={getFieldError('user.email') ? 'border-red-500' : ''}
                                 />
                                 {getFieldError('user.email') && (
                                     <p className="mt-1 text-sm text-red-500">{getFieldError('user.email')}</p>
                                 )}
                             </div>
-                                </div>
+                        </div>
 
                         <div>
-                            <Label htmlFor="description">Description</Label>
-                                    <Textarea
-                                        id="description"
-                                        name="description"
-                                        value={formData.description}
-                                        onChange={handleChange}
-                                placeholder="Enter store description"
+                            <Label htmlFor="description">Описание</Label>
+                            <Textarea
+                                id="description"
+                                name="description"
+                                value={formData.description}
+                                onChange={handleChange}
+                                placeholder="Введите описание заведения"
                                 rows={3}
                                 className={getFieldError('description') ? 'border-red-500' : ''}
-                                    />
+                            />
                             {getFieldError('description') && (
                                 <p className="mt-1 text-sm text-red-500">{getFieldError('description')}</p>
                             )}
-                                </div>
+                        </div>
 
                         {/* Contact Information */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <Label htmlFor="address">Address *</Label>
-                                    <Input
-                                        id="address"
-                                        name="address"
+                                <Label htmlFor="address">Адрес *</Label>
+                                <Input
+                                    id="address"
+                                    name="address"
                                     type="text"
-                                        value={formData.address}
-                                        onChange={handleChange}
-                                    placeholder="Enter store address"
+                                    value={formData.address}
+                                    onChange={handleChange}
+                                    placeholder="Введите адрес заведения"
                                     className={getFieldError('address') ? 'border-red-500' : ''}
-                                    />
+                                />
                                 {getFieldError('address') && (
                                     <p className="mt-1 text-sm text-red-500">{getFieldError('address')}</p>
                                 )}
-                                </div>
+                            </div>
 
                             <div>
-                                <Label htmlFor="phone">Phone Number *</Label>
-                                        <Input
-                                            id="phone"
-                                            name="phone"
+                                <Label htmlFor="phone">Номер телефона *</Label>
+                                <Input
+                                    id="phone"
+                                    name="phone"
                                     type="tel"
-                                            value={formData.phone}
-                                            onChange={handleChange}
-                                    placeholder="Enter phone number"
+                                    value={formData.phone}
+                                    onChange={handleChange}
+                                    placeholder="Введите номер телефона"
                                     className={getFieldError('phone') ? 'border-red-500' : ''}
-                                        />
+                                />
                                 {getFieldError('phone') && (
                                     <p className="mt-1 text-sm text-red-500">{getFieldError('phone')}</p>
                                 )}
                             </div>
-                                    </div>
+                        </div>
 
                         <div>
-                            <Label htmlFor="email">Store Email *</Label>
-                                        <Input
-                                            id="email"
-                                            name="email"
-                                            type="email"
-                                            value={formData.email}
-                                            onChange={handleChange}
-                                placeholder="Enter store email"
+                            <Label htmlFor="email">Email заведения *</Label>
+                            <Input
+                                id="email"
+                                name="email"
+                                type="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                placeholder="Введите email заведения"
                                 className={getFieldError('email') ? 'border-red-500' : ''}
-                                        />
+                            />
                             {getFieldError('email') && (
                                 <p className="mt-1 text-sm text-red-500">{getFieldError('email')}</p>
                             )}
-                                    </div>
+                        </div>
 
                         {/* Operating Hours */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <Label htmlFor="openingHours">Opening Hours</Label>
-                                    <Input
+                                <Label htmlFor="openingHours">Часы открытия</Label>
+                                <Input
                                     id="openingHours"
                                     name="openingHours"
                                     type="time"
                                     value={formData.openingHours}
-                                        onChange={handleChange}
+                                    onChange={handleChange}
                                     className={getFieldError('openingHours') ? 'border-red-500' : ''}
-                                    />
+                                />
                                 {getFieldError('openingHours') && (
                                     <p className="mt-1 text-sm text-red-500">{getFieldError('openingHours')}</p>
                                 )}
-                                </div>
+                            </div>
 
                             <div>
-                                <Label htmlFor="closingHours">Closing Hours</Label>
-                                    <Input
+                                <Label htmlFor="closingHours">Часы закрытия</Label>
+                                <Input
                                     id="closingHours"
                                     name="closingHours"
                                     type="time"
                                     value={formData.closingHours}
-                                        onChange={handleChange}
+                                    onChange={handleChange}
                                     className={getFieldError('closingHours') ? 'border-red-500' : ''}
                                 />
                                 {getFieldError('closingHours') && (
                                     <p className="mt-1 text-sm text-red-500">{getFieldError('closingHours')}</p>
                                 )}
-                                    </div>
-                                </div>
+                            </div>
+                        </div>
 
                         {/* Category and Status */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <Label htmlFor="category">Category</Label>
+                                <Label htmlFor="category">Категория</Label>
                                 <select
                                     id="category"
                                     value={formData.category}
@@ -776,7 +776,7 @@ export default function StoresPage() {
                                     aria-label="Select category"
                                     style={{ WebkitAppearance: 'menulist' }}
                                 >
-                                    <option value="">Select a category</option>
+                                    <option value="">Выберите категорию</option>
                                     {categories.map((category) => (
                                         <option key={category.id} value={category.id}>
                                             {category.name}
@@ -789,7 +789,7 @@ export default function StoresPage() {
                             </div>
 
                             <div>
-                                <Label htmlFor="status">Status</Label>
+                                <Label htmlFor="status">Статус</Label>
                                 <select
                                     id="status"
                                     value={formData.status}
@@ -809,7 +809,7 @@ export default function StoresPage() {
 
                         {/* Manager Selection */}
                         <div>
-                            <Label htmlFor="manager">Manager (Optional)</Label>
+                            <Label htmlFor="manager">Менеджер (необязательно)</Label>
                             <select
                                 id="manager"
                                 value={formData.managerId || ''}
@@ -818,7 +818,7 @@ export default function StoresPage() {
                                 aria-label="Select manager"
                                 style={{ WebkitAppearance: 'menulist' }}
                             >
-                                <option value="">No manager</option>
+                                <option value="">Без менеджера</option>
                                 {availableManagers.map((manager) => (
                                     <option key={manager.id} value={manager.id}>
                                         {manager.firstName} {manager.lastName} ({manager.email})
@@ -832,14 +832,14 @@ export default function StoresPage() {
 
                         {/* Logo URL */}
                         <div>
-                            <Label htmlFor="logo">Logo URL</Label>
+                            <Label htmlFor="logo">URL логотипа</Label>
                             <Input
                                 id="logo"
                                 name="logo"
                                 type="url"
                                 value={formData.logo}
                                 onChange={handleChange}
-                                placeholder="Enter logo URL"
+                                placeholder="Введите URL логотипа"
                                 className={getFieldError('logo') ? 'border-red-500' : ''}
                             />
                             {getFieldError('logo') && (
@@ -859,7 +859,7 @@ export default function StoresPage() {
                                 aria-label="Store active status"
                             />
                             <Label htmlFor="active" className="text-sm font-medium text-gray-700">
-                                Active (Store will be visible to customers)
+                                Активно (заведение будет видно клиентам)
                             </Label>
                         </div>
 
@@ -871,14 +871,14 @@ export default function StoresPage() {
                                 onClick={closeModal}
                                 disabled={submitting}
                             >
-                                Cancel
+                                Отмена
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={submitting}
                                 className="bg-blue-600 hover:bg-blue-700"
                             >
-                                {submitting ? 'Saving...' : selectedStore ? 'Update Store' : 'Create Store'}
+                                {submitting ? 'Сохранение...' : selectedStore ? 'Обновить заведение' : 'Создать заведение'}
                             </Button>
                         </div>
                     </form>
@@ -886,4 +886,4 @@ export default function StoresPage() {
             </Modal>
         </div>
     );
-} 
+}

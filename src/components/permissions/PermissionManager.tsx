@@ -66,7 +66,7 @@ export const PermissionManager: React.FC<PermissionManagerProps> = ({ roleName, 
         return (
             <Card>
                 <CardHeader>
-                    <CardTitle>Role Permissions: {roleName}</CardTitle>
+                    <CardTitle>Разрешения: {roleName}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -83,7 +83,7 @@ export const PermissionManager: React.FC<PermissionManagerProps> = ({ roleName, 
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Role Permissions: {roleName}</CardTitle>
+                <CardTitle>Разрешения: {roleName}</CardTitle>
             </CardHeader>
             <CardContent>
                 {error && (

@@ -118,13 +118,13 @@ const HistoryList: React.FC<HistoryListProps> = ({
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Order Number</TableHead>
-                            <TableHead>Date</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Total Amount</TableHead>
-                            <TableHead>Payment Method</TableHead>
-                            <TableHead>Items</TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
+                            <TableHead>Номер заказа</TableHead>
+                            <TableHead>Дата</TableHead>
+                            <TableHead>Статус</TableHead>
+                            <TableHead>Сумма</TableHead>
+                            <TableHead>Метод оплаты</TableHead>
+                            <TableHead>Позиции</TableHead>
+                            <TableHead className="text-right">Действия</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -142,13 +142,13 @@ const HistoryList: React.FC<HistoryListProps> = ({
                                     </Badge>
                                 </TableCell>
                                 <TableCell>
-                                    ${order.totalAmount?.toFixed(2) || '0.00'}
+                                    ₸{order.totalAmount?.toFixed(2) || '0.00'}
                                 </TableCell>
                                 <TableCell>
                                     {order.paymentMethod}
                                 </TableCell>
                                 <TableCell>
-                                    {order.items.length} items
+                                    {order.items.length} поз.
                                 </TableCell>
                                 <TableCell className="text-right">
                                     <Button
@@ -174,4 +174,4 @@ const HistoryList: React.FC<HistoryListProps> = ({
     );
 };
 
-export default HistoryList; 
+export default HistoryList;

@@ -23,10 +23,10 @@ export function QROrderDetailsModal({ isOpen, onClose, onOrderUpdated }: QROrder
             onClose={onClose}
         >
             <div className="p-6">
-                <h2 className="text-xl font-semibold mb-4">QR Order Scanner</h2>
-                <p className="text-gray-600 mb-6">Scan QR code to view and confirm order details</p>
-                
-                <QROrderScanner 
+                <h2 className="text-xl font-semibold mb-4">QR-сканер заказов</h2>
+                <p className="text-gray-600 mb-6">Отсканируйте QR-код для просмотра и подтверждения деталей заказа</p>
+
+                <QROrderScanner
                     isOpen={isOpen}
                     onClose={onClose}
                     onScan={handleScan}

@@ -28,7 +28,7 @@ const StoreList: React.FC = () => {
                 }
             } catch (err: any) {
                 console.error('Error fetching stores:', err);
-                setError(err.message || 'Failed to fetch stores');
+                setError(err.message || 'Не удалось загрузить заведения');
             } finally {
                 setLoading(false);
             }
@@ -40,7 +40,7 @@ const StoreList: React.FC = () => {
         return (
             <Card>
                 <CardHeader>
-                    <CardTitle>Stores</CardTitle>
+                    <CardTitle>Заведения</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -61,7 +61,7 @@ const StoreList: React.FC = () => {
         return (
             <Card>
                 <CardHeader>
-                    <CardTitle>Stores</CardTitle>
+                    <CardTitle>Заведения</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="text-red-500">{error}</div>
@@ -74,10 +74,10 @@ const StoreList: React.FC = () => {
         return (
             <Card>
                 <CardHeader>
-                    <CardTitle>Stores</CardTitle>
+                    <CardTitle>Заведения</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="text-gray-500">No stores found</div>
+                    <div className="text-gray-500">Заведения не найдены</div>
                 </CardContent>
             </Card>
         );
@@ -86,7 +86,7 @@ const StoreList: React.FC = () => {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Stores</CardTitle>
+                <CardTitle>Заведения</CardTitle>
             </CardHeader>
             <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -102,7 +102,7 @@ const StoreList: React.FC = () => {
                                     />
                                 ) : (
                                     <div className="w-full h-full bg-gray-100 rounded-lg flex items-center justify-center">
-                                        <span className="text-gray-400">No image</span>
+                                        <span className="text-gray-400">Нет изображения</span>
                                     </div>
                                 )}
                             </div>
@@ -124,7 +124,7 @@ const StoreList: React.FC = () => {
                                     <p>{store.email}</p>
                                 </div>
                                 <div className="mt-2 text-sm">
-                                    <p className="font-medium">Opening Hours:</p>
+                                    <p className="font-medium">Часы работы:</p>
                                     <p>{store.openingHours}</p>
                                 </div>
                             </div>
@@ -136,4 +136,4 @@ const StoreList: React.FC = () => {
     );
 };
 
-export default StoreList; 
+export default StoreList;

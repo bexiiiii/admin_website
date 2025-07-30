@@ -24,7 +24,7 @@ export function QRScannerModal({ isOpen, onClose, onOrderUpdated }: QRScannerMod
         try {
             const orderData = JSON.parse(result);
             if (!orderData.orderId) {
-                toast.error('Invalid QR code');
+                toast.error('Неверный QR-код');
                 return;
             }
 
@@ -32,28 +32,28 @@ export function QRScannerModal({ isOpen, onClose, onOrderUpdated }: QRScannerMod
             const currentStatus = orderData.status;
             const statusFlow = ['PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'PICKED_UP', 'DELIVERED'];
             const currentIndex = statusFlow.indexOf(currentStatus);
-            
+
             if (currentIndex === -1 || currentIndex === statusFlow.length - 1) {
-                toast.error('Order is already in final status');
+                toast.error('Заказ уже в конечном статусе');
                 return;
             }
 
             const nextStatus = statusFlow[currentIndex + 1];
             await orderApi.updateStatus(orderData.orderId, nextStatus);
-            
-            toast.success(`Order status updated to ${nextStatus}`);
+
+            toast.success(`Статус заказа обновлен на ${nextStatus}`);
             onOrderUpdated();
             setScanning(false);
             onClose();
         } catch (error) {
             console.error('Failed to process QR code:', error);
-            toast.error('Failed to process QR code');
+            toast.error('Не удалось обработать QR-код');
         }
     };
 
     const handleError = (error: Error) => {
         console.error('QR Scanner error:', error);
-        toast.error('Failed to access camera');
+        toast.error('Не удалось получить доступ к камере');
     };
 
     return (
@@ -64,8 +64,8 @@ export function QRScannerModal({ isOpen, onClose, onOrderUpdated }: QRScannerMod
         >
             <div className="space-y-6">
                 <div>
-                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Scan Order QR Code</h2>
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Scan the QR code to update order status</p>
+                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Сканировать QR-код заказа</h2>
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Отсканируйте QR-код, чтобы обновить статус заказа</p>
                 </div>
 
                 <Card>
@@ -87,23 +87,23 @@ export function QRScannerModal({ isOpen, onClose, onOrderUpdated }: QRScannerMod
                             )}
                         </div>
                         <p className="mt-4 text-center text-sm text-gray-500">
-                            Position the QR code within the frame to scan
+                            Расположите QR-код в рамке для сканирования
                         </p>
                     </CardContent>
                 </Card>
 
                 <div className="flex justify-end gap-3">
                     <Button variant="outline" onClick={onClose}>
-                        Cancel
+                        Отмена
                     </Button>
                     <Button
                         variant="outline"
                         onClick={() => setScanning(!scanning)}
                     >
-                        {scanning ? 'Stop Scanning' : 'Start Scanning'}
+                        {scanning ? 'Остановить сканирование' : 'Начать сканирование'}
                     </Button>
                 </div>
             </div>
         </Modal>
     );
-} 
+}

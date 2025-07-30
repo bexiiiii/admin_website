@@ -24,7 +24,7 @@ export default function NotificationDropdown() {
             <button
                 onClick={toggleDropdown}
                 className="relative flex items-center justify-center w-10 h-10 text-gray-700 rounded-lg hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
-                aria-label="Toggle notifications"
+                aria-label="Переключить уведомления"
             >
                 <svg
                     width="24"
@@ -54,12 +54,12 @@ export default function NotificationDropdown() {
             >
                 <div className="flex items-center justify-between pb-3 mb-3 border-b border-gray-100 dark:border-gray-700">
                     <h5 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                        Notifications
+                        Уведомления
                     </h5>
                     <button
                         onClick={toggleDropdown}
                         className="text-gray-500 transition dropdown-toggle dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-                        aria-label="Close notifications"
+                        aria-label="Закрыть уведомления"
                     >
                         <svg
                             className="fill-current"
@@ -85,11 +85,11 @@ export default function NotificationDropdown() {
                         </div>
                     ) : error ? (
                         <div className="flex items-center justify-center h-full text-red-500">
-                            Failed to load notifications
+                            Не удалось загрузить уведомления
                         </div>
                     ) : notifications.length === 0 ? (
                         <div className="flex items-center justify-center h-full text-gray-500">
-                            No notifications
+                            Нет уведомлений
                         </div>
                     ) : (
                         <div className="space-y-4">
@@ -103,15 +103,14 @@ export default function NotificationDropdown() {
                                             {notification.title}
                                         </h3>
                                         <span
-                                            className={`px-2 py-1 text-xs font-medium rounded-full ${
-                                                notification.type === 'ERROR'
+                                            className={`px-2 py-1 text-xs font-medium rounded-full ${notification.type === 'ERROR'
                                                     ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
                                                     : notification.type === 'WARNING'
-                                                    ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
-                                                    : notification.type === 'SUCCESS'
-                                                    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                                                    : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
-                                            }`}
+                                                        ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
+                                                        : notification.type === 'SUCCESS'
+                                                            ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                                                            : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
+                                                }`}
                                         >
                                             {notification.type}
                                         </span>

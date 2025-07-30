@@ -14,7 +14,7 @@ const NotificationList: React.FC = () => {
         return (
             <Card>
                 <CardHeader>
-                    <CardTitle>Notifications</CardTitle>
+                    <CardTitle>Уведомления</CardTitle>
                 </CardHeader>
                 <CardContent>
                     {[1, 2, 3].map((i) => (
@@ -32,10 +32,10 @@ const NotificationList: React.FC = () => {
         return (
             <Card>
                 <CardHeader>
-                    <CardTitle>Notifications</CardTitle>
+                    <CardTitle>Уведомления</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="text-red-500">Failed to load notifications</div>
+                    <div className="text-red-500">Не удалось загрузить уведомления</div>
                 </CardContent>
             </Card>
         );
@@ -44,11 +44,11 @@ const NotificationList: React.FC = () => {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Notifications</CardTitle>
+                <CardTitle>Уведомления</CardTitle>
             </CardHeader>
             <CardContent>
                 {notifications.length === 0 ? (
-                    <div className="text-gray-500">No notifications</div>
+                    <div className="text-gray-500">Нет уведомлений</div>
                 ) : (
                     <div className="space-y-4">
                         {notifications.map((notification: NotificationDTO) => (

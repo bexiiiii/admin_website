@@ -35,7 +35,7 @@ export default function EditProductPage() {
     try {
       const response = await fetch(`/api/products/${productId}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch product');
+        throw new Error('Не удалось получить товар');
       }
       const product: Product = await response.json();
       setFormData({
@@ -48,7 +48,7 @@ export default function EditProductPage() {
         active: product.active,
       });
     } catch (error) {
-      toast.error('Failed to fetch product');
+      toast.error('Не удалось получить товар');
       console.error('Error fetching product:', error);
     } finally {
       setLoading(false);
@@ -58,7 +58,7 @@ export default function EditProductPage() {
   const handleUpdateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.description) {
-      toast.error('Name and description are required');
+      toast.error('Название и описание обязательны');
       return;
     }
 
@@ -73,13 +73,13 @@ export default function EditProductPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update product');
+        throw new Error('Не удалось обновить товар');
       }
 
-      toast.success('Product updated successfully');
+      toast.success('Товар успешно обновлен');
       router.push('/products');
     } catch (error) {
-      toast.error('Failed to update product');
+      toast.error('Не удалось обновить товар');
       console.error('Error updating product:', error);
     } finally {
       setSaving(false);
@@ -89,7 +89,7 @@ export default function EditProductPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg">Loading...</div>
+        <div className="text-lg">Загрузка...</div>
       </div>
     );
   }
@@ -98,12 +98,12 @@ export default function EditProductPage() {
     <div className="container mx-auto p-6">
       <Card>
         <CardHeader>
-          <CardTitle>Edit Product</CardTitle>
+          <CardTitle>Редактировать товар</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleUpdateProduct} className="space-y-4">
             <div>
-              <Label htmlFor="name">Product Name</Label>
+              <Label htmlFor="name">Название товара</Label>
               <Input
                 id="name"
                 value={formData.name}
@@ -113,7 +113,7 @@ export default function EditProductPage() {
             </div>
 
             <div>
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">Описание</Label>
               <Textarea
                 id="description"
                 value={formData.description}
@@ -123,7 +123,7 @@ export default function EditProductPage() {
             </div>
 
             <div>
-              <Label htmlFor="regularPrice">Price</Label>
+              <Label htmlFor="regularPrice">Цена</Label>
               <Input
                 id="regularPrice"
                 type="number"
@@ -135,7 +135,7 @@ export default function EditProductPage() {
             </div>
 
             <div>
-              <Label htmlFor="stockQuantity">Stock Quantity</Label>
+              <Label htmlFor="stockQuantity">Количество на складе</Label>
               <Input
                 id="stockQuantity"
                 type="number"
@@ -151,19 +151,19 @@ export default function EditProductPage() {
                 checked={formData.active}
                 onCheckedChange={(checked) => setFormData({ ...formData, active: checked })}
               />
-              <Label htmlFor="active">Active</Label>
+              <Label htmlFor="active">Активен</Label>
             </div>
 
             <div className="flex gap-4">
               <Button type="submit" disabled={saving}>
-                {saving ? 'Saving...' : 'Update Product'}
+                {saving ? 'Сохранение...' : 'Обновить товар'}
               </Button>
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => router.push('/products')}
               >
-                Cancel
+                Отмена
               </Button>
             </div>
           </form>

@@ -3,20 +3,20 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useRoleBasedRoutes } from '@/hooks/useRoleBasedRoutes';
 import { cn } from '@/lib/utils';
-import { 
-  AnalyticsIcon, 
-  UsersIcon, 
-  StoreIcon, 
-  PackageIcon, 
-  ShoppingCartIcon, 
-  TagIcon, 
-  PercentIcon, 
-  StarIcon, 
-  ShoppingBagIcon, 
-  ShieldIcon, 
-  KeyIcon, 
-  HeartIcon, 
-  ActivityIcon 
+import {
+  AnalyticsIcon,
+  UsersIcon,
+  StoreIcon,
+  PackageIcon,
+  ShoppingCartIcon,
+  TagIcon,
+  PercentIcon,
+  StarIcon,
+  ShoppingBagIcon,
+  ShieldIcon,
+  KeyIcon,
+  HeartIcon,
+  ActivityIcon
 } from '@/icons';
 
 const iconMap = {
@@ -43,9 +43,9 @@ export default function Sidebar() {
     <div className="w-64 bg-white shadow-lg h-full">
       <div className="p-6">
         <div className="flex items-center space-x-2">
-          <h1 className="text-xl font-bold text-gray-800">FoodSave Admin</h1>
+          <h1 className="text-xl font-bold text-gray-800">FoodSave Админ</h1>
         </div>
-        
+
         {user && (
           <div className="mt-4 p-3 bg-gray-50 rounded-lg">
             <p className="text-sm font-medium text-gray-700">Роль: {user.role}</p>
@@ -89,4 +89,4 @@ export default function Sidebar() {
       </div>
     </div>
   );
-} 
+}

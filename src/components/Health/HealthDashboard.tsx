@@ -46,7 +46,7 @@ const HealthDashboard: React.FC = () => {
         return (
             <Card>
                 <CardContent>
-                    <div className="text-red-500">Failed to load health metrics</div>
+                    <div className="text-red-500">Не удалось загрузить метрики состояния</div>
                 </CardContent>
             </Card>
         );
@@ -56,7 +56,7 @@ const HealthDashboard: React.FC = () => {
         return (
             <Card>
                 <CardContent>
-                    <div className="text-gray-500">No health metrics available</div>
+                    <div className="text-gray-500">Нет доступных метрик состояния</div>
                 </CardContent>
             </Card>
         );
@@ -90,16 +90,16 @@ const HealthDashboard: React.FC = () => {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Heap Memory</CardTitle>
+                        <CardTitle>Heap память</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-2">
                             <div className="flex justify-between">
-                                <span>Used:</span>
+                                <span>Использовано:</span>
                                 <span>{formatBytes(data.heapMemoryUsage.used)}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span>Max:</span>
+                                <span>Макс:</span>
                                 <span>{formatBytes(data.heapMemoryUsage.max)}</span>
                             </div>
                             <div className="w-full bg-gray-200 rounded-full h-2.5">
@@ -119,16 +119,16 @@ const HealthDashboard: React.FC = () => {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>System Load</CardTitle>
+                        <CardTitle>Нагрузка на систему</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-2">
                             <div className="flex justify-between">
-                                <span>Current Load:</span>
+                                <span>Текущая нагрузка:</span>
                                 <span>{data.systemLoad.toFixed(2)}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span>Threads:</span>
+                                <span>Потоки:</span>
                                 <span>{data.threadCount}</span>
                             </div>
                         </div>
@@ -137,7 +137,7 @@ const HealthDashboard: React.FC = () => {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Uptime</CardTitle>
+                        <CardTitle>Время работы</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
@@ -148,20 +148,20 @@ const HealthDashboard: React.FC = () => {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Total Memory</CardTitle>
+                        <CardTitle>Всего памяти</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-2">
                             <div className="flex justify-between">
-                                <span>Free:</span>
+                                <span>Свободно:</span>
                                 <span>{formatBytes(data.freeMemory)}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span>Total:</span>
+                                <span>Всего:</span>
                                 <span>{formatBytes(data.totalMemory)}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span>Max:</span>
+                                <span>Макс:</span>
                                 <span>{formatBytes(data.maxMemory)}</span>
                             </div>
                         </div>
@@ -170,16 +170,16 @@ const HealthDashboard: React.FC = () => {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Non-Heap Memory</CardTitle>
+                        <CardTitle>Non-Heap память</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-2">
                             <div className="flex justify-between">
-                                <span>Used:</span>
+                                <span>Использовано:</span>
                                 <span>{formatBytes(data.nonHeapMemoryUsage.used)}</span>
                             </div>
                             <div className="flex justify-between">
-                                <span>Max:</span>
+                                <span>Макс:</span>
                                 <span>{formatBytes(data.nonHeapMemoryUsage.max)}</span>
                             </div>
                             <div className="w-full bg-gray-200 rounded-full h-2.5">
@@ -201,4 +201,4 @@ const HealthDashboard: React.FC = () => {
     );
 };
 
-export default HealthDashboard; 
+export default HealthDashboard;

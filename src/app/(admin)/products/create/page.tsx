@@ -33,19 +33,19 @@ export default function CreateProductPage() {
     try {
       // Validate required fields
       if (!formData.name.trim()) {
-        toast.error('Product name is required');
+        toast.error('Название товара обязательно');
         return;
       }
       if (!formData.description.trim()) {
-        toast.error('Product description is required');
+        toast.error('Описание товара обязательно');
         return;
       }
       if (formData.regularPrice <= 0) {
-        toast.error('Price must be greater than 0');
+        toast.error('Цена должна быть больше 0');
         return;
       }
       if (!formData.category.trim()) {
-        toast.error('Category is required');
+        toast.error('Категория обязательна');
         return;
       }
 
@@ -65,11 +65,11 @@ export default function CreateProductPage() {
       };
 
       await ProductService.createProduct(createRequest);
-      toast.success('Product created successfully');
+      toast.success('Товар успешно создан');
       router.push('/products');
     } catch (error: any) {
       console.error('Error creating product:', error);
-      const errorMessage = error.response?.data?.message || error.message || 'Failed to create product';
+      const errorMessage = error.response?.data?.message || error.message || 'Не удалось создать товар';
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -96,13 +96,13 @@ export default function CreateProductPage() {
     <div className="container mx-auto py-10">
       <Card>
         <CardHeader>
-          <CardTitle>Create New Product</CardTitle>
+          <CardTitle>Создать новый товар</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="name">Название</Label>
                 <Input
                   id="name"
                   name="name"
@@ -113,7 +113,7 @@ export default function CreateProductPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="category">Category</Label>
+                <Label htmlFor="category">Категория</Label>
                 <Input
                   id="category"
                   name="category"
@@ -125,7 +125,7 @@ export default function CreateProductPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">Описание</Label>
               <Textarea
                 id="description"
                 name="description"
@@ -136,7 +136,7 @@ export default function CreateProductPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="imageUrl">Image URL</Label>
+              <Label htmlFor="imageUrl">URL изображения</Label>
               <Input
                 id="imageUrl"
                 name="imageUrl"
@@ -149,7 +149,7 @@ export default function CreateProductPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="regularPrice">Regular Price</Label>
+                <Label htmlFor="regularPrice">Обычная цена</Label>
                 <Input
                   id="regularPrice"
                   name="regularPrice"
@@ -163,7 +163,7 @@ export default function CreateProductPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="stockQuantity">Stock Quantity</Label>
+                <Label htmlFor="stockQuantity">Количество на складе</Label>
                 <Input
                   id="stockQuantity"
                   name="stockQuantity"
@@ -182,15 +182,15 @@ export default function CreateProductPage() {
                 checked={showDiscount}
                 onCheckedChange={setShowDiscount}
               />
-              <Label htmlFor="showDiscount">Add Discount</Label>
+              <Label htmlFor="showDiscount">Добавить скидку</Label>
             </div>
 
             {showDiscount && (
               <div className="space-y-4 border rounded-lg p-4">
-                <h3 className="font-medium">Discount Details</h3>
+                <h3 className="font-medium">Детали скидки</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="discountPrice">Discount Price</Label>
+                    <Label htmlFor="discountPrice">Цена со скидкой</Label>
                     <Input
                       id="discountPrice"
                       name="discountPrice"
@@ -204,7 +204,7 @@ export default function CreateProductPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="discountPercentage">Discount Percentage</Label>
+                    <Label htmlFor="discountPercentage">Процент скидки</Label>
                     <Input
                       id="discountPercentage"
                       name="discountPercentage"
@@ -218,7 +218,7 @@ export default function CreateProductPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="discountStartDate">Start Date</Label>
+                    <Label htmlFor="discountStartDate">Дата начала</Label>
                     <Input
                       id="discountStartDate"
                       name="discountStartDate"
@@ -230,7 +230,7 @@ export default function CreateProductPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="discountEndDate">End Date</Label>
+                    <Label htmlFor="discountEndDate">Дата окончания</Label>
                     <Input
                       id="discountEndDate"
                       name="discountEndDate"
@@ -252,7 +252,7 @@ export default function CreateProductPage() {
                   setFormData((prev) => ({ ...prev, active: checked }))
                 }
               />
-              <Label htmlFor="active">Active</Label>
+              <Label htmlFor="active">Активен</Label>
             </div>
 
             <div className="flex justify-end space-x-4">
@@ -262,10 +262,10 @@ export default function CreateProductPage() {
                 onClick={() => router.back()}
                 disabled={loading}
               >
-                Cancel
+                Отмена
               </Button>
               <Button type="submit" disabled={loading}>
-                {loading ? 'Creating...' : 'Create Product'}
+                {loading ? 'Создание...' : 'Создать товар'}
               </Button>
             </div>
           </form>
@@ -273,4 +273,4 @@ export default function CreateProductPage() {
       </Card>
     </div>
   );
-} 
+}

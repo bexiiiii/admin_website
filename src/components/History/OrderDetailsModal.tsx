@@ -42,7 +42,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
             <div className="space-y-6">
                 {/* Header */}
                 <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-semibold">Order Details - #{order.id}</h2>
+                    <h2 className="text-2xl font-semibold">Детали заказа - #{order.id}</h2>
                     <Badge variant={getPaymentStatusColor(order.paymentStatus)}>
                         {order.paymentStatus}
                     </Badge>
@@ -51,23 +51,23 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                 {/* Order Status and Date */}
                 <div>
                     <p className="text-sm text-muted-foreground">
-                        Order Date: {order.orderDate ? format(new Date(order.orderDate), 'PPpp') : 'N/A'}
+                        Дата заказа: {order.orderDate ? format(new Date(order.orderDate), 'PPpp') : 'N/A'}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                        Status: <Badge variant={getPaymentStatusColor(order.paymentStatus)}>{order.status}</Badge>
+                        Статус: <Badge variant={getPaymentStatusColor(order.paymentStatus)}>{order.status}</Badge>
                     </p>
                 </div>
 
                 {/* Customer Information */}
                 <div className="space-y-2">
-                    <h3 className="font-semibold">Customer Information</h3>
+                    <h3 className="font-semibold">Информация о клиенте</h3>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <p className="text-sm text-muted-foreground">Name</p>
+                            <p className="text-sm text-muted-foreground">Имя</p>
                             <p>{order.userName}</p>
                         </div>
                         <div>
-                            <p className="text-sm text-muted-foreground">Phone</p>
+                            <p className="text-sm text-muted-foreground">Телефон</p>
                             <p>{order.userPhone || order.contactPhone || 'Не указан'}</p>
                         </div>
                         <div>
@@ -79,15 +79,15 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
 
                 {/* Order Items */}
                 <div className="space-y-2">
-                    <h3 className="font-semibold">Order Items</h3>
+                    <h3 className="font-semibold">Позиции заказа</h3>
                     <div className="border rounded-lg">
                         <table className="w-full">
                             <thead>
                                 <tr className="border-b">
-                                    <th className="text-left p-3">Product</th>
-                                    <th className="text-right p-3">Quantity</th>
-                                    <th className="text-right p-3">Price</th>
-                                    <th className="text-right p-3">Total</th>
+                                    <th className="text-left p-3">Товар</th>
+                                    <th className="text-right p-3">Количество</th>
+                                    <th className="text-right p-3">Цена</th>
+                                    <th className="text-right p-3">Сумма</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -107,7 +107,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                             <tfoot>
                                 <tr className="border-t">
                                     <td colSpan={3} className="text-right p-3 font-semibold">
-                                        Total Amount:
+                                        Итого:
                                     </td>
                                     <td className="text-right p-3 font-semibold">
                                         ₸{((order as any).total || order.totalAmount)?.toFixed(0) || '0'}
@@ -120,14 +120,14 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
 
                 {/* Payment Information */}
                 <div className="space-y-2">
-                    <h3 className="font-semibold">Payment Information</h3>
+                    <h3 className="font-semibold">Информация об оплате</h3>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <p className="text-sm text-muted-foreground">Payment Method</p>
+                            <p className="text-sm text-muted-foreground">Метод оплаты</p>
                             <p>{order.paymentMethod}</p>
                         </div>
                         <div>
-                            <p className="text-sm text-muted-foreground">Order ID</p>
+                            <p className="text-sm text-muted-foreground">ID Заказа</p>
                             <p>{order.id}</p>
                         </div>
                     </div>
@@ -136,7 +136,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                 {/* Notes */}
                 {order.notes && (
                     <div className="space-y-2">
-                        <h3 className="font-semibold">Notes</h3>
+                        <h3 className="font-semibold">Примечания</h3>
                         <p className="text-sm">{order.notes}</p>
                     </div>
                 )}
@@ -145,4 +145,4 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
     );
 };
 
-export default OrderDetailsModal; 
+export default OrderDetailsModal;

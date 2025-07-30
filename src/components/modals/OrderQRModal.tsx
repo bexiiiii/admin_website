@@ -41,7 +41,7 @@ export function OrderQRModal({ isOpen, onClose, order }: OrderQRModalProps) {
                 backgroundColor: '#ffffff',
                 scale: 2,
             });
-            
+
             const link = document.createElement('a');
             link.download = `receipt-${order.id}.png`;
             link.href = canvas.toDataURL('image/png');
@@ -61,32 +61,32 @@ export function OrderQRModal({ isOpen, onClose, order }: OrderQRModalProps) {
                 {/* Header */}
                 <div className="text-center border-b pb-2">
                     <h2 className="text-lg font-bold">FoodSave</h2>
-                    <p className="text-xs text-gray-500">Order Receipt</p>
+                    <p className="text-xs text-gray-500">Чек заказа</p>
                 </div>
 
                 {/* Order Info */}
                 <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
-                    <span className="text-gray-500">Order #:</span>
+                    <span className="text-gray-500">Заказ #:</span>
                     <span className="font-medium">{order.id}</span>
-                    <span className="text-gray-500">Date:</span>
+                    <span className="text-gray-500">Дата:</span>
                     <span>{order.orderDate ? format(new Date(order.orderDate), 'MMM dd, yyyy HH:mm') : 'N/A'}</span>
-                    <span className="text-gray-500">Status:</span>
+                    <span className="text-gray-500">Статус:</span>
                     <span className="font-medium">{order.status}</span>
                 </div>
 
                 {/* Customer Info */}
                 <div className="border-t border-b py-2 grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
-                    <span className="text-gray-500">Customer:</span>
+                    <span className="text-gray-500">Клиент:</span>
                     <span className="font-medium">{order.userName}</span>
-                    <span className="text-gray-500">Phone:</span>
+                    <span className="text-gray-500">Телефон:</span>
                     <span>{order.userPhone || order.contactPhone || 'Не указан'}</span>
-                    <span className="text-gray-500">Address:</span>
+                    <span className="text-gray-500">Адрес:</span>
                     <span className="text-right">{order.deliveryAddress}</span>
                 </div>
 
                 {/* Items */}
                 <div className="space-y-1">
-                    <div className="text-xs font-medium border-b pb-1">Items</div>
+                    <div className="text-xs font-medium border-b pb-1">Позиции</div>
                     {order.items.map((item) => (
                         <div key={item.id} className="flex justify-between text-xs">
                             <div>
@@ -101,7 +101,7 @@ export function OrderQRModal({ isOpen, onClose, order }: OrderQRModalProps) {
                 {/* Total */}
                 <div className="border-t pt-1">
                     <div className="flex justify-between font-bold text-sm">
-                        <span>Total:</span>
+                        <span>Итого:</span>
                         <span>{formatCurrency(order.totalAmount)}</span>
                     </div>
                 </div>
@@ -117,14 +117,14 @@ export function OrderQRModal({ isOpen, onClose, order }: OrderQRModalProps) {
                                 includeMargin={true}
                             />
                         </div>
-                        <p className="mt-1 text-xs text-gray-500">Scan to view order details</p>
+                        <p className="mt-1 text-xs text-gray-500">Сканируйте для просмотра деталей заказа</p>
                     </div>
                 </div>
 
                 {/* Notes */}
                 {order.notes && order.notes.trim() && (
                     <div className="border-t pt-2 pb-2">
-                        <div className="text-xs text-gray-500 mb-1">Notes:</div>
+                        <div className="text-xs text-gray-500 mb-1">Примечания:</div>
                         <div className="text-xs text-gray-700 bg-gray-50 p-2 rounded">
                             {order.notes}
                         </div>
@@ -133,8 +133,8 @@ export function OrderQRModal({ isOpen, onClose, order }: OrderQRModalProps) {
 
                 {/* Footer */}
                 <div className="border-t pt-2 text-center text-xs text-gray-500">
-                    <p>Thank you for your order!</p>
-                    <p className="mt-0.5">Payment Method: {order.paymentMethod}</p>
+                    <p>Спасибо за ваш заказ!</p>
+                    <p className="mt-0.5">Метод оплаты: {order.paymentMethod}</p>
                 </div>
 
                 {/* Actions */}
@@ -146,17 +146,17 @@ export function OrderQRModal({ isOpen, onClose, order }: OrderQRModalProps) {
                         className="flex items-center gap-1"
                     >
                         <DownloadIcon className="h-4 w-4" />
-                        Download
+                        Скачать
                     </Button>
                     <Button
                         variant="outline"
                         size="sm"
                         onClick={onClose}
                     >
-                        Close
+                        Закрыть
                     </Button>
                 </div>
             </div>
         </Modal>
     );
-} 
+}

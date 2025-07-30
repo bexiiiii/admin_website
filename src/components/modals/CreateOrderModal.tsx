@@ -143,22 +143,22 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }: CreateOrde
         >
             <div className="space-y-6">
                 <div>
-                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Create New Order</h2>
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Fill in the details to create a new order</p>
+                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Создать новый заказ</h2>
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Заполните данные для создания нового заказа</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-4">
                         <div>
-                            <Label>Contact Phone</Label>
+                            <Label>Контактный телефон</Label>
                             <Input
                                 value={formData.contactPhone}
                                 onChange={(e) => setFormData({ ...formData, contactPhone: e.target.value })}
-                                placeholder="Enter contact phone"
+                                placeholder="Введите контактный телефон"
                             />
                         </div>
                         <div>
-                            <Label>Payment Method</Label>
+                            <Label>Способ оплаты</Label>
                             <select
                                 value={formData.paymentMethod}
                                 onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })}
@@ -166,31 +166,31 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }: CreateOrde
                                 aria-label="Select payment method"
                                 style={{ WebkitAppearance: 'menulist' }}
                             >
-                                <option value="CASH">Cash</option>
-                                <option value="CARD">Card</option>
-                                <option value="ONLINE">Online</option>
+                                <option value="CASH">Наличные</option>
+                                <option value="CARD">Карта</option>
+                                <option value="ONLINE">Онлайн</option>
                             </select>
                         </div>
                         <div>
-                            <Label>Notes</Label>
+                            <Label>Примечания</Label>
                             <Input
                                 value={formData.notes}
                                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                                placeholder="Add any additional notes"
+                                placeholder="Добавьте любые дополнительные примечания"
                             />
                         </div>
                     </div>
 
                     <div className="space-y-4">
                         <div>
-                            <Label>Select Products</Label>
+                            <Label>Выбор продуктов</Label>
                             <select
                                 onChange={(e) => handleProductSelect(Number(e.target.value))}
                                 className="w-full h-10 px-3 rounded-md border border-gray-300 bg-white dark:bg-gray-800 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer relative z-10"
                                 aria-label="Select a product"
                                 style={{ WebkitAppearance: 'menulist' }}
                             >
-                                <option value="">Select a product</option>
+                                <option value="">Выберите продукт</option>
                                 {products && products.length > 0 ? (
                                     products.map((product) => (
                                         <option key={product.id} value={product.id}>
@@ -198,14 +198,14 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }: CreateOrde
                                         </option>
                                     ))
                                 ) : (
-                                    <option value="" disabled>No products available</option>
+                                    <option value="" disabled>Нет доступных продуктов</option>
                                 )}
                             </select>
                         </div>
 
                         <Card>
                             <CardContent className="p-4">
-                                <h3 className="font-medium mb-4">Selected Products</h3>
+                                <h3 className="font-medium mb-4">Выбранные продукты</h3>
                                 <div className="space-y-3">
                                     {selectedProducts.map((item) => (
                                         <div key={item.productId} className="flex items-center justify-between">
@@ -236,7 +236,7 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }: CreateOrde
                                 {selectedProducts.length > 0 && (
                                     <div className="mt-4 pt-4 border-t">
                                         <div className="flex justify-between font-medium">
-                                            <span>Total:</span>
+                                            <span>Итого:</span>
                                             <span>{formatCurrency(calculateTotal())}</span>
                                         </div>
                                     </div>
@@ -248,10 +248,10 @@ export function CreateOrderModal({ isOpen, onClose, onOrderCreated }: CreateOrde
 
                 <div className="flex justify-end gap-3">
                     <Button variant="outline" onClick={onClose}>
-                        Cancel
+                        Отмена
                     </Button>
                     <Button onClick={handleSubmit} disabled={loading}>
-                        {loading ? 'Creating...' : 'Create Order'}
+                        {loading ? 'Создание...' : 'Создать заказ'}
                     </Button>
                 </div>
             </div>

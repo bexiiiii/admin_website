@@ -62,7 +62,7 @@ export function EditOrderModal({ isOpen, onClose, order, onOrderUpdated }: EditO
                 }
             } catch (error) {
                 console.error('Failed to fetch products:', error);
-                toast.error('Failed to load products');
+                toast.error('Не удалось загрузить товары');
             }
         };
 
@@ -123,13 +123,13 @@ export function EditOrderModal({ isOpen, onClose, order, onOrderUpdated }: EditO
                     quantity: item.quantity
                 }))
             });
-            
-            toast.success('Order updated successfully');
+
+            toast.success('Заказ успешно обновлен');
             onOrderUpdated();
             onClose();
         } catch (error) {
             console.error('Failed to update order:', error);
-            toast.error('Failed to update order');
+            toast.error('Не удалось обновить заказ');
         } finally {
             setLoading(false);
         }
@@ -143,14 +143,14 @@ export function EditOrderModal({ isOpen, onClose, order, onOrderUpdated }: EditO
         >
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Edit Order</h2>
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Order #{order.id}</p>
+                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Редактировать заказ</h2>
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Заказ #{order.id}</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-4">
                         <div>
-                            <Label htmlFor="userName">Customer Name</Label>
+                            <Label htmlFor="userName">Имя клиента</Label>
                             <Input
                                 id="userName"
                                 value={formData.userName}
@@ -171,7 +171,7 @@ export function EditOrderModal({ isOpen, onClose, order, onOrderUpdated }: EditO
                         </div>
 
                         <div>
-                            <Label htmlFor="contactPhone">Phone</Label>
+                            <Label htmlFor="contactPhone">Телефон</Label>
                             <Input
                                 id="contactPhone"
                                 value={formData.contactPhone}
@@ -183,7 +183,7 @@ export function EditOrderModal({ isOpen, onClose, order, onOrderUpdated }: EditO
 
                     <div className="space-y-4">
                         <div>
-                            <Label htmlFor="paymentMethod">Payment Method</Label>
+                            <Label htmlFor="paymentMethod">Метод оплаты</Label>
                             <select
                                 id="paymentMethod"
                                 value={formData.paymentMethod}
@@ -192,14 +192,14 @@ export function EditOrderModal({ isOpen, onClose, order, onOrderUpdated }: EditO
                                 aria-label="Select payment method"
                                 style={{ WebkitAppearance: 'menulist' }}
                             >
-                                <option value="CASH">Cash</option>
-                                <option value="CARD">Card</option>
-                                <option value="ONLINE">Online</option>
+                                <option value="CASH">Наличные</option>
+                                <option value="CARD">Карта</option>
+                                <option value="ONLINE">Онлайн</option>
                             </select>
                         </div>
 
                         <div>
-                            <Label htmlFor="status">Status</Label>
+                            <Label htmlFor="status">Статус</Label>
                             <select
                                 id="status"
                                 value={formData.status}
@@ -208,18 +208,18 @@ export function EditOrderModal({ isOpen, onClose, order, onOrderUpdated }: EditO
                                 aria-label="Select status"
                                 style={{ WebkitAppearance: 'menulist' }}
                             >
-                                <option value="PENDING">Pending</option>
-                                <option value="CONFIRMED">Confirmed</option>
-                                <option value="PREPARING">Preparing</option>
-                                <option value="READY">Ready</option>
-                                <option value="PICKED_UP">Picked Up</option>
-                                <option value="DELIVERED">Delivered</option>
-                                <option value="CANCELLED">Cancelled</option>
+                                <option value="PENDING">В ожидании</option>
+                                <option value="CONFIRMED">Подтвержден</option>
+                                <option value="PREPARING">Готовится</option>
+                                <option value="READY">Готов</option>
+                                <option value="PICKED_UP">Забран</option>
+                                <option value="DELIVERED">Доставлен</option>
+                                <option value="CANCELLED">Отменен</option>
                             </select>
                         </div>
 
                         <div>
-                            <Label htmlFor="notes">Notes</Label>
+                            <Label htmlFor="notes">Примечания</Label>
                             <Input
                                 id="notes"
                                 value={formData.notes}
@@ -231,7 +231,7 @@ export function EditOrderModal({ isOpen, onClose, order, onOrderUpdated }: EditO
 
                 <div className="border-t pt-4">
                     <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-medium">Order Items</h3>
+                        <h3 className="text-lg font-medium">Позиции заказа</h3>
                         <div className="w-64">
                             <select
                                 onChange={(e) => handleProductSelect(Number(e.target.value))}
@@ -239,7 +239,7 @@ export function EditOrderModal({ isOpen, onClose, order, onOrderUpdated }: EditO
                                 aria-label="Select a product"
                                 style={{ WebkitAppearance: 'menulist' }}
                             >
-                                <option value="">Add a product</option>
+                                <option value="">Добавить товар</option>
                                 {products.map((product) => (
                                     <option key={product.id} value={product.id}>
                                         {product.name} - {formatCurrency(product.price)}
@@ -273,12 +273,12 @@ export function EditOrderModal({ isOpen, onClose, order, onOrderUpdated }: EditO
                                 </div>
                                 <div className="text-right">
                                     <p className="font-medium">{formatCurrency(item.unitPrice)}</p>
-                                    <p className="text-sm text-gray-500">Total: {formatCurrency(item.unitPrice * item.quantity)}</p>
+                                    <p className="text-sm text-gray-500">Итого: {formatCurrency(item.unitPrice * item.quantity)}</p>
                                 </div>
                             </div>
                         ))}
                         <div className="flex justify-between items-center pt-3 border-t">
-                            <span className="font-medium">Total Amount:</span>
+                            <span className="font-medium">Общая сумма:</span>
                             <span className="font-bold">{formatCurrency(calculateTotal())}</span>
                         </div>
                     </div>
@@ -290,13 +290,13 @@ export function EditOrderModal({ isOpen, onClose, order, onOrderUpdated }: EditO
                         variant="outline"
                         onClick={onClose}
                     >
-                        Cancel
+                        Отмена
                     </Button>
                     <Button
                         type="submit"
                         disabled={loading}
                     >
-                        {loading ? 'Saving...' : 'Save Changes'}
+                        {loading ? 'Сохранение...' : 'Сохранить изменения'}
                     </Button>
                 </div>
             </form>

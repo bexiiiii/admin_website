@@ -25,7 +25,7 @@ const OrderList: React.FC = () => {
         return (
             <Card>
                 <CardHeader>
-                    <CardTitle>Orders</CardTitle>
+                    <CardTitle>Заказы</CardTitle>
                 </CardHeader>
                 <CardContent>
                     {[1, 2, 3].map((i) => (
@@ -43,7 +43,7 @@ const OrderList: React.FC = () => {
         return (
             <Card>
                 <CardHeader>
-                    <CardTitle>Orders</CardTitle>
+                    <CardTitle>Заказы</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="text-red-500">{error}</div>
@@ -91,7 +91,7 @@ const OrderList: React.FC = () => {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Orders</CardTitle>
+                <CardTitle>Заказы</CardTitle>
             </CardHeader>
             <CardContent>
                     <div className="space-y-4">
@@ -115,14 +115,14 @@ const OrderList: React.FC = () => {
                                 </div>
                                 <div className="mt-2">
                                 <p className="text-sm">
-                                        Total Amount: ${order.totalAmount.toFixed(2)}
+                                        Общая сумма: ${order.totalAmount.toFixed(2)}
                                     </p>
                                 <p className="text-sm">
-                                    Payment Method: {order.paymentMethod}
+                                    Способ оплаты: {order.paymentMethod}
                                     </p>
                                 </div>
                             <div className="mt-2">
-                                <h4 className="text-sm font-medium mb-1">Items:</h4>
+                                <h4 className="text-sm font-medium mb-1">Продукт:</h4>
                                 <ul className="text-sm space-y-1">
                                     {order.items.map((item, index) => (
                                         <li key={item.id || index}>

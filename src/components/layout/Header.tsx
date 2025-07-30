@@ -17,7 +17,7 @@ export default function Header() {
     <header className="sticky top-0 z-50 flex items-center justify-between w-full h-16 px-4 bg-white border-b border-gray-200 dark:bg-gray-900 dark:border-gray-800">
       <div className="flex items-center">
         <Link href="/" className="text-xl font-bold text-gray-800 dark:text-white">
-          FoodSave Admin
+          Панель администратора FoodSave
         </Link>
       </div>
       <div className="flex items-center space-x-4">
@@ -30,4 +30,4 @@ export default function Header() {
       </div>
     </header>
   );
-} 
+}

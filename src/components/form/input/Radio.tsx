@@ -1,14 +1,14 @@
 import React from "react";
 
 interface RadioProps {
-  id: string; // Unique ID for the radio button
-  name: string; // Radio group name
-  value: string; // Value of the radio button
-  checked: boolean; // Whether the radio button is checked
-  label: string; // Label for the radio button
-  onChange: (value: string) => void; // Handler for value change
-  className?: string; // Optional additional classes
-  disabled?: boolean; // Optional disabled state for the radio button
+  id: string; // Уникальный ID для радиокнопки
+  name: string; // Имя группы радиокнопок
+  value: string; // Значение радиокнопки
+  checked: boolean; // Установлена ли радиокнопка
+  label: string; // Метка для радиокнопки
+  onChange: (value: string) => void; // Обработчик изменения значения
+  className?: string; // Необязательные дополнительные классы
+  disabled?: boolean; // Необязательное состояние отключения для радиокнопки
 }
 
 const Radio: React.FC<RadioProps> = ({
@@ -24,11 +24,10 @@ const Radio: React.FC<RadioProps> = ({
   return (
     <label
       htmlFor={id}
-      className={`relative flex cursor-pointer  select-none items-center gap-3 text-sm font-medium ${
-        disabled
+      className={`relative flex cursor-pointer  select-none items-center gap-3 text-sm font-medium ${disabled
           ? "text-gray-300 dark:text-gray-600 cursor-not-allowed"
           : "text-gray-700 dark:text-gray-400"
-      } ${className}`}
+        } ${className}`}
     >
       <input
         id={id}
@@ -36,25 +35,22 @@ const Radio: React.FC<RadioProps> = ({
         type="radio"
         value={value}
         checked={checked}
-        onChange={() => !disabled && onChange(value)} // Prevent onChange when disabled
+        onChange={() => !disabled && onChange(value)} // Предотвратить onChange, когда отключено
         className="sr-only"
-        disabled={disabled} // Disable input
+        disabled={disabled} // Отключить ввод
       />
       <span
-        className={`flex h-5 w-5 items-center justify-center rounded-full border-[1.25px] ${
-          checked
+        className={`flex h-5 w-5 items-center justify-center rounded-full border-[1.25px] ${checked
             ? "border-brand-500 bg-brand-500"
             : "bg-transparent border-gray-300 dark:border-gray-700"
-        } ${
-          disabled
+          } ${disabled
             ? "bg-gray-100 dark:bg-gray-700 border-gray-200 dark:border-gray-700"
             : ""
-        }`}
+          }`}
       >
         <span
-          className={`h-2 w-2 rounded-full bg-white ${
-            checked ? "block" : "hidden"
-          }`}
+          className={`h-2 w-2 rounded-full bg-white ${checked ? "block" : "hidden"
+            }`}
         ></span>
       </span>
       {label}
