@@ -18,10 +18,10 @@ const HistoryPage: React.FC = () => {
     return (
         <div className="container mx-auto py-6 space-y-6">
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold">Order History</h1>
+                <h1 className="text-2xl font-bold">История заказов</h1>
                 <Button variant="outline" className="gap-2">
                     <DownloadIcon className="h-4 w-4" />
-                    Export
+                    Экспорт
                 </Button>
             </div>
 
@@ -32,7 +32,7 @@ const HistoryPage: React.FC = () => {
                             <div className="relative flex-1">
                                 <SearchIcon className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                                 <Input
-                                    placeholder="Search orders..."
+                                    placeholder="Поиск заказов..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     className="pl-8"
@@ -40,14 +40,14 @@ const HistoryPage: React.FC = () => {
                             </div>
                             <Select value={statusFilter} onValueChange={setStatusFilter}>
                                 <SelectTrigger className="w-[180px]">
-                                    <SelectValue placeholder="Status" />
+                                    <SelectValue placeholder="Статус" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">All Status</SelectItem>
-                                    <SelectItem value="PAID">Paid</SelectItem>
-                                    <SelectItem value="PENDING">Pending</SelectItem>
-                                    <SelectItem value="FAILED">Failed</SelectItem>
-                                    <SelectItem value="REFUNDED">Refunded</SelectItem>
+                                    <SelectItem value="all">Все статусы</SelectItem>
+                                    <SelectItem value="PAID">Оплачен</SelectItem>
+                                    <SelectItem value="PENDING">В ожидании</SelectItem>
+                                    <SelectItem value="FAILED">Неудачный</SelectItem>
+                                    <SelectItem value="REFUNDED">Возвращен</SelectItem>
                                 </SelectContent>
                             </Select>
                             <DatePickerWithRange
@@ -69,4 +69,4 @@ const HistoryPage: React.FC = () => {
     );
 };
 
-export default HistoryPage; 
+export default HistoryPage;

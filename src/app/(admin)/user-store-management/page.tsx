@@ -15,7 +15,7 @@ export default function UserStoreManagementPage() {
     <AdminOnly>
       <div className="space-y-6">
         <PageBreadcrumb pageTitle="Привязка пользователей к заведениям" />
-        
+
         <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
           <div className="p-6">
             <div className="mb-6">
@@ -27,11 +27,11 @@ export default function UserStoreManagementPage() {
                 Только администраторы могут управлять этими связями.
               </p>
             </div>
-            
-            <UserStoreAssignment 
+
+            <UserStoreAssignment
               onAssignmentChange={() => {
                 // Можно добавить обновление других компонентов при изменении
-                console.log('User-store assignment changed');
+                console.log('Привязка пользователь-заведение изменена');
               }}
             />
           </div>

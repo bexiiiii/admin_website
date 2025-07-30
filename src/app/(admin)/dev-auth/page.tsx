@@ -17,7 +17,7 @@ export default function DevAuthPage() {
       const response = await fetch(`https://foodsave.kz/api/auth/dev-login?role=${role}`, {
         method: 'POST',
       });
-      
+
       if (response.ok) {
         const authData = await response.json();
         const { accessToken, user: devUser } = authData;
@@ -57,24 +57,24 @@ export default function DevAuthPage() {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Загрузка...</div>;
   }
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Development Authentication</h1>
-      
+      <h1 className="text-3xl font-bold mb-6">Аутентификация для разработки</h1>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Current User</CardTitle>
+            <CardTitle>Текущий пользователь</CardTitle>
           </CardHeader>
           <CardContent>
             {user ? (
               <div className="space-y-2">
-                <p><strong>Name:</strong> {user.name}</p>
+                <p><strong>Имя:</strong> {user.name}</p>
                 <p><strong>Email:</strong> {user.email}</p>
-                <p><strong>Role:</strong> <span className="bg-blue-100 px-2 py-1 rounded">{user.role}</span></p>
+                <p><strong>Роль:</strong> <span className="bg-blue-100 px-2 py-1 rounded">{user.role}</span></p>
                 <p><strong>ID:</strong> {user.id}</p>
               </div>
             ) : (
@@ -85,41 +85,41 @@ export default function DevAuthPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Switch Role</CardTitle>
+            <CardTitle>Сменить роль</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              <Button 
+              <Button
                 onClick={() => authenticateAs('STORE_MANAGER')}
                 disabled={authLoading}
                 className="w-full"
                 variant={user?.role === 'STORE_MANAGER' ? 'default' : 'outline'}
               >
-                Store Manager
+                Менеджер заведения
               </Button>
-              <Button 
+              <Button
                 onClick={() => authenticateAs('STORE_OWNER')}
                 disabled={authLoading}
                 className="w-full"
                 variant={user?.role === 'STORE_OWNER' ? 'default' : 'outline'}
               >
-                Store Owner
+                Владелец заведения
               </Button>
-              <Button 
+              <Button
                 onClick={() => authenticateAs('SUPER_ADMIN')}
                 disabled={authLoading}
                 className="w-full"
                 variant={user?.role === 'SUPER_ADMIN' ? 'default' : 'outline'}
               >
-                Super Admin
+                Супер-администратор
               </Button>
-              <Button 
+              <Button
                 onClick={() => authenticateAs('CUSTOMER')}
                 disabled={authLoading}
                 className="w-full"
                 variant={user?.role === 'CUSTOMER' ? 'default' : 'outline'}
               >
-                Customer
+                Клиент
               </Button>
             </div>
           </CardContent>
@@ -128,25 +128,25 @@ export default function DevAuthPage() {
 
       <Card className="mt-6">
         <CardHeader>
-          <CardTitle>Role Access Information</CardTitle>
+          <CardTitle>Информация о доступе ролей</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div>
               <h4 className="font-semibold text-green-600">STORE_MANAGER</h4>
-              <p className="text-sm text-gray-600">Access: Manager Dashboard, Analytics, Orders, Products, Profile</p>
+              <p className="text-sm text-gray-600">Доступ: Панель менеджера, Аналитика, Заказы, Товары, Профиль</p>
             </div>
             <div>
               <h4 className="font-semibold text-blue-600">STORE_OWNER</h4>
-              <p className="text-sm text-gray-600">Access: Dashboard, Analytics, Orders, Products, Categories, Stores, etc.</p>
+              <p className="text-sm text-gray-600">Доступ: Панель, Аналитика, Заказы, Товары, Категории, Заведения и т.д.</p>
             </div>
             <div>
               <h4 className="font-semibold text-purple-600">SUPER_ADMIN</h4>
-              <p className="text-sm text-gray-600">Access: All pages including Users, Roles, System Health</p>
+              <p className="text-sm text-gray-600">Доступ: Все страницы, включая Пользователи, Роли, Состояние системы</p>
             </div>
             <div>
               <h4 className="font-semibold text-gray-600">CUSTOMER</h4>
-              <p className="text-sm text-gray-600">Limited access for testing</p>
+              <p className="text-sm text-gray-600">Ограниченный доступ для тестирования</p>
             </div>
           </div>
         </CardContent>

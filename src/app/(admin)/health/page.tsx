@@ -45,8 +45,8 @@ export default function HealthPage() {
         setMetrics(response.data);
       } catch (error) {
         toast({
-          title: 'Error',
-          description: 'Failed to load system metrics',
+          title: 'Ошибка',
+          description: 'Не удалось загрузить метрики системы',
           variant: 'destructive',
         });
       } finally {
@@ -85,7 +85,7 @@ export default function HealthPage() {
     return (
       <div className="p-6 bg-gray-50 dark:bg-gray-900">
         <div className="text-center text-gray-500 dark:text-gray-400">
-          No system metrics available
+          Нет доступных метрик системы
         </div>
       </div>
     );
@@ -93,25 +93,25 @@ export default function HealthPage() {
 
   return (
     <div className="p-6 bg-gray-50 dark:bg-gray-900">
-      <h1 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">System Health</h1>
+      <h1 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">Состояние системы</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">CPU Usage</CardTitle>
+            <CardTitle className="text-sm font-medium">Использование ЦП</CardTitle>
             <Badge variant={metrics.cpu.current > 80 ? "destructive" : "default"}>
               {metrics.cpu.current}%
             </Badge>
           </CardHeader>
           <CardContent>
             <Progress value={metrics.cpu.current} className="h-2" />
-            <p className="text-xs text-gray-500 mt-2">Average: {metrics.cpu.current}%</p>
+            <p className="text-xs text-gray-500 mt-2">Среднее: {metrics.cpu.current}%</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Memory Usage</CardTitle>
+            <CardTitle className="text-sm font-medium">Использование памяти</CardTitle>
             <Badge variant={metrics.memory.current > 80 ? "destructive" : "default"}>
               {metrics.memory.current}%
             </Badge>
@@ -119,14 +119,14 @@ export default function HealthPage() {
           <CardContent>
             <Progress value={metrics.memory.current} className="h-2" />
             <p className="text-xs text-gray-500 mt-2">
-              {metrics.memory.used}GB / {metrics.memory.total}GB
+              {metrics.memory.used}ГБ / {metrics.memory.total}ГБ
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Disk Usage</CardTitle>
+            <CardTitle className="text-sm font-medium">Использование диска</CardTitle>
             <Badge variant={metrics.disk.current > 80 ? "destructive" : "default"}>
               {metrics.disk.current}%
             </Badge>
@@ -134,20 +134,20 @@ export default function HealthPage() {
           <CardContent>
             <Progress value={metrics.disk.current} className="h-2" />
             <p className="text-xs text-gray-500 mt-2">
-              {metrics.disk.used}GB / {metrics.disk.total}GB
+              {metrics.disk.used}ГБ / {metrics.disk.total}ГБ
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Network Traffic</CardTitle>
-            <Badge variant="default">Active</Badge>
+            <CardTitle className="text-sm font-medium">Сетевой трафик</CardTitle>
+            <Badge variant="default">Активен</Badge>
           </CardHeader>
           <CardContent>
             <div className="text-sm">
-              <p>In: {metrics.network.in} MB/s</p>
-              <p>Out: {metrics.network.out} MB/s</p>
+              <p>Вх: {metrics.network.in} МБ/с</p>
+              <p>Исх: {metrics.network.out} МБ/с</p>
             </div>
           </CardContent>
         </Card>
@@ -156,7 +156,7 @@ export default function HealthPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>CPU Usage Over Time</CardTitle>
+            <CardTitle>Использование ЦП со временем</CardTitle>
           </CardHeader>
           <CardContent>
             <LineChartOne
@@ -171,7 +171,7 @@ export default function HealthPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Memory Usage Over Time</CardTitle>
+            <CardTitle>Использование памяти со временем</CardTitle>
           </CardHeader>
           <CardContent>
             <LineChartOne
@@ -186,7 +186,7 @@ export default function HealthPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Disk Usage by Category</CardTitle>
+            <CardTitle>Использование диска по категориям</CardTitle>
           </CardHeader>
           <CardContent>
             <BarChartOne
@@ -200,7 +200,7 @@ export default function HealthPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Network Traffic</CardTitle>
+            <CardTitle>Сетевой трафик</CardTitle>
           </CardHeader>
           <CardContent>
             <LineChartOne
@@ -215,4 +215,4 @@ export default function HealthPage() {
       </div>
     </div>
   );
-} 
+}
