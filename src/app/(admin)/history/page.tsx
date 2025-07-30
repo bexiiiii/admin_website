@@ -18,7 +18,7 @@ const HistoryPage: React.FC = () => {
     return (
         <div className="container mx-auto py-6 space-y-6">
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold">История заказов</h1>
+                <h1 className="text-2xl font-bold">Order History</h1>
                 <Button variant="outline" className="gap-2">
                     <DownloadIcon className="h-4 w-4" />
                     Экспорт
@@ -43,11 +43,11 @@ const HistoryPage: React.FC = () => {
                                     <SelectValue placeholder="Статус" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">Все статусы</SelectItem>
-                                    <SelectItem value="PAID">Оплачен</SelectItem>
-                                    <SelectItem value="PENDING">В ожидании</SelectItem>
-                                    <SelectItem value="FAILED">Неудачный</SelectItem>
-                                    <SelectItem value="REFUNDED">Возвращен</SelectItem>
+                                    <SelectItem value="all">All Status</SelectItem>
+                                    <SelectItem value="PAID">Paid</SelectItem>
+                                    <SelectItem value="PENDING">Pending</SelectItem>
+                                    <SelectItem value="FAILED">Failed</SelectItem>
+                                    <SelectItem value="REFUNDED">Refunded</SelectItem>
                                 </SelectContent>
                             </Select>
                             <DatePickerWithRange

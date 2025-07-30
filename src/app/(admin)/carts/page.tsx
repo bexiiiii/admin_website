@@ -1,43 +1,43 @@
-"use client";
+    "use client";
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { toast } from 'react-hot-toast';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Input } from '@/components/ui/input';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import { Modal } from "@/components/ui/modal";
-import { Label } from "@/components/ui/label";
-import { useModal } from '@/hooks/useModal';
-import ApiService from '@/services/api';
-import { CartDTO, CartItemDTO, CartAddItemRequest, ProductDTO } from '@/types/api';
-import { API_ENDPOINTS } from '@/config/api';
-import { productApi } from '@/services/api';
+    import React, { useState, useEffect } from 'react';
+    import { Card, CardContent } from '@/components/ui/card';
+    import { Button } from '@/components/ui/button';
+    import { toast } from 'react-hot-toast';
+    import { Skeleton } from '@/components/ui/skeleton';
+    import { Input } from '@/components/ui/input';
+    import {
+        Table,
+        TableBody,
+        TableCell,
+        TableHead,
+        TableHeader,
+        TableRow,
+    } from "@/components/ui/table";
+    import { Modal } from "@/components/ui/modal";
+    import { Label } from "@/components/ui/label";
+    import { useModal } from '@/hooks/useModal';
+    import ApiService from '@/services/api';
+    import { CartDTO, CartItemDTO, CartAddItemRequest, ProductDTO } from '@/types/api';
+    import { API_ENDPOINTS } from '@/config/api';
+    import { productApi } from '@/services/api';
 
-export default function CartsPage() {
-    const [carts, setCarts] = useState<CartDTO[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [searchQuery, setSearchQuery] = useState('');
-    const { isOpen, openModal, closeModal } = useModal();
-    const [selectedCart, setSelectedCart] = useState<CartDTO | undefined>();
-    const [selectedProduct, setSelectedProduct] = useState<number>(0);
-    const [quantity, setQuantity] = useState<number>(1);
-    const [products, setProducts] = useState<ProductDTO[]>([]);
-    const [loadingProducts, setLoadingProducts] = useState(false);
+    export default function CartsPage() {
+        const [carts, setCarts] = useState<CartDTO[]>([]);
+        const [loading, setLoading] = useState(true);
+        const [searchQuery, setSearchQuery] = useState('');
+        const { isOpen, openModal, closeModal } = useModal();
+        const [selectedCart, setSelectedCart] = useState<CartDTO | undefined>();
+        const [selectedProduct, setSelectedProduct] = useState<number>(0);
+        const [quantity, setQuantity] = useState<number>(1);
+        const [products, setProducts] = useState<ProductDTO[]>([]);
+        const [loadingProducts, setLoadingProducts] = useState(false);
 
-    const api = ApiService.getInstance();
+        const api = ApiService.getInstance();
 
-    useEffect(() => {
-        fetchCarts();
-    }, []);
+        useEffect(() => {
+            fetchCarts();
+        }, []);
 
     const fetchProducts = async () => {
         try {
@@ -46,7 +46,7 @@ export default function CartsPage() {
             setProducts(response.content || []);
         } catch (error) {
             console.error('Failed to fetch products:', error);
-            toast.error('Не удалось загрузить товары');
+            toast.error('Failed to load products');
         } finally {
             setLoadingProducts(false);
         }
@@ -58,7 +58,7 @@ export default function CartsPage() {
             setCarts(Array.isArray(response) ? response : [response]);
         } catch (error) {
             console.error('Failed to fetch carts:', error);
-            toast.error('Не удалось загрузить корзины');
+            toast.error('Failed to load carts');
             setCarts([]);
         } finally {
             setLoading(false);
@@ -67,20 +67,20 @@ export default function CartsPage() {
 
     const handleAddItem = async () => {
         if (!selectedProduct || !quantity) {
-            toast.error('Пожалуйста, выберите товар и количество');
+            toast.error('Please select a product and quantity');
             return;
         }
 
-        const itemData = {
-            productId: selectedProduct,
-            quantity: quantity
-        };
+            const itemData = {
+                productId: selectedProduct,
+                quantity: quantity
+            };
 
         try {
             console.log('Adding item to cart:', itemData);
             const response = await api.addToCart(itemData);
             console.log('Add to cart response:', response);
-            toast.success('Товар успешно добавлен в корзину');
+            toast.success('Item added to cart successfully');
             fetchCarts();
             closeModal();
             setSelectedCart(undefined);
@@ -88,86 +88,86 @@ export default function CartsPage() {
             setQuantity(1);
         } catch (error) {
             console.error('Error adding item to cart:', error);
-            toast.error('Не удалось добавить товар в корзину');
+            toast.error('Failed to add item to cart');
         }
     };
 
     const handleRemoveItem = async (cartId: number, itemId: number) => {
         try {
             await api.removeFromCart(itemId.toString());
-            toast.success('Товар удален из корзины');
+            toast.success('Item removed from cart');
             fetchCarts();
         } catch (error) {
             console.error('Failed to remove item:', error);
-            toast.error('Не удалось удалить товар из корзины');
+            toast.error('Failed to remove item from cart');
         }
     };
 
     const handleClearCart = async (cartId: number) => {
         try {
             await api.clearCart();
-            toast.success('Корзина успешно очищена');
+            toast.success('Cart cleared successfully');
             fetchCarts();
         } catch (error) {
             console.error('Failed to clear cart:', error);
-            toast.error('Не удалось очистить корзину');
+            toast.error('Failed to clear cart');
         }
     };
 
     const handleUpdateItemQuantity = async (itemId: number, newQuantity: number) => {
         if (newQuantity < 1) {
-            toast.error('Количество должно быть не менее 1');
+            toast.error('Quantity must be at least 1');
             return;
         }
 
         try {
             await api.updateCartItem(itemId.toString(), { quantity: newQuantity });
-            toast.success('Количество товара обновлено');
+            toast.success('Item quantity updated');
             fetchCarts();
         } catch (error) {
             console.error('Failed to update item quantity:', error);
-            toast.error('Не удалось обновить количество товара');
+            toast.error('Failed to update item quantity');
         }
     };
 
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString();
-    };
+        const formatDate = (dateString: string) => {
+            return new Date(dateString).toLocaleDateString();
+        };
 
     const formatPrice = (price: number) => {
-        return new Intl.NumberFormat('ru-RU', {
+        return new Intl.NumberFormat('en-US', {
             style: 'currency',
-            currency: 'KZT'
+            currency: 'USD'
         }).format(price);
     };
 
-    const filteredCarts = carts.filter(cart =>
-        cart.userId?.toString().includes(searchQuery) ||
-        cart.items.some(item =>
-            item.productName?.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-    );
-
-    if (loading) {
-        return (
-            <div className="p-6 bg-gray-50 dark:bg-gray-900">
-                <div className="mb-6">
-                    <Skeleton className="h-8 w-48" />
-                </div>
-                <div className="space-y-4">
-                    {[1, 2, 3].map((i) => (
-                        <Card key={i} className="bg-white dark:bg-gray-800">
-                            <CardContent className="p-6">
-                                <Skeleton className="h-4 w-1/4 mb-2" />
-                                <Skeleton className="h-4 w-3/4 mb-2" />
-                                <Skeleton className="h-4 w-1/2" />
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-            </div>
+        const filteredCarts = carts.filter(cart =>
+            cart.userId?.toString().includes(searchQuery) ||
+            cart.items.some(item =>
+                item.productName?.toLowerCase().includes(searchQuery.toLowerCase())
+            )
         );
-    }
+
+        if (loading) {
+            return (
+                <div className="p-6 bg-gray-50 dark:bg-gray-900">
+                    <div className="mb-6">
+                        <Skeleton className="h-8 w-48" />
+                    </div>
+                    <div className="space-y-4">
+                        {[1, 2, 3].map((i) => (
+                            <Card key={i} className="bg-white dark:bg-gray-800">
+                                <CardContent className="p-6">
+                                    <Skeleton className="h-4 w-1/4 mb-2" />
+                                    <Skeleton className="h-4 w-3/4 mb-2" />
+                                    <Skeleton className="h-4 w-1/2" />
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
 
     return (
         <div className="p-6 bg-gray-50 dark:bg-gray-900">
@@ -181,7 +181,7 @@ export default function CartsPage() {
                     }}
                     className="bg-brand-500 hover:bg-brand-600 text-white"
                 >
-                    Сделать заказ
+                    Create New Cart
                 </Button>
             </div>
 
@@ -190,7 +190,7 @@ export default function CartsPage() {
                     <span className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400">🔍</span>
                     <Input
                         type="text"
-                        placeholder="Поиск по названию товара..."
+                        placeholder="Search carts by product name..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="pl-10 bg-white dark:bg-gray-800"
@@ -203,18 +203,18 @@ export default function CartsPage() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>ID корзины</TableHead>
-                                <TableHead>Товары</TableHead>
-                                <TableHead>Общая сумма</TableHead>
-                                <TableHead>Обновлено</TableHead>
-                                <TableHead className="text-right">Действия</TableHead>
+                                <TableHead>Cart ID</TableHead>
+                                <TableHead>Items</TableHead>
+                                <TableHead>Total Amount</TableHead>
+                                <TableHead>Last Updated</TableHead>
+                                <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {filteredCarts.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={5} className="text-center py-4">
-                                        Корзины не найдены
+                                        No carts found
                                     </TableCell>
                                 </TableRow>
                             ) : (
@@ -223,10 +223,10 @@ export default function CartsPage() {
                                         <TableCell>
                                             <div>
                                                 <p className="font-medium text-gray-900 dark:text-white">
-                                                    Корзина #{cart.id}
+                                                    Cart #{cart.id}
                                                 </p>
                                                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                                                    ID пользователя: {cart.userId}
+                                                    User ID: {cart.userId}
                                                 </p>
                                             </div>
                                         </TableCell>
@@ -268,7 +268,7 @@ export default function CartsPage() {
                                                                 onClick={() => handleRemoveItem(cart.id, item.id || 0)}
                                                                 className="text-red-600 hover:text-red-700"
                                                             >
-                                                                Удалить
+                                                                Remove
                                                             </Button>
                                                         </div>
                                                     </div>
@@ -296,7 +296,7 @@ export default function CartsPage() {
                                                         openModal();
                                                     }}
                                                 >
-                                                    Добавить товар
+                                                    Add Item
                                                 </Button>
                                                 <Button
                                                     variant="outline"
@@ -304,7 +304,7 @@ export default function CartsPage() {
                                                     onClick={() => handleClearCart(cart.id)}
                                                     className="text-red-600 hover:text-red-700"
                                                 >
-                                                    Очистить корзину
+                                                    Clear Cart
                                                 </Button>
                                             </div>
                                         </TableCell>
@@ -329,7 +329,7 @@ export default function CartsPage() {
                 <div className="p-6">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
-                            Добавить товар в корзину
+                            Add Item to Cart
                         </h2>
                         <Button
                             variant="ghost"
@@ -349,7 +349,7 @@ export default function CartsPage() {
                     <div className="space-y-6">
                         <div className="space-y-2">
                             <Label htmlFor="product" className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                                Товар
+                                Product
                             </Label>
                             {loadingProducts ? (
                                 <Skeleton className="h-10 w-full" />
@@ -362,10 +362,10 @@ export default function CartsPage() {
                                     required
                                     aria-label="Select a product"
                                 >
-                                    <option value={0}>Выберите товар</option>
+                                    <option value={0}>Select a product</option>
                                     {products.map((product) => (
                                         <option key={product.id} value={product.id}>
-                                            {product.name} - {formatPrice(product.price)} (На складе: {product.stockQuantity})
+                                            {product.name} - {formatPrice(product.price)} (Stock: {product.stockQuantity})
                                         </option>
                                     ))}
                                 </select>
@@ -374,7 +374,7 @@ export default function CartsPage() {
 
                         <div className="space-y-2">
                             <Label htmlFor="quantity" className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                                Количество
+                                Quantity
                             </Label>
                             <Input
                                 id="quantity"
@@ -398,14 +398,14 @@ export default function CartsPage() {
                                     setQuantity(1);
                                 }}
                             >
-                                Отмена
+                                Cancel
                             </Button>
                             <Button
                                 type="button"
                                 onClick={handleAddItem}
                                 className="bg-brand-500 hover:bg-brand-600 text-white"
                             >
-                                Добавить товар
+                                Add Item
                             </Button>
                         </div>
                     </div>
@@ -413,4 +413,4 @@ export default function CartsPage() {
             </Modal>
         </div>
     );
-}
+} 
