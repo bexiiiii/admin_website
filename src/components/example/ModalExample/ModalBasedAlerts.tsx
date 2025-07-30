@@ -190,4 +190,16 @@ export default function ModalBasedAlerts() {
             felis risus nisi non. Quisque eu ut tempor curabitur.
           </p>
 
-          <div className="flex items-center justify-center w
+          <div className="flex items-center justify-center gap-3 mt-6">
+            <button
+              onClick={errorModal.closeModal}
+              className="px-4 py-3 text-sm font-medium text-white rounded-lg bg-error-500 shadow-theme-xs hover:bg-error-600"
+            >
+              Понял
+            </button>
+          </div>
+        </div>
+      </Modal>
+    </ComponentCard>
+  );
+}
