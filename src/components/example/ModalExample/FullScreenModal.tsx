@@ -17,9 +17,9 @@ export default function FullScreenModal() {
     closeFullscreenModal();
   };
   return (
-    <ComponentCard title="Full Screen Modal">
+    <ComponentCard title="Полноэкранное модальное окно">
       <Button size="sm" onClick={openFullscreenModal}>
-        Open Modal
+        Открыть модальное окно
       </Button>
       <Modal
         isOpen={isFullscreenModalOpen}
@@ -30,7 +30,7 @@ export default function FullScreenModal() {
         <div className="fixed top-0 left-0 flex flex-col justify-between w-full h-screen p-6 overflow-x-hidden overflow-y-auto bg-white dark:bg-gray-900 lg:p-10">
           <div>
             <h4 className="font-semibold text-gray-800 mb-7 text-title-sm dark:text-white/90">
-              Modal Heading
+              Заголовок модального окна
             </h4>
             <p className="text-sm leading-6 text-gray-500 dark:text-gray-400">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit.
@@ -53,10 +53,10 @@ export default function FullScreenModal() {
           </div>
           <div className="flex items-center justify-end w-full gap-3 mt-8">
             <Button size="sm" variant="outline" onClick={closeFullscreenModal}>
-              Close
+              Закрыть
             </Button>
             <Button size="sm" onClick={handleSave}>
-              Save Changes
+              Сохранить изменения
             </Button>
           </div>
         </div>

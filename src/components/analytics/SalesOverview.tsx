@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
+import {
   TrendingUpIcon,
   EyeIcon,
   MoreHorizontalIcon,
@@ -29,10 +29,10 @@ export default function SalesOverview({ salesData, topStores }: SalesOverviewPro
   const [sortBy, setSortBy] = useState('revenue');
 
   const periods = [
-    { value: 'today', label: 'Today' },
-    { value: 'yesterday', label: 'Yesterday' },
-    { value: 'week', label: 'This Week' },
-    { value: 'month', label: 'This Month' }
+    { value: 'today', label: 'Сегодня' },
+    { value: 'yesterday', label: 'Вчера' },
+    { value: 'week', label: 'Эта неделя' },
+    { value: 'month', label: 'Этот месяц' }
   ];
 
   const totalRevenue = salesData.reduce((sum, item) => sum + item.amount, 0);
@@ -52,14 +52,14 @@ export default function SalesOverview({ salesData, topStores }: SalesOverviewPro
           <div>
             <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
               <TrendingUpIcon className="h-5 w-5 text-blue-500" />
-              Sales Overview
+              Обзор продаж
             </CardTitle>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              Track your daily sales performance
+              Отслеживайте ежедневные показатели продаж
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <select 
+            <select
               value={selectedPeriod}
               onChange={(e) => setSelectedPeriod(e.target.value)}
               className="px-3 py-1 text-xs border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
@@ -75,44 +75,44 @@ export default function SalesOverview({ salesData, topStores }: SalesOverviewPro
         <CardContent>
           <div className="grid gap-4 md:grid-cols-3 mb-6">
             <div className="p-4 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg">
-              <div className="text-sm text-blue-600 dark:text-blue-400 font-medium">Total Revenue</div>
+              <div className="text-sm text-blue-600 dark:text-blue-400 font-medium">Общий доход</div>
               <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">
                 ${totalRevenue.toLocaleString()}
               </div>
               <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                +12.5% from last period
+                +12.5% с прошлого периода
               </div>
             </div>
             <div className="p-4 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg">
-              <div className="text-sm text-green-600 dark:text-green-400 font-medium">Total Orders</div>
+              <div className="text-sm text-green-600 dark:text-green-400 font-medium">Всего заказов</div>
               <div className="text-2xl font-bold text-green-900 dark:text-green-100">
                 {totalOrders.toLocaleString()}
               </div>
               <div className="text-xs text-green-600 dark:text-green-400 mt-1">
-                +8.2% from last period
+                +8.2% с прошлого периода
               </div>
             </div>
             <div className="p-4 bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-lg">
-              <div className="text-sm text-purple-600 dark:text-purple-400 font-medium">Avg. Order Value</div>
+              <div className="text-sm text-purple-600 dark:text-purple-400 font-medium">Сред. стоимость заказа</div>
               <div className="text-2xl font-bold text-purple-900 dark:text-purple-100">
                 ${totalOrders > 0 ? (totalRevenue / totalOrders).toFixed(2) : '0.00'}
               </div>
               <div className="text-xs text-purple-600 dark:text-purple-400 mt-1">
-                +3.8% from last period
+                +3.8% с прошлого периода
               </div>
             </div>
           </div>
-          
+
           {/* Recent Sales Activity */}
           <div className="space-y-3">
-            <h4 className="font-medium text-gray-900 dark:text-white">Recent Activity</h4>
+            <h4 className="font-medium text-gray-900 dark:text-white">Недавняя активность</h4>
             {salesData.slice(0, 5).map((sale, index) => (
               <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                   <div>
                     <div className="text-sm font-medium text-gray-900 dark:text-white">
-                      {sale.orders} orders placed
+                      {sale.orders} заказов размещено
                     </div>
                     <div className="text-xs text-gray-500 dark:text-gray-400">
                       {sale.date}
@@ -134,20 +134,20 @@ export default function SalesOverview({ salesData, topStores }: SalesOverviewPro
           <div>
             <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
               <EyeIcon className="h-5 w-5 text-orange-500" />
-              Top Stores
+              Лучшие магазины
             </CardTitle>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              Best performing stores
+              Самые эффективные магазины
             </p>
           </div>
-          <select 
+          <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
             className="px-2 py-1 text-xs border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
           >
-            <option value="revenue">Revenue</option>
-            <option value="sales">Sales</option>
-            <option value="name">Name</option>
+            <option value="revenue">Доход</option>
+            <option value="sales">Продажи</option>
+            <option value="name">Название</option>
           </select>
         </CardHeader>
         <CardContent>
@@ -165,7 +165,7 @@ export default function SalesOverview({ salesData, topStores }: SalesOverviewPro
                       {store.name}
                     </div>
                     <div className="text-xs text-gray-500 dark:text-gray-400">
-                      {store.sales} sales
+                      {store.sales} продаж
                     </div>
                   </div>
                 </div>
@@ -174,7 +174,7 @@ export default function SalesOverview({ salesData, topStores }: SalesOverviewPro
                     ${store.revenue.toLocaleString()}
                   </div>
                   <Badge variant="outline" className="text-xs">
-                    Top {index < 3 ? (index + 1) : ''}
+                    Топ {index < 3 ? (index + 1) : ''}
                   </Badge>
                 </div>
               </div>

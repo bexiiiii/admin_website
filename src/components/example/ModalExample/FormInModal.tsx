@@ -15,9 +15,9 @@ export default function FormInModal() {
     closeModal();
   };
   return (
-    <ComponentCard title="Form In Modal">
+    <ComponentCard title="Форма в модальном окне">
       <Button size="sm" onClick={openModal}>
-        Open Modal
+        Открыть модальное окно
       </Button>
       <Modal
         isOpen={isOpen}
@@ -26,42 +26,42 @@ export default function FormInModal() {
       >
         <form className="">
           <h4 className="mb-6 text-lg font-medium text-gray-800 dark:text-white/90">
-            Personal Information
+            Личная информация
           </h4>
 
           <div className="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2">
             <div className="col-span-1">
-              <Label>First Name</Label>
-              <Input type="text" placeholder="Emirhan" />
+              <Label>Имя</Label>
+              <Input type="text" placeholder="Эмирхан" />
             </div>
 
             <div className="col-span-1">
-              <Label>Last Name</Label>
-              <Input type="text" placeholder="Boruch" />
+              <Label>Фамилия</Label>
+              <Input type="text" placeholder="Борух" />
             </div>
 
             <div className="col-span-1">
-              <Label>Last Name</Label>
+              <Label>Электронная почта</Label>
               <Input type="email" placeholder="emirhanboruch55@gmail.com" />
             </div>
 
             <div className="col-span-1">
-              <Label>Phone</Label>
+              <Label>Телефон</Label>
               <Input type="text" placeholder="+09 363 398 46" />
             </div>
 
             <div className="col-span-1 sm:col-span-2">
-              <Label>Bio</Label>
-              <Input type="text" placeholder="Team Manager" />
+              <Label>Биография</Label>
+              <Input type="text" placeholder="Менеджер команды" />
             </div>
           </div>
 
           <div className="flex items-center justify-end w-full gap-3 mt-6">
             <Button size="sm" variant="outline" onClick={closeModal}>
-              Close
+              Закрыть
             </Button>
             <Button size="sm" onClick={handleSave}>
-              Save Changes
+              Сохранить изменения
             </Button>
           </div>
         </form>

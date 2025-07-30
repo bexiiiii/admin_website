@@ -31,28 +31,28 @@ export default function MonthlySalesChart() {
                 } else {
                     // Set default data if no sales data is available
                     setData([
-                        { month: 'Jan', sales: 12000, target: 15000 },
-                        { month: 'Feb', sales: 14000, target: 16000 },
-                        { month: 'Mar', sales: 16000, target: 18000 },
-                        { month: 'Apr', sales: 15000, target: 17000 },
-                        { month: 'May', sales: 18000, target: 20000 },
-                        { month: 'Jun', sales: 20000, target: 22000 }
+                        { month: 'Янв', sales: 12000, target: 15000 },
+                        { month: 'Фев', sales: 14000, target: 16000 },
+                        { month: 'Мар', sales: 16000, target: 18000 },
+                        { month: 'Апр', sales: 15000, target: 17000 },
+                        { month: 'Май', sales: 18000, target: 20000 },
+                        { month: 'Июн', sales: 20000, target: 22000 }
                     ]);
                 }
             } catch (err) {
-                console.error('Error fetching sales data:', err);
+                console.error('Ошибка при загрузке данных о продажах:', err);
                 // Set default data on error
                 setData([
-                    { month: 'Jan', sales: 12000, target: 15000 },
-                    { month: 'Feb', sales: 14000, target: 16000 },
-                    { month: 'Mar', sales: 16000, target: 18000 },
-                    { month: 'Apr', sales: 15000, target: 17000 },
-                    { month: 'May', sales: 18000, target: 20000 },
-                    { month: 'Jun', sales: 20000, target: 22000 }
+                    { month: 'Янв', sales: 12000, target: 15000 },
+                    { month: 'Фев', sales: 14000, target: 16000 },
+                    { month: 'Мар', sales: 16000, target: 18000 },
+                    { month: 'Апр', sales: 15000, target: 17000 },
+                    { month: 'Май', sales: 18000, target: 20000 },
+                    { month: 'Июн', sales: 20000, target: 22000 }
                 ]);
                 toast({
-                    title: 'Error',
-                    description: 'Failed to load sales data',
+                    title: 'Ошибка',
+                    description: 'Не удалось загрузить данные о продажах',
                     variant: 'destructive',
                 });
             } finally {
@@ -75,7 +75,7 @@ export default function MonthlySalesChart() {
     return (
         <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
             <h3 className="text-base font-medium text-gray-800 dark:text-white/90">
-                Monthly Sales
+                Ежемесячные продажи
             </h3>
             <div className="h-[300px] mt-4">
                 <ResponsiveContainer width="100%" height="100%">
@@ -90,14 +90,14 @@ export default function MonthlySalesChart() {
                             dataKey="sales"
                             stroke="#8884d8"
                             strokeWidth={2}
-                            name="Actual Sales"
+                            name="Фактические продажи"
                         />
                         <Line
                             type="monotone"
                             dataKey="target"
                             stroke="#82ca9d"
                             strokeWidth={2}
-                            name="Target"
+                            name="Цель"
                         />
                     </LineChart>
                 </ResponsiveContainer>

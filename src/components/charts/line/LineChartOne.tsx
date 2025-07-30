@@ -38,14 +38,14 @@ export default function LineChartOne({ data }: LineChartOneProps) {
     labels: data.map(item => item.month),
     datasets: [
       {
-        label: 'Revenue',
+        label: 'Доход',
         data: data.map(item => item.amount),
         borderColor: 'rgb(59, 130, 246)',
         backgroundColor: 'rgba(59, 130, 246, 0.5)',
         tension: 0.4,
       },
       {
-        label: 'Orders',
+        label: 'Заказы',
         data: data.map(item => item.orders),
         borderColor: 'rgb(16, 185, 129)',
         backgroundColor: 'rgba(16, 185, 129, 0.5)',

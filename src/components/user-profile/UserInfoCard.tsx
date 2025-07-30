@@ -53,7 +53,7 @@ export default function UserInfoCard() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     // Clear field-specific errors when user starts typing
     setErrors(prev => prev.filter(error => error.field !== name));
   };
@@ -65,7 +65,7 @@ export default function UserInfoCard() {
   const handleSave = async () => {
     // Validate form data
     const validation = validateUserProfile(formData);
-    
+
     if (!validation.isValid) {
       setErrors(validation.errors);
       toast.error("Please fix the validation errors");
@@ -95,20 +95,20 @@ export default function UserInfoCard() {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Загрузка...</div>;
   }
   return (
     <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
-            Personal Information
+            Личная информация
           </h4>
 
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                First Name
+                Имя
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                 {profile?.firstName || 'N/A'}
@@ -117,7 +117,7 @@ export default function UserInfoCard() {
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Last Name
+                Фамилия
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                 {profile?.lastName || 'N/A'}
@@ -126,7 +126,7 @@ export default function UserInfoCard() {
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Email address
+                Адрес электронной почты
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                 {profile?.email || 'N/A'}
@@ -135,7 +135,7 @@ export default function UserInfoCard() {
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Phone
+                Телефон
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                 {profile?.phone || 'N/A'}
@@ -144,7 +144,7 @@ export default function UserInfoCard() {
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Address
+                Адрес
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                 {profile?.address || 'N/A'}
@@ -172,7 +172,7 @@ export default function UserInfoCard() {
               fill=""
             />
           </svg>
-          Edit
+          Редактировать
         </button>
       </div>
 
@@ -180,28 +180,28 @@ export default function UserInfoCard() {
         <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
           <div className="px-2 pr-14">
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Edit Personal Information
+              Редактировать личную информацию
             </h4>
             <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
-              Update your details to keep your profile up-to-date.
+              Обновите свои данные, чтобы ваш профиль был актуальным.
             </p>
           </div>
           <form className="flex flex-col" onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
             <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
               <div>
                 <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
-                  Personal Information
+                  Личная информация
                 </h5>
 
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>First Name *</Label>
-                    <Input 
-                      type="text" 
+                    <Label>Имя *</Label>
+                    <Input
+                      type="text"
                       name="firstName"
                       value={formData.firstName}
                       onChange={handleInputChange}
-                      placeholder="Enter your first name"
+                      placeholder="Введите ваше имя"
                       className={getFieldError('firstName') ? 'border-red-500' : ''}
                     />
                     {getFieldError('firstName') && (
@@ -210,13 +210,13 @@ export default function UserInfoCard() {
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>Last Name *</Label>
-                    <Input 
-                      type="text" 
+                    <Label>Фамилия *</Label>
+                    <Input
+                      type="text"
                       name="lastName"
                       value={formData.lastName}
                       onChange={handleInputChange}
-                      placeholder="Enter your last name"
+                      placeholder="Введите вашу фамилию"
                       className={getFieldError('lastName') ? 'border-red-500' : ''}
                     />
                     {getFieldError('lastName') && (
@@ -225,13 +225,13 @@ export default function UserInfoCard() {
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>Email Address *</Label>
-                    <Input 
-                      type="email" 
+                    <Label>Адрес электронной почты *</Label>
+                    <Input
+                      type="email"
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      placeholder="Enter your email address"
+                      placeholder="Введите ваш email"
                       className={getFieldError('email') ? 'border-red-500' : ''}
                     />
                     {getFieldError('email') && (
@@ -240,13 +240,13 @@ export default function UserInfoCard() {
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>Phone</Label>
-                    <Input 
-                      type="tel" 
+                    <Label>Телефон</Label>
+                    <Input
+                      type="tel"
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      placeholder="Enter your phone number"
+                      placeholder="Введите ваш номер телефона"
                       className={getFieldError('phone') ? 'border-red-500' : ''}
                     />
                     {getFieldError('phone') && (
@@ -255,13 +255,13 @@ export default function UserInfoCard() {
                   </div>
 
                   <div className="col-span-2">
-                    <Label>Address</Label>
-                    <Input 
-                      type="text" 
+                    <Label>Адрес</Label>
+                    <Input
+                      type="text"
                       name="address"
                       value={formData.address}
                       onChange={handleInputChange}
-                      placeholder="Enter your address"
+                      placeholder="Введите ваш адрес"
                       className={getFieldError('address') ? 'border-red-500' : ''}
                     />
                     {getFieldError('address') && (
@@ -269,11 +269,11 @@ export default function UserInfoCard() {
                     )}
                   </div>
                 </div>
-                
+
                 {errors.length > 0 && (
                   <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg dark:bg-red-900/20 dark:border-red-800">
                     <p className="text-sm text-red-600 dark:text-red-400 font-medium mb-2">
-                      Please fix the following errors:
+                      Пожалуйста, исправьте следующие ошибки:
                     </p>
                     <ul className="list-disc list-inside text-sm text-red-600 dark:text-red-400">
                       {errors.map((error, index) => (
@@ -286,10 +286,10 @@ export default function UserInfoCard() {
             </div>
             <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
               <Button size="sm" variant="outline" onClick={closeModal} type="button">
-                Cancel
+                Отмена
               </Button>
               <Button size="sm" type="submit" disabled={saving}>
-                {saving ? 'Saving...' : 'Save Changes'}
+                {saving ? 'Сохранение...' : 'Сохранить изменения'}
               </Button>
             </div>
           </form>

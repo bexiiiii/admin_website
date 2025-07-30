@@ -62,7 +62,7 @@ const EcommerceMetrics: React.FC = () => {
         return (
             <Card>
                 <CardContent>
-                    <div className="text-gray-500">No metrics available</div>
+                    <div className="text-gray-500">Нет доступных метрик</div>
                 </CardContent>
             </Card>
         );
@@ -72,23 +72,23 @@ const EcommerceMetrics: React.FC = () => {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
                 <CardHeader>
-                    <CardTitle>Total Customers</CardTitle>
+                    <CardTitle>Всего клиентов</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{metrics.totalCustomers}</div>
                     <p className="text-xs text-gray-500">
-                        {metrics.customerGrowth > 0 ? '+' : ''}{metrics.customerGrowth}% from last month
+                        {metrics.customerGrowth > 0 ? '+' : ''}{metrics.customerGrowth}% с прошлого месяца
                     </p>
                 </CardContent>
             </Card>
             <Card>
                 <CardHeader>
-                    <CardTitle>Total Orders</CardTitle>
+                    <CardTitle>Всего заказов</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{metrics.totalOrders}</div>
                     <p className="text-xs text-gray-500">
-                        {metrics.orderGrowth > 0 ? '+' : ''}{metrics.orderGrowth}% from last month
+                        {metrics.orderGrowth > 0 ? '+' : ''}{metrics.orderGrowth}% с прошлого месяца
                     </p>
                 </CardContent>
             </Card>

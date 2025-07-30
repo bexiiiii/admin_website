@@ -35,7 +35,7 @@ const StatisticsChart: React.FC = () => {
         return (
             <Card>
                 <CardHeader>
-                    <CardTitle>Statistics</CardTitle>
+                    <CardTitle>Статистика</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className={cn("h-[300px] w-full bg-gray-200 rounded animate-pulse")} />
@@ -48,7 +48,7 @@ const StatisticsChart: React.FC = () => {
         return (
             <Card>
                 <CardHeader>
-                    <CardTitle>Statistics</CardTitle>
+                    <CardTitle>Статистика</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className={cn("text-red-500")}>{error}</div>
@@ -61,10 +61,10 @@ const StatisticsChart: React.FC = () => {
         return (
             <Card>
                 <CardHeader>
-                    <CardTitle>Statistics</CardTitle>
+                    <CardTitle>Статистика</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className={cn("text-gray-500")}>No data available</div>
+                    <div className={cn("text-gray-500")}>Нет данных</div>
                 </CardContent>
             </Card>
         );
@@ -73,7 +73,7 @@ const StatisticsChart: React.FC = () => {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Statistics</CardTitle>
+                <CardTitle>Статистика</CardTitle>
             </CardHeader>
             <CardContent>
                 <div className={cn("grid grid-cols-2 md:grid-cols-3 gap-4")}>

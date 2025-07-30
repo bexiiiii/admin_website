@@ -17,10 +17,10 @@ export default function InputGroup() {
     console.log("Updated phone number:", phoneNumber);
   };
   return (
-    <ComponentCard title="Input Group">
+    <ComponentCard title="Группа ввода">
       <div className="space-y-6">
         <div>
-          <Label>Email</Label>
+          <Label>Электронная почта</Label>
           <div className="relative">
             <Input
               placeholder="info@gmail.com"
@@ -33,7 +33,7 @@ export default function InputGroup() {
           </div>
         </div>
         <div>
-          <Label>Phone</Label>
+          <Label>Телефон</Label>
           <PhoneInput
             selectPosition="start"
             countries={countries}
@@ -42,7 +42,7 @@ export default function InputGroup() {
           />
         </div>{" "}
         <div>
-          <Label>Phone</Label>
+          <Label>Телефон</Label>
           <PhoneInput
             selectPosition="end"
             countries={countries}

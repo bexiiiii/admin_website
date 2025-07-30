@@ -102,7 +102,7 @@ export default function UserMetaCard() {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Загрузка...</div>;
   }
 
   return (
@@ -166,7 +166,7 @@ export default function UserMetaCard() {
                 onClick={openModal}
                 className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               >
-                Edit Profile
+                Редактировать профиль
               </Button>
             </div>
           </div>
@@ -176,22 +176,22 @@ export default function UserMetaCard() {
         <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
           <div className="px-2 pr-14">
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Edit Personal Information
+              Редактировать личную информацию
             </h4>
             <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
-              Update your details to keep your profile up-to-date.
+              Обновите свои данные, чтобы ваш профиль был актуальным.
             </p>
           </div>
           <form className="flex flex-col">
             <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
               <div>
                 <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
-                  Personal Information
+                  Личная информация
                 </h5>
 
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div>
-                    <Label>First Name</Label>
+                    <Label>Имя</Label>
                     <Input
                       type="text"
                       name="firstName"
@@ -201,7 +201,7 @@ export default function UserMetaCard() {
                   </div>
 
                   <div>
-                    <Label>Last Name</Label>
+                    <Label>Фамилия</Label>
                     <Input
                       type="text"
                       name="lastName"
@@ -221,7 +221,7 @@ export default function UserMetaCard() {
                   </div>
 
                   <div>
-                    <Label>Phone</Label>
+                    <Label>Телефон</Label>
                     <Input
                       type="text"
                       name="phone"
@@ -231,7 +231,7 @@ export default function UserMetaCard() {
                   </div>
 
                   <div className="lg:col-span-2">
-                    <Label>Address</Label>
+                    <Label>Адрес</Label>
                     <Input
                       type="text"
                       name="address"
@@ -249,14 +249,14 @@ export default function UserMetaCard() {
                 onClick={closeModal}
                 className="px-6 py-3 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 focus:ring-4 focus:ring-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:focus:ring-gray-800"
               >
-                Cancel
+                Отмена
               </Button>
               <Button
                 type="button"
                 onClick={handleSave}
                 className="px-6 py-3 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               >
-                Save Changes
+                Сохранить изменения
               </Button>
             </div>
           </form>

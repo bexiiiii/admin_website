@@ -50,7 +50,7 @@ const CountryMap: React.FC<CountryMapProps> = ({ mapColor }) => {
         [
           {
             latLng: [37.2580397, -104.657039],
-            name: "United States",
+            name: "Соединенные Штаты",
             style: {
               fill: "#465FFF",
               borderWidth: 1,
@@ -60,17 +60,17 @@ const CountryMap: React.FC<CountryMapProps> = ({ mapColor }) => {
           },
           {
             latLng: [20.7504374, 73.7276105],
-            name: "India",
+            name: "Индия",
             style: { fill: "#465FFF", borderWidth: 1, borderColor: "white" },
           },
           {
             latLng: [53.613, -11.6368],
-            name: "United Kingdom",
+            name: "Великобритания",
             style: { fill: "#465FFF", borderWidth: 1, borderColor: "white" },
           },
           {
             latLng: [-25.0304388, 115.2092761],
-            name: "Sweden",
+            name: "Швеция",
             style: {
               fill: "#465FFF",
               borderWidth: 1,

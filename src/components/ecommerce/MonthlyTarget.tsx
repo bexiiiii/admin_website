@@ -23,14 +23,14 @@ export default function MonthlyTarget() {
             try {
                 // Set mock data for now since we don't have a targets API endpoint
                 setTargets([
-                    { name: 'Monthly Sales', current: 15000, target: 20000, unit: '$' },
-                    { name: 'New Customers', current: 45, target: 60, unit: 'users' },
-                    { name: 'Orders Completed', current: 180, target: 250, unit: 'orders' }
+                    { name: 'Ежемесячные продажи', current: 15000, target: 20000, unit: '$' },
+                    { name: 'Новые клиенты', current: 45, target: 60, unit: 'пользователей' },
+                    { name: 'Выполненные заказы', current: 180, target: 250, unit: 'заказов' }
                 ]);
             } catch (error) {
                 toast({
-                    title: 'Error',
-                    description: 'Failed to load targets',
+                    title: 'Ошибка',
+                    description: 'Не удалось загрузить цели',
                     variant: 'destructive',
                 });
             } finally {
@@ -73,14 +73,14 @@ export default function MonthlyTarget() {
             <div className="flex justify-between items-center mb-4">
                 <div>
                     <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-                        Monthly Targets
+                        Ежемесячные цели
                     </h3>
                     <p className="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
-                        Progress towards monthly goals
+                        Прогресс в достижении ежемесячных целей
                     </p>
                 </div>
                 <div className="relative inline-block">
-                    <button onClick={toggleDropdown} className="dropdown-toggle" aria-label="More options">
+                    <button onClick={toggleDropdown} className="dropdown-toggle" aria-label="Больше опций">
                         <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
                     </button>
                     <Dropdown
@@ -92,13 +92,13 @@ export default function MonthlyTarget() {
                             onItemClick={closeDropdown}
                             className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
                         >
-                            View More
+                            Посмотреть больше
                         </DropdownItem>
                         <DropdownItem
                             onItemClick={closeDropdown}
                             className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
                         >
-                            Delete
+                            Удалить
                         </DropdownItem>
                     </Dropdown>
                 </div>
@@ -117,7 +117,7 @@ export default function MonthlyTarget() {
                                 </span>
                             </div>
                             <div className="relative block h-2 w-full rounded-sm bg-gray-200 dark:bg-gray-800">
-                                <div 
+                                <div
                                     className="absolute left-0 top-0 flex h-full items-center justify-center rounded-sm bg-brand-500 text-xs font-medium text-white"
                                     style={{ width: `${progress}%` }}
                                 />

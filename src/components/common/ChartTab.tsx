@@ -18,7 +18,7 @@ const ChartTab: React.FC = () => {
           "optionOne"
         )}`}
       >
-        Monthly
+        Ежемесячно
       </button>
 
       <button
@@ -27,7 +27,7 @@ const ChartTab: React.FC = () => {
           "optionTwo"
         )}`}
       >
-        Quarterly
+        Ежеквартально
       </button>
 
       <button
@@ -36,7 +36,7 @@ const ChartTab: React.FC = () => {
           "optionThree"
         )}`}
       >
-        Annually
+        Ежегодно
       </button>
     </div>
   );

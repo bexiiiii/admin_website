@@ -28,7 +28,7 @@ export default function RecentOrders() {
     }, []);
 
     if (loading) {
-        return <div>Loading orders...</div>;
+        return <div>Загружаем заказы...</div>;
     }
 
     if (error) {
@@ -37,13 +37,13 @@ export default function RecentOrders() {
 
     return (
         <div className="p-4">
-            <h2 className="text-xl font-semibold mb-4">Recent Orders</h2>
+            <h2 className="text-xl font-semibold mb-4">Недавние заказы</h2>
             <div className="space-y-4">
                 {orders.map((order) => (
                     <div key={order.id} className="border rounded-lg p-4">
                         <div className="flex justify-between items-center">
                             <div>
-                                <p className="font-medium">Order #{order.id}</p>
+                                <p className="font-medium">Заказ #{order.id}</p>
                                 <p className="text-sm text-gray-500">
                                     {new Date(order.orderDate || '').toLocaleDateString()}
                                 </p>
@@ -60,10 +60,10 @@ export default function RecentOrders() {
                         </div>
                         <div className="mt-2">
                             <p className="text-sm">
-                                Total: ${order.totalAmount.toFixed(2)}
+                                Общее количество: ${order.totalAmount.toFixed(2)}
                             </p>
                             <p className="text-sm text-gray-500">
-                                Items: {order.items.length}
+                                Товары: {order.items.length}
                             </p>
                         </div>
                     </div>

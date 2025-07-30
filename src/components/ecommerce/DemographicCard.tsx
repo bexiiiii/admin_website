@@ -33,24 +33,24 @@ export default function DemographicCard() {
                 } else {
                     // Set default data if no order status distribution is available
                     setData([
-                        { category: 'Completed', value: 45, color: COLORS[0] },
-                        { category: 'Pending', value: 25, color: COLORS[1] },
-                        { category: 'Cancelled', value: 15, color: COLORS[2] },
-                        { category: 'Processing', value: 15, color: COLORS[3] }
+                        { category: 'Завершено', value: 45, color: COLORS[0] },
+                        { category: 'В ожидании', value: 25, color: COLORS[1] },
+                        { category: 'Отменено', value: 15, color: COLORS[2] },
+                        { category: 'В обработке', value: 15, color: COLORS[3] }
                     ]);
                 }
             } catch (err) {
-                console.error('Error fetching demographics:', err);
+                console.error('Ошибка при загрузке демографических данных:', err);
                 // Set default data on error
                 setData([
-                    { category: 'Completed', value: 45, color: COLORS[0] },
-                    { category: 'Pending', value: 25, color: COLORS[1] },
-                    { category: 'Cancelled', value: 15, color: COLORS[2] },
-                    { category: 'Processing', value: 15, color: COLORS[3] }
+                    { category: 'Завершено', value: 45, color: COLORS[0] },
+                    { category: 'В ожидании', value: 25, color: COLORS[1] },
+                    { category: 'Отменено', value: 15, color: COLORS[2] },
+                    { category: 'В обработке', value: 15, color: COLORS[3] }
                 ]);
                 toast({
-                    title: 'Error',
-                    description: 'Failed to load demographic data',
+                    title: 'Ошибка',
+                    description: 'Не удалось загрузить демографические данные',
                     variant: 'destructive',
                 });
             } finally {
@@ -73,7 +73,7 @@ export default function DemographicCard() {
     return (
         <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
             <h3 className="text-base font-medium text-gray-800 dark:text-white/90">
-                Order Status Distribution
+                Распределение статусов заказов
             </h3>
             <div className="h-[300px] mt-4">
                 <ResponsiveContainer width="100%" height="100%">

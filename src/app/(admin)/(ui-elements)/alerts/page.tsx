@@ -5,78 +5,78 @@ import { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Next.js Alerts | TailAdmin - Next.js Dashboard Template",
+  title: "",
   description:
-    "This is Next.js Alerts page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
+    "",
   // other metadata
 };
 
 export default function Alerts() {
   return (
     <div>
-      <PageBreadcrumb pageTitle="Alerts" />
+      <PageBreadcrumb pageTitle="Оповещения" />
       <div className="space-y-5 sm:space-y-6">
-        <ComponentCard title="Success Alert">
+        <ComponentCard title="Оповещение об успехе">
           <Alert
             variant="success"
-            title="Success Message"
-            message="Be cautious when performing this action."
+            title="Сообщение об успехе"
+            message="Будьте осторожны при выполнении этого действия."
             showLink={true}
             linkHref="/"
-            linkText="Learn more"
+            linkText="Узнать больше"
           />
           <Alert
             variant="success"
-            title="Success Message"
-            message="Be cautious when performing this action."
+            title="Сообщение об успехе"
+            message="Будьте осторожны при выполнении этого действия."
             showLink={false}
           />
         </ComponentCard>
-        <ComponentCard title="Warning Alert">
+        <ComponentCard title="Предупреждающее оповещение">
           <Alert
             variant="warning"
-            title="Warning Message"
-            message="Be cautious when performing this action."
+            title="Предупреждающее сообщение"
+            message="Будьте осторожны при выполнении этого действия."
             showLink={true}
             linkHref="/"
-            linkText="Learn more"
+            linkText="Узнать больше"
           />
           <Alert
             variant="warning"
-            title="Warning Message"
-            message="Be cautious when performing this action."
+            title="Предупреждающее сообщение"
+            message="Будьте осторожны при выполнении этого действия."
             showLink={false}
           />
         </ComponentCard>{" "}
-        <ComponentCard title="Error Alert">
+        <ComponentCard title="Оповещение об ошибке">
           <Alert
             variant="error"
-            title="Error Message"
-            message="Be cautious when performing this action."
+            title="Сообщение об ошибке"
+            message="Будьте осторожны при выполнении этого действия."
             showLink={true}
             linkHref="/"
-            linkText="Learn more"
+            linkText="Узнать больше"
           />
           <Alert
             variant="error"
-            title="Error Message"
-            message="Be cautious when performing this action."
+            title="Сообщение об ошибке"
+            message="Будьте осторожны при выполнении этого действия."
             showLink={false}
           />
         </ComponentCard>{" "}
-        <ComponentCard title="Info Alert">
+        <ComponentCard title="Информационное оповещение">
           <Alert
             variant="info"
-            title="Info Message"
-            message="Be cautious when performing this action."
+            title="Информационное сообщение"
+            message="Будьте осторожны при выполнении этого действия."
             showLink={true}
             linkHref="/"
-            linkText="Learn more"
+            linkText="Узнать больше"
           />
           <Alert
             variant="info"
-            title="Info Message"
-            message="Be cautious when performing this action."
+            title="Информационное сообщение"
+            message="Будьте осторожны при выполнении этого действия."
             showLink={false}
           />
         </ComponentCard>

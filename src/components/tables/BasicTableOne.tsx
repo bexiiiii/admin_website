@@ -31,10 +31,10 @@ const tableData: Order[] = [
     id: 1,
     user: {
       image: "/images/user/user-17.jpg",
-      name: "Lindsey Curtis",
-      role: "Web Designer",
+      name: "Линдси Кертис",
+      role: "Веб-дизайнер",
     },
-    projectName: "Agency Website",
+    projectName: "Сайт агентства",
     team: {
       images: [
         "/images/user/user-22.jpg",
@@ -43,44 +43,44 @@ const tableData: Order[] = [
       ],
     },
     budget: "3.9K",
-    status: "Active",
+    status: "Активен",
   },
   {
     id: 2,
     user: {
       image: "/images/user/user-18.jpg",
-      name: "Kaiya George",
-      role: "Project Manager",
+      name: "Кайя Джордж",
+      role: "Менеджер проекта",
     },
-    projectName: "Technology",
+    projectName: "Технологии",
     team: {
       images: ["/images/user/user-25.jpg", "/images/user/user-26.jpg"],
     },
     budget: "24.9K",
-    status: "Pending",
+    status: "В ожидании",
   },
   {
     id: 3,
     user: {
       image: "/images/user/user-17.jpg",
-      name: "Zain Geidt",
-      role: "Content Writing",
+      name: "Зейн Гейдт",
+      role: "Копирайтер",
     },
-    projectName: "Blog Writing",
+    projectName: "Написание блога",
     team: {
       images: ["/images/user/user-27.jpg"],
     },
     budget: "12.7K",
-    status: "Active",
+    status: "Активен",
   },
   {
     id: 4,
     user: {
       image: "/images/user/user-20.jpg",
-      name: "Abram Schleifer",
-      role: "Digital Marketer",
+      name: "Абрам Шлейфер",
+      role: "Цифровой маркетолог",
     },
-    projectName: "Social Media",
+    projectName: "Социальные сети",
     team: {
       images: [
         "/images/user/user-28.jpg",
@@ -89,16 +89,16 @@ const tableData: Order[] = [
       ],
     },
     budget: "2.8K",
-    status: "Cancel",
+    status: "Отменен",
   },
   {
     id: 5,
     user: {
       image: "/images/user/user-21.jpg",
-      name: "Carla George",
-      role: "Front-end Developer",
+      name: "Карла Джордж",
+      role: "Фронтенд-разработчик",
     },
-    projectName: "Website",
+    projectName: "Веб-сайт",
     team: {
       images: [
         "/images/user/user-31.jpg",
@@ -107,7 +107,7 @@ const tableData: Order[] = [
       ],
     },
     budget: "4.5K",
-    status: "Active",
+    status: "Активен",
   },
 ];
 
@@ -123,27 +123,27 @@ export default function BasicTableOne() {
                 <TableCell
                   className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                 >
-                  User
+                  Пользователь
                 </TableCell>
                 <TableCell
                   className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                 >
-                  Project Name
+                  Название проекта
                 </TableCell>
                 <TableCell
                   className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                 >
-                  Team
+                  Команда
                 </TableCell>
                 <TableCell
                   className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                 >
-                  Status
+                  Статус
                 </TableCell>
                 <TableCell
                   className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                 >
-                  Budget
+                  Бюджет
                 </TableCell>
               </TableRow>
             </TableHeader>
@@ -197,11 +197,11 @@ export default function BasicTableOne() {
                     <Badge
                       size="sm"
                       color={
-                        order.status === "Active"
+                        order.status === "Активен"
                           ? "success"
-                          : order.status === "Pending"
-                          ? "warning"
-                          : "error"
+                          : order.status === "В ожидании"
+                            ? "warning"
+                            : "error"
                       }
                     >
                       {order.status}

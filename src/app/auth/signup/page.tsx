@@ -2,8 +2,8 @@ import SignUpForm from "@/components/auth/SignUpForm";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Sign Up | FoodSave Admin",
-  description: "Create a new account for FoodSave Admin Dashboard",
+  title: "Зарегистрироваться | FoodSave Admin",
+  description: "Создайте новую учетную запись для панели управления FoodSave Admin",
 };
 
 export default function SignUp() {

@@ -27,13 +27,13 @@ export function FavoritesList({ userId }: FavoritesListProps) {
     const fetchFavorites = async () => {
         try {
             const response = await fetch(`/api/favorites?userId=${userId}`);
-            if (!response.ok) throw new Error('Failed to fetch favorites');
+            if (!response.ok) throw new Error('Не удалось загрузить избранное');
             const data = await response.json();
             setFavorites(data);
         } catch (error) {
             toast({
-                title: 'Error',
-                description: 'Failed to load favorites',
+                title: 'Ошибка',
+                description: 'Не удалось загрузить избранные товары',
                 variant: 'destructive',
             });
         } finally {
@@ -46,17 +46,17 @@ export function FavoritesList({ userId }: FavoritesListProps) {
             const response = await fetch(`/api/favorites?userId=${userId}&productId=${productId}`, {
                 method: 'DELETE',
             });
-            if (!response.ok) throw new Error('Failed to remove from favorites');
-            
+            if (!response.ok) throw new Error('Не удалось удалить из избранного');
+
             setFavorites(favorites.filter(product => product.id !== productId));
             toast({
-                title: 'Success',
-                description: 'Product removed from favorites',
+                title: 'Успех',
+                description: 'Продукт удален из избранного',
             });
         } catch (error) {
             toast({
-                title: 'Error',
-                description: 'Failed to remove from favorites',
+                title: 'Ошибка',
+                description: 'Не удалось удалить продукт из избранного',
                 variant: 'destructive',
             });
         }
@@ -67,14 +67,14 @@ export function FavoritesList({ userId }: FavoritesListProps) {
     }, [userId]);
 
     if (loading) {
-        return <div>Loading favorites...</div>;
+        return <div>Загрузка избранного...</div>;
     }
 
     if (favorites.length === 0) {
         return (
             <Card>
                 <CardContent className="flex items-center justify-center h-32">
-                    <p className="text-muted-foreground">No favorites yet</p>
+                    <p className="text-muted-foreground">Нет избранных товаров</p>
                 </CardContent>
             </Card>
         );
@@ -115,4 +115,4 @@ export function FavoritesList({ userId }: FavoritesListProps) {
             ))}
         </div>
     );
-} 
+}

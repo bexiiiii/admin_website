@@ -13,9 +13,9 @@ export default function VerticallyCenteredModal() {
     closeModal();
   };
   return (
-    <ComponentCard title="Vertically Centered Modal">
+    <ComponentCard title="Вертикально центрированное модальное окно">
       <Button size="sm" onClick={openModal}>
-        Open Modal
+        Открыть модальное окно
       </Button>
       <Modal
         isOpen={isOpen}
@@ -25,7 +25,7 @@ export default function VerticallyCenteredModal() {
       >
         <div className="text-center">
           <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90 sm:text-title-sm">
-            All Done! Success Confirmed
+            Все готово! Успех подтвержден
           </h4>
           <p className="text-sm leading-6 text-gray-500 dark:text-gray-400">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit.
@@ -34,10 +34,10 @@ export default function VerticallyCenteredModal() {
 
           <div className="flex items-center justify-center w-full gap-3 mt-8">
             <Button size="sm" variant="outline" onClick={closeModal}>
-              Close
+              Закрыть
             </Button>
             <Button size="sm" onClick={handleSave}>
-              Save Changes
+              Сохранить изменения
             </Button>
           </div>
         </div>

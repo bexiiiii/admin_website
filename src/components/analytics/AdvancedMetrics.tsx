@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  TrendingUpIcon, 
+import {
+  TrendingUpIcon,
   TrendingDownIcon,
   CalendarIcon,
   DollarSignIcon,
@@ -32,34 +32,34 @@ interface AdvancedMetricsProps {
 export default function AdvancedMetrics({ data }: AdvancedMetricsProps) {
   const metrics: MetricItem[] = [
     {
-      title: "Average Order Value",
+      title: "Средний чек",
       value: `$${data.averageOrderValue.toFixed(2)}`,
       change: 5.2,
-      changeLabel: "vs last month",
+      changeLabel: "по сравнению с прошлым месяцем",
       icon: DollarSignIcon,
       color: "bg-blue-500"
     },
     {
-      title: "Conversion Rate",
+      title: "Коэффициент конверсии",
       value: `${data.conversionRate.toFixed(1)}%`,
       change: -1.3,
-      changeLabel: "vs last month",
+      changeLabel: "по сравнению с прошлым месяцем",
       icon: PercentIcon,
       color: "bg-green-500"
     },
     {
-      title: "Customer Retention",
+      title: "Удержание клиентов",
       value: `${data.customerRetention.toFixed(1)}%`,
       change: 2.8,
-      changeLabel: "vs last month",
+      changeLabel: "по сравнению с прошлым месяцем",
       icon: TrendingUpIcon,
       color: "bg-purple-500"
     },
     {
-      title: "Monthly Recurring Revenue",
+      title: "Ежемесячный регулярный доход",
       value: `$${data.monthlyRecurringRevenue.toLocaleString()}`,
       change: 8.1,
-      changeLabel: "vs last month",
+      changeLabel: "по сравнению с прошлым месяцем",
       icon: CalendarIcon,
       color: "bg-orange-500"
     }
@@ -68,8 +68,8 @@ export default function AdvancedMetrics({ data }: AdvancedMetricsProps) {
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
       {metrics.map((metric, index) => (
-        <Card 
-          key={index} 
+        <Card
+          key={index}
           className="relative overflow-hidden bg-white dark:bg-gray-800 border-0 shadow-sm hover:shadow-md transition-all duration-300"
         >
           <div className={`absolute top-0 left-0 w-full h-1 ${metric.color}`} />
@@ -92,9 +92,8 @@ export default function AdvancedMetrics({ data }: AdvancedMetricsProps) {
                 ) : (
                   <ArrowDownIcon className="h-3 w-3 text-red-500 mr-1" />
                 )}
-                <span className={`font-medium ${
-                  metric.change >= 0 ? 'text-green-600' : 'text-red-600'
-                }`}>
+                <span className={`font-medium ${metric.change >= 0 ? 'text-green-600' : 'text-red-600'
+                  }`}>
                   {Math.abs(metric.change)}%
                 </span>
                 <span className="text-gray-500 ml-1">{metric.changeLabel}</span>

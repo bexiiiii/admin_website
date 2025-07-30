@@ -15,9 +15,9 @@ export default function DefaultModal() {
   };
   return (
     <div>
-      <ComponentCard title="Default Modal">
+      <ComponentCard title="Модальное окно по умолчанию">
         <Button size="sm" onClick={openModal}>
-          Open Modal
+          Открыть модальное окно
         </Button>
         <Modal
           isOpen={isOpen}
@@ -25,7 +25,7 @@ export default function DefaultModal() {
           className="max-w-[600px] p-5 lg:p-10"
         >
           <h4 className="font-semibold text-gray-800 mb-7 text-title-sm dark:text-white/90">
-            Modal Heading
+            Заголовок модального окна
           </h4>
           <p className="text-sm leading-6 text-gray-500 dark:text-gray-400">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit.
@@ -40,10 +40,10 @@ export default function DefaultModal() {
           </p>
           <div className="flex items-center justify-end w-full gap-3 mt-8">
             <Button size="sm" variant="outline" onClick={closeModal}>
-              Close
+              Закрыть
             </Button>
             <Button size="sm" onClick={handleSave}>
-              Save Changes
+              Сохранить изменения
             </Button>
           </div>
         </Modal>

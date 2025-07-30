@@ -24,11 +24,11 @@ export function AddToFavorites({ userId, productId, onSuccess }: AddToFavoritesP
                 body: JSON.stringify({ userId, productId }),
             });
 
-            if (!response.ok) throw new Error('Failed to add to favorites');
+            if (!response.ok) throw new Error('Не удалось добавить в избранное');
 
             toast({
-                title: 'Success',
-                description: 'Product added to favorites',
+                title: 'Успех',
+                description: 'Продукт добавлен в избранное',
             });
 
             if (onSuccess) {
@@ -36,8 +36,8 @@ export function AddToFavorites({ userId, productId, onSuccess }: AddToFavoritesP
             }
         } catch (error) {
             toast({
-                title: 'Error',
-                description: 'Failed to add to favorites',
+                title: 'Ошибка',
+                description: 'Не удалось добавить в избранное',
                 variant: 'destructive',
             });
         }
@@ -53,4 +53,4 @@ export function AddToFavorites({ userId, productId, onSuccess }: AddToFavoritesP
             <Heart className="h-4 w-4" />
         </Button>
     );
-} 
+}

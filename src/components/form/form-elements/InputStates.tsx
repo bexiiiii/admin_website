@@ -23,46 +23,46 @@ export default function InputStates() {
   };
   return (
     <ComponentCard
-      title="Input States"
-      desc="Validation styles for error, success and disabled states on form controls."
+      title="Состояния ввода"
+      desc="Стили проверки для состояний ошибки, успеха и отключения для элементов формы."
     >
       <div className="space-y-5 sm:space-y-6">
         {/* Error Input */}
         <div>
-          <Label>Email</Label>
+          <Label>Электронная почта</Label>
           <Input
             type="email"
             defaultValue={email}
             onChange={handleEmailChange}
-            placeholder="Enter your email"
+            placeholder="Введите ваш адрес электронной почты"
             className={error ? "border-red-500" : ""}
           />
-          {error && <p className="text-sm text-red-500 mt-1">This is an invalid email address.</p>}
+          {error && <p className="text-sm text-red-500 mt-1">Это неверный адрес электронной почты.</p>}
         </div>
 
         {/* Success Input */}
         <div>
-          <Label>Email</Label>
+          <Label>Электронная почта</Label>
           <Input
             type="email"
             defaultValue={email}
             onChange={handleEmailChange}
-            placeholder="Enter your email"
+            placeholder="Введите ваш адрес электронной почты"
             className={!error ? "border-green-500" : ""}
           />
-          {!error && <p className="text-sm text-green-500 mt-1">Valid email!</p>}
+          {!error && <p className="text-sm text-green-500 mt-1">Действительный адрес электронной почты!</p>}
         </div>
 
         {/* Disabled Input */}
         <div>
-          <Label>Email</Label>
+          <Label>Электронная почта</Label>
           <Input
             type="text"
             defaultValue="disabled@example.com"
             disabled={true}
-            placeholder="Disabled email"
+            placeholder="Отключенный адрес электронной почты"
           />
-          <p className="text-sm text-gray-500 mt-1">This field is disabled.</p>
+          <p className="text-sm text-gray-500 mt-1">Это поле отключено.</p>
         </div>
       </div>
     </ComponentCard>

@@ -37,7 +37,7 @@ export default function UserAddressCard() {
       }
     } catch (err) {
       console.error("Failed to load profile:", err);
-      toast.error("Failed to load profile");
+      toast.error("Не удалось загрузить профиль");
     } finally {
       setLoading(false);
     }
@@ -65,19 +65,19 @@ export default function UserAddressCard() {
       });
 
       await fetchProfile();
-      toast.success("Address updated successfully");
+      toast.success("Адрес успешно обновлён");
       setError('');
       closeModal();
     } catch (err) {
       console.error("Failed to update address:", err);
-      toast.error("Failed to update address");
+      toast.error("Не удалось обновить адрес");
     } finally {
       setSaving(false);
     }
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Загрузка...</div>;
   }
   return (
     <>
@@ -85,16 +85,16 @@ export default function UserAddressCard() {
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
-              Address Information
+              Информация об адресе
             </h4>
 
             <div className="grid grid-cols-1 gap-4">
               <div>
                 <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  Full Address
+                  Полный адрес
                 </p>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  {profile?.address || 'No address provided'}
+                  {profile?.address || 'Адрес не указан'}
                 </p>
               </div>
             </div>
@@ -119,7 +119,7 @@ export default function UserAddressCard() {
                 fill=""
               />
             </svg>
-            Edit
+            Редактировать
           </button>
         </div>
       </div>
@@ -127,33 +127,33 @@ export default function UserAddressCard() {
         <div className="relative w-full p-4 overflow-y-auto bg-white no-scrollbar rounded-3xl dark:bg-gray-900 lg:p-11">
           <div className="px-2 pr-14">
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Edit Address
+              Редактировать адрес
             </h4>
             <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
-              Update your address information.
+              Обновите информацию о вашем адресе.
             </p>
           </div>
           <form className="flex flex-col" onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
             <div className="px-2 overflow-y-auto custom-scrollbar">
               <div className="space-y-5">
                 <div>
-                  <Label>Full Address</Label>
+                  <Label>Полный адрес</Label>
                   <TextArea
                     value={formData.address}
                     onChange={handleInputChange}
-                    placeholder="Enter your complete address (e.g., Street, City, State, Country, Postal Code)"
+                    placeholder="Введите ваш полный адрес (например, улица, город, штат, страна, почтовый индекс)"
                     rows={4}
-                    hint="Include street address, city, state/province, country, and postal code. Maximum 500 characters."
+                    hint="Включите улицу, город, штат/провинцию, страну и почтовый индекс. Максимум 500 символов."
                     className={error ? 'border-red-500' : ''}
                   />
                   {error && (
                     <p className="mt-1 text-sm text-red-500">{error}</p>
                   )}
                   <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                    {formData.address.length}/500 characters
+                    {formData.address.length}/500 символов
                   </div>
                 </div>
-                
+
                 {error && (
                   <div className="p-3 bg-red-50 border border-red-200 rounded-lg dark:bg-red-900/20 dark:border-red-800">
                     <p className="text-sm text-red-600 dark:text-red-400 font-medium">
@@ -165,10 +165,10 @@ export default function UserAddressCard() {
             </div>
             <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
               <Button size="sm" variant="outline" onClick={closeModal} type="button">
-                Cancel
+                Отмена
               </Button>
               <Button size="sm" type="submit" disabled={saving}>
-                {saving ? 'Saving...' : 'Save Changes'}
+                {saving ? 'Сохранение...' : 'Сохранить изменения'}
               </Button>
             </div>
           </form>

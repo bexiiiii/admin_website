@@ -13,9 +13,9 @@ export default function FileInputExample() {
   };
 
   return (
-    <ComponentCard title="File Input">
+    <ComponentCard title="Ввод файла">
       <div>
-        <Label>Upload file</Label>
+        <Label>Загрузить файл</Label>
         <FileInput onChange={handleFileChange} className="custom-class" />
       </div>
     </ComponentCard>

@@ -39,15 +39,15 @@ export default function DiscountForm({ discount, onSuccess, onCancel }: Discount
         try {
             if (discount) {
                 await api.updateDiscount(discount.id.toString(), formData);
-                toast.success('Discount updated successfully');
+                toast.success('Скидка успешно обновлена');
             } else {
                 await api.createDiscount(formData);
-                toast.success('Discount created successfully');
+                toast.success('Скидка успешно создана');
             }
             onSuccess();
         } catch (error) {
-            console.error('Failed to save discount:', error);
-            toast.error('Failed to save discount');
+            console.error('Не удалось сохранить скидку:', error);
+            toast.error('Не удалось сохранить скидку');
         } finally {
             setLoading(false);
         }
@@ -74,7 +74,7 @@ export default function DiscountForm({ discount, onSuccess, onCancel }: Discount
         <Card className="bg-white dark:bg-gray-800">
             <CardHeader>
                 <CardTitle className="text-xl font-semibold text-gray-800 dark:text-white">
-                    {discount ? 'Edit Discount' : 'Create New Discount'}
+                    {discount ? 'Редактировать скидку' : 'Создать новую скидку'}
                 </CardTitle>
             </CardHeader>
             <CardContent>
@@ -82,7 +82,7 @@ export default function DiscountForm({ discount, onSuccess, onCancel }: Discount
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Discount Code
+                                Код скидки
                             </label>
                             <Input
                                 type="text"
@@ -91,13 +91,13 @@ export default function DiscountForm({ discount, onSuccess, onCancel }: Discount
                                 onChange={handleChange}
                                 required
                                 className="w-full"
-                                placeholder="Enter discount code"
+                                placeholder="Введите код скидки"
                             />
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Type
+                                Тип
                             </label>
                             <select
                                 name="type"
@@ -106,14 +106,14 @@ export default function DiscountForm({ discount, onSuccess, onCancel }: Discount
                                 className="w-full h-10 rounded-md border border-gray-200 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-800 dark:bg-gray-800 dark:ring-offset-gray-950 dark:placeholder:text-gray-400 dark:focus-visible:ring-gray-300"
                                 aria-label="Discount type"
                             >
-                                <option value="PERCENTAGE">Percentage</option>
-                                <option value="FIXED_AMOUNT">Fixed Amount</option>
+                                <option value="PERCENTAGE">Процент</option>
+                                <option value="FIXED_AMOUNT">Фиксированная сумма</option>
                             </select>
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Value ({formData.type === 'PERCENTAGE' ? '%' : '$'})
+                                Значение ({formData.type === 'PERCENTAGE' ? '%' : '$'})
                             </label>
                             <Input
                                 type="number"
@@ -129,7 +129,7 @@ export default function DiscountForm({ discount, onSuccess, onCancel }: Discount
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Minimum Purchase ($)
+                                Минимальная покупка ($)
                             </label>
                             <Input
                                 type="number"
@@ -145,7 +145,7 @@ export default function DiscountForm({ discount, onSuccess, onCancel }: Discount
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Maximum Discount ($)
+                                Максимальная скидка ($)
                             </label>
                             <Input
                                 type="number"
@@ -161,7 +161,7 @@ export default function DiscountForm({ discount, onSuccess, onCancel }: Discount
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Usage Limit
+                                Лимит использования
                             </label>
                             <Input
                                 type="number"
@@ -176,7 +176,7 @@ export default function DiscountForm({ discount, onSuccess, onCancel }: Discount
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Start Date
+                                Дата начала
                             </label>
                             <div className="relative">
                                 <Input
@@ -192,7 +192,7 @@ export default function DiscountForm({ discount, onSuccess, onCancel }: Discount
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                End Date
+                                Дата окончания
                             </label>
                             <div className="relative">
                                 <Input
@@ -214,18 +214,18 @@ export default function DiscountForm({ discount, onSuccess, onCancel }: Discount
                             onClick={onCancel}
                             disabled={loading}
                         >
-                            Cancel
+                            Отмена
                         </Button>
                         <Button
                             type="submit"
                             className="bg-brand-500 hover:bg-brand-600 text-white"
                             disabled={loading}
                         >
-                            {loading ? 'Saving...' : discount ? 'Update Discount' : 'Create Discount'}
+                            {loading ? 'Сохранение...' : discount ? 'Обновить скидку' : 'Создать скидку'}
                         </Button>
                     </div>
                 </form>
             </CardContent>
         </Card>
     );
-} 
+}

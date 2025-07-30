@@ -5,14 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
 import { useApi } from '@/hooks/useApi';
 import Link from 'next/link';
-import { 
-  PieChartIcon, 
-  BoxIcon, 
+import {
+  PieChartIcon,
+  BoxIcon,
   BoxCubeIcon,
   DollarLineIcon,
   CalenderIcon
 } from '@/icons/index';
-import { 
+import {
   DollarSign as DollarSignIcon,
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
@@ -93,50 +93,50 @@ export default function ManagerDashboard() {
     <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
-          Manager Dashboard
+          Панель управления менеджера
         </h1>
         <p className="text-gray-600 dark:text-gray-400">
-          Welcome, {user.name}! Manage your store operations from here.
+          Добро пожаловать, {user.name}! Управляйте операциями вашего магазина отсюда.
         </p>
       </div>
 
       {/* Today's Statistics */}
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
-          Today's Performance
+          Сегодняшняя производительность
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
-            title="Today's Orders"
+            title="Заказы сегодня"
             value={stats?.todayOrders || 0}
             icon={CalenderIcon}
             color="text-blue-600"
             isLoading={loading}
-            subtitle="Orders received today"
+            subtitle="Заказы, полученные сегодня"
           />
           <StatCard
-            title="Completed Orders"
+            title="Завершенные заказы"
             value={stats?.todayCompletedOrders || 0}
             icon={CheckCircleIcon}
             color="text-green-600"
             isLoading={loading}
-            subtitle="Successfully delivered"
+            subtitle="Успешно доставленные"
           />
           <StatCard
-            title="Cancelled Orders"
+            title="Отмененные заказы"
             value={stats?.todayCancelledOrders || 0}
             icon={XCircleIcon}
             color="text-red-600"
             isLoading={loading}
-            subtitle="Cancelled today"
+            subtitle="Отмененные сегодня"
           />
           <StatCard
-            title="Today's Revenue"
+            title="Выручка сегодня"
             value={loading ? "..." : `$${(stats?.todayRevenue || 0).toLocaleString()}`}
             icon={DollarSignIcon}
             color="text-green-600"
             isLoading={loading}
-            subtitle="Revenue from completed orders"
+            subtitle="Выручка от завершенных заказов"
           />
         </div>
       </div>
@@ -144,32 +144,32 @@ export default function ManagerDashboard() {
       {/* Overall Statistics */}
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
-          Store Overview
+          Обзор магазина
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <StatCard
-            title="Total Orders"
+            title="Всего заказов"
             value={stats?.totalOrders || 0}
             icon={BoxIcon}
             color="text-blue-600"
             isLoading={loading}
-            subtitle="All time orders"
+            subtitle="Заказы за все время"
           />
           <StatCard
-            title="Total Products"
+            title="Всего продуктов"
             value={stats?.totalProducts || 0}
             icon={BoxCubeIcon}
             color="text-purple-600"
             isLoading={loading}
-            subtitle="Products in catalog"
+            subtitle="Продукты в каталоге"
           />
           <StatCard
-            title="Total Revenue"
+            title="Всего выручки"
             value={loading ? "..." : `$${(stats?.totalRevenue || 0).toLocaleString()}`}
             icon={TrendingUpIcon}
             color="text-green-600"
             isLoading={loading}
-            subtitle="All time revenue"
+            subtitle="Выручка за все время"
           />
         </div>
       </div>
@@ -177,19 +177,19 @@ export default function ManagerDashboard() {
       {/* Quick Actions */}
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
-          Quick Actions
+          Быстрые действия
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Link href="/analytics">
             <Card className="hover:shadow-lg transition-shadow cursor-pointer border-2 hover:border-blue-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Analytics</CardTitle>
+                <CardTitle className="text-sm font-medium">Аналитика</CardTitle>
                 <PieChartIcon className="h-6 w-6 text-blue-600" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-blue-600">View Analytics</div>
+                <div className="text-2xl font-bold text-blue-600">Просмотр аналитики</div>
                 <p className="text-xs text-muted-foreground">
-                  Track sales and performance metrics
+                  Отслеживайте продажи и показатели эффективности
                 </p>
               </CardContent>
             </Card>
@@ -198,13 +198,13 @@ export default function ManagerDashboard() {
           <Link href="/orders">
             <Card className="hover:shadow-lg transition-shadow cursor-pointer border-2 hover:border-green-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Orders</CardTitle>
+                <CardTitle className="text-sm font-medium">Заказы</CardTitle>
                 <BoxIcon className="h-6 w-6 text-green-600" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-green-600">Manage Orders</div>
+                <div className="text-2xl font-bold text-green-600">Управление заказами</div>
                 <p className="text-xs text-muted-foreground">
-                  View and process customer orders
+                  Просмотр и обработка заказов клиентов
                 </p>
               </CardContent>
             </Card>
@@ -213,13 +213,13 @@ export default function ManagerDashboard() {
           <Link href="/products">
             <Card className="hover:shadow-lg transition-shadow cursor-pointer border-2 hover:border-purple-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Products</CardTitle>
+                <CardTitle className="text-sm font-medium">Продукты</CardTitle>
                 <BoxCubeIcon className="h-6 w-6 text-purple-600" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-purple-600">Manage Products</div>
+                <div className="text-2xl font-bold text-purple-600">Управление продуктами</div>
                 <p className="text-xs text-muted-foreground">
-                  Add, edit, and organize products
+                  Добавление, редактирование и организация продуктов
                 </p>
               </CardContent>
             </Card>
@@ -229,11 +229,11 @@ export default function ManagerDashboard() {
 
       <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
         <h3 className="text-lg font-semibold text-yellow-800 dark:text-yellow-200 mb-2">
-          Store Manager Access
+          Доступ менеджера магазина
         </h3>
         <p className="text-yellow-700 dark:text-yellow-300">
-          As a store manager, you can view analytics and statistics for your store only. 
-          The data shown above includes today's performance and overall store metrics.
+          В качестве менеджера магазина вы можете просматривать аналитику и статистику только для вашего магазина.
+          Данные, показанные выше, включают в себя сегодняшнюю производительность и общие метрики магазина.
         </p>
       </div>
     </div>

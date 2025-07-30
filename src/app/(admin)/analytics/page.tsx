@@ -2,7 +2,13 @@
 import React, { useEffect, useState } from "react";
 import { useApi } from "@/hooks/useApi";
 import { toast as hotToast } from "react-hot-toast";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -10,12 +16,12 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import * as XLSX from 'xlsx';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
 import ChartTab from "@/components/common/ChartTab";
@@ -35,11 +41,11 @@ import { useRoleBasedRoutes } from "@/hooks/useRoleBasedRoutes";
 import { useAuth } from "@/hooks/useAuth";
 import { Permission } from "@/types/permission";
 import { RoleGuard, AdminOnly, StoreManagementRoles } from "@/components/auth/RoleGuard";
-import { 
-  TrendingUpIcon, 
-  TrendingDownIcon, 
-  UsersIcon, 
-  ShoppingCartIcon, 
+import {
+  TrendingUpIcon,
+  TrendingDownIcon,
+  UsersIcon,
+  ShoppingCartIcon,
   DollarSignIcon,
   PackageIcon,
   ArrowUpIcon,
@@ -56,15 +62,15 @@ import {
 } from "lucide-react";
 
 interface DailySalesAnalytics {
-    storeId: number;
-    storeName: string;
-    date: string;
-    totalOrders: number;
-    completedOrders: number;
-    canceledOrders: number;
-    totalRevenue: number;
-    completedRevenue: number;
-    canceledRevenue: number;
+  storeId: number;
+  storeName: string;
+  date: string;
+  totalOrders: number;
+  completedOrders: number;
+  canceledOrders: number;
+  totalRevenue: number;
+  completedRevenue: number;
+  canceledRevenue: number;
 }
 
 const defaultAnalyticsData: AnalyticsData = {
@@ -94,11 +100,11 @@ interface MetricCardProps {
   formatValue?: (val: number) => string;
 }
 
-const MetricCard: React.FC<MetricCardProps> = ({ 
-  title, 
-  value, 
-  icon: Icon, 
-  growth, 
+const MetricCard: React.FC<MetricCardProps> = ({
+  title,
+  value,
+  icon: Icon,
+  growth,
   color,
   formatValue = (val) => val.toLocaleString()
 }) => (
@@ -124,9 +130,8 @@ const MetricCard: React.FC<MetricCardProps> = ({
               ) : (
                 <ArrowDownIcon className="h-3 w-3 text-red-500 mr-1" />
               )}
-              <span className={`text-xs font-medium ${
-                growth >= 0 ? 'text-green-600' : 'text-red-600'
-              }`}>
+              <span className={`text-xs font-medium ${growth >= 0 ? 'text-green-600' : 'text-red-600'
+                }`}>
                 {Math.abs(growth).toFixed(1)}%
               </span>
               <span className="text-xs text-gray-500 ml-1">vs last period</span>
@@ -149,7 +154,7 @@ export default function AnalyticsPage() {
   const [startDate, setStartDate] = useState('2024-01-01');
   const [endDate, setEndDate] = useState('2024-12-31');
   const [selectedStoreId, setSelectedStoreId] = useState<string>('all');
-  const [availableStores, setAvailableStores] = useState<{id: number, name: string}[]>([]);
+  const [availableStores, setAvailableStores] = useState<{ id: number, name: string }[]>([]);
   const [storesLoading, setStoresLoading] = useState(false);
   const { getAnalytics } = useApi();
   const { hasPermission } = useRoleBasedRoutes();
@@ -194,8 +199,8 @@ export default function AnalyticsPage() {
     } catch (error) {
       console.error('Error fetching stores:', error);
       toast({
-        title: "Error",
-        description: "Failed to load stores list",
+        title: "Ошибка",
+        description: "Не удалось загрузить список магазинов",
         variant: "destructive",
       });
     } finally {
@@ -212,12 +217,12 @@ export default function AnalyticsPage() {
       // For STORE_MANAGER, always use their specific store
       // For others, add store filter if specific store is selected
       if (user?.role === 'STORE_MANAGER' || selectedStoreId !== 'all') {
-        const storeIdToUse = user?.role === 'STORE_MANAGER' 
+        const storeIdToUse = user?.role === 'STORE_MANAGER'
           ? availableStores.length > 0 ? availableStores[0].id : selectedStoreId
           : selectedStoreId;
         url += `&storeId=${storeIdToUse}`;
       }
-      
+
       const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -230,21 +235,21 @@ export default function AnalyticsPage() {
       }
 
       const data = await response.json();
-      
+
       // Filter data on frontend if backend doesn't support store filtering yet
       let filteredData = data;
       if (selectedStoreId !== 'all') {
-        filteredData = data.filter((item: DailySalesAnalytics) => 
+        filteredData = data.filter((item: DailySalesAnalytics) =>
           item.storeId.toString() === selectedStoreId
         );
       }
-      
+
       setDailySalesAnalytics(filteredData);
     } catch (error) {
       console.error('Error fetching daily sales analytics:', error);
       toast({
-        title: "Error",
-        description: "Failed to load daily sales analytics",
+        title: "Ошибка",
+        description: "Не удалось загрузить ежедневную аналитику продаж",
         variant: "destructive",
       });
     } finally {
@@ -285,8 +290,8 @@ export default function AnalyticsPage() {
   const exportToExcel = () => {
     if (dailySalesAnalytics.length === 0) {
       toast({
-        title: "No Data",
-        description: "No data available to export. Please load data first.",
+        title: "Нет данных",
+        description: "Нет доступных данных для экспорта. Пожалуйста, сначала загрузите данные.",
         variant: "destructive",
       });
       return;
@@ -295,7 +300,7 @@ export default function AnalyticsPage() {
     try {
       // Create workbook
       const workbook = XLSX.utils.book_new();
-      
+
       // Helper function to format currency properly
       const formatCurrencyForExcel = (amount: number) => {
         return new Intl.NumberFormat('kk-KZ', {
@@ -308,7 +313,7 @@ export default function AnalyticsPage() {
       const excelData = [
         // Header row
         ['Date', 'Store', 'Total Orders', 'Completed', 'Canceled', 'Total Revenue', 'Completed Revenue', 'Canceled Revenue'],
-        
+
         // Data rows - exactly as they appear in the table
         ...dailySalesAnalytics.map(item => [
           formatDate(item.date),
@@ -320,29 +325,29 @@ export default function AnalyticsPage() {
           formatCurrencyForExcel(item.completedRevenue),
           formatCurrencyForExcel(item.canceledRevenue)
         ]),
-        
+
         // Empty row for separation
         ['', '', '', '', '', '', '', ''],
-        
+
         // Summary section
-        ['SUMMARY STATISTICS', '', '', '', '', '', '', ''],
-        ['Total Orders:', totalSalesStats.totalOrders, '', '', '', '', '', ''],
-        ['Completed Orders:', totalSalesStats.completedOrders, '', '', '', '', '', ''],
-        ['Canceled Orders:', totalSalesStats.canceledOrders, '', '', '', '', '', ''],
-        ['Total Revenue:', formatCurrencyForExcel(totalSalesStats.totalRevenue), '', '', '', '', '', ''],
-        ['Completed Revenue:', formatCurrencyForExcel(totalSalesStats.completedRevenue), '', '', '', '', '', ''],
-        ['Canceled Revenue:', formatCurrencyForExcel(totalSalesStats.canceledRevenue), '', '', '', '', '', ''],
+        ['СВОДНАЯ СТАТИСТИКА', '', '', '', '', '', '', ''],
+        ['Всего заказов:', totalSalesStats.totalOrders, '', '', '', '', '', ''],
+        ['Завершенные заказы:', totalSalesStats.completedOrders, '', '', '', '', '', ''],
+        ['Отмененные заказы:', totalSalesStats.canceledOrders, '', '', '', '', '', ''],
+        ['Общий доход:', formatCurrencyForExcel(totalSalesStats.totalRevenue), '', '', '', '', '', ''],
+        ['Доход от завершенных заказов:', formatCurrencyForExcel(totalSalesStats.completedRevenue), '', '', '', '', '', ''],
+        ['Убыток от отмененных заказов:', formatCurrencyForExcel(totalSalesStats.canceledRevenue), '', '', '', '', '', ''],
         ['', '', '', '', '', '', '', ''],
-        ['Export Parameters:', '', '', '', '', '', '', ''],
-        ['Start Date:', startDate, '', '', '', '', '', ''],
-        ['End Date:', endDate, '', '', '', '', '', ''],
-        ['Store Filter:', selectedStoreId === 'all' ? 'All Stores' : availableStores.find(s => s.id.toString() === selectedStoreId)?.name || 'Unknown', '', '', '', '', '', ''],
-        ['Export Date:', new Date().toLocaleDateString('en-GB'), '', '', '', '', '', '']
+        ['Параметры экспорта:', '', '', '', '', '', '', ''],
+        ['Дата начала:', startDate, '', '', '', '', '', ''],
+        ['Дата окончания:', endDate, '', '', '', '', '', ''],
+        ['Фильтр по магазинам:', selectedStoreId === 'all' ? 'Все магазины' : availableStores.find(s => s.id.toString() === selectedStoreId)?.name || 'Неизвестно', '', '', '', '', '', ''],
+        ['Дата экспорта:', new Date().toLocaleDateString('en-GB'), '', '', '', '', '', '']
       ];
 
       // Create worksheet from array of arrays
       const worksheet = XLSX.utils.aoa_to_sheet(excelData);
-      
+
       // Set column widths for better readability
       const columnWidths = [
         { wch: 12 }, // Date
@@ -371,7 +376,7 @@ export default function AnalyticsPage() {
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Daily Sales Analytics');
 
       // Generate filename with current parameters
-      const storeInfo = selectedStoreId === 'all' ? 'All_Stores' : 
+      const storeInfo = selectedStoreId === 'all' ? 'All_Stores' :
         (availableStores.find(s => s.id.toString() === selectedStoreId)?.name || 'Unknown_Store').replace(/\s+/g, '_');
       const filename = `Daily_Sales_Analytics_${storeInfo}_${startDate}_to_${endDate}_${new Date().toISOString().split('T')[0]}.xlsx`;
 
@@ -397,7 +402,7 @@ export default function AnalyticsPage() {
       if (showRefreshing) {
         setRefreshing(true);
       }
-      
+
       const response = await getAnalytics();
       console.log('API Response:', response);
       console.log('totalStores:', response?.totalStores);
@@ -405,7 +410,7 @@ export default function AnalyticsPage() {
       console.log('totalProducts:', response?.totalProducts);
       console.log('totalOrders:', response?.totalOrders);
       console.log('totalRevenue:', response?.totalRevenue);
-      
+
       if (response) {
         // Merge the API response with default values to ensure all arrays exist
         const mergedData = {
@@ -439,12 +444,12 @@ export default function AnalyticsPage() {
         console.error("Failed to load order stats:", orderStatsError);
         // Не показываем ошибку пользователю, так как это дополнительная информация
       }
-      
+
     } catch (err) {
       console.error("Failed to load analytics:", err);
       toast({
-        title: "Error",
-        description: "Failed to load analytics data",
+        title: "Ошибка",
+        description: "Не удалось загрузить данные аналитики",
         variant: "destructive",
       });
       setAnalyticsData(defaultAnalyticsData);
@@ -477,7 +482,7 @@ export default function AnalyticsPage() {
           </div>
           <Skeleton className="h-10 w-32" />
         </div>
-        
+
         {/* Metric Cards Skeleton */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {[1, 2, 3, 4].map((i) => (
@@ -493,7 +498,7 @@ export default function AnalyticsPage() {
             </Card>
           ))}
         </div>
-        
+
         {/* Charts Skeleton */}
         <div className="grid gap-6 lg:grid-cols-7">
           <Card className="lg:col-span-4 bg-white dark:bg-gray-800 border-0 shadow-sm">
@@ -513,7 +518,7 @@ export default function AnalyticsPage() {
             </CardContent>
           </Card>
         </div>
-        
+
         {/* Additional Cards Skeleton */}
         <div className="grid gap-6 lg:grid-cols-2">
           {[1, 2].map((i) => (
@@ -534,485 +539,483 @@ export default function AnalyticsPage() {
   return (
     <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'STORE_MANAGER', 'STORE_OWNER']}>
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      <div className="p-6 space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Analytics Dashboard
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">
-              Track your business performance and insights
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleRefresh}
-              disabled={refreshing}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
-            >
-              <RefreshCwIcon className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-              Refresh
-            </button>
-            <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-              <DownloadIcon className="h-4 w-4" />
-              Export
-            </button>
-          </div>
-        </div>
-
-        {/* Time Range Selector */}
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-600 dark:text-gray-400">Time Range:</span>
-          <div className="flex bg-white dark:bg-gray-800 rounded-lg p-1 shadow-sm">
-            {[
-              { value: '7d', label: '7 Days' },
-              { value: '30d', label: '30 Days' },
-              { value: '90d', label: '90 Days' },
-              { value: '1y', label: '1 Year' }
-            ].map((option) => (
+        <div className="p-6 space-y-6">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                Аналитика
+              </h1>
+              <p className="text-gray-600 dark:text-gray-400 mt-1">
+                Отслеживайте эффективность вашего бизнеса и получайте инсайты
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
               <button
-                key={option.value}
-                onClick={() => setTimeRange(option.value)}
-                className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
-                  timeRange === option.value
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-                }`}
+                onClick={handleRefresh}
+                disabled={refreshing}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
               >
-                {option.label}
+                <RefreshCwIcon className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+                Обновить
               </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Key Metrics Grid */}
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          <MetricCard
-            title="Total Revenue"
-            value={safeNumber(analyticsData.totalRevenue || analyticsData.revenue || 0)}
-            icon={DollarSignIcon}
-            growth={12.5}
-            color="bg-green-500"
-            formatValue={(val) => `$${val.toLocaleString()}`}
-          />
-          <MetricCard
-            title="Total Orders"
-            value={safeNumber(analyticsData.totalOrders)}
-            icon={ShoppingCartIcon}
-            growth={8.2}
-            color="bg-blue-500"
-          />
-          <MetricCard
-            title="Total Products"
-            value={safeNumber(analyticsData.totalProducts)}
-            icon={PackageIcon}
-            growth={6.8}
-            color="bg-indigo-500"
-          />
-          <MetricCard
-            title="Total Users"
-            value={safeNumber(analyticsData.totalUsers)}
-            icon={UsersIcon}
-            growth={15.3}
-            color="bg-purple-500"
-          />
-          <MetricCard
-            title="Total Stores"
-            value={safeNumber(analyticsData.totalStores)}
-            icon={StoreIcon}
-            growth={5.1}
-            color="bg-orange-500"
-          />
-        </div>
-
-        {/* Order Statistics Cards */}
-        {orderStats && (
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Order Statistics
-            </h2>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              <OrderStatsCard
-                title="Overall Order Statistics"
-                totalOrders={orderStats.totalOrders}
-                successfulOrders={orderStats.successfulOrders}
-                failedOrders={orderStats.failedOrders}
-                pendingOrders={orderStats.pendingOrders}
-                icon={<ShoppingCartIcon className="h-4 w-4" />}
-              />
-              
-              <MetricCard
-                title="Success Rate"
-                value={orderStats.totalOrders > 0 ? (orderStats.successfulOrders / orderStats.totalOrders) * 100 : 0}
-                icon={TrendingUpIcon}
-                color="bg-green-500"
-                formatValue={(val) => `${val.toFixed(1)}%`}
-              />
-              
-              <MetricCard
-                title="Pending Orders"
-                value={orderStats.pendingOrders + orderStats.confirmedOrders + orderStats.preparingOrders + orderStats.readyOrders}
-                icon={ActivityIcon}
-                color="bg-yellow-500"
-                formatValue={(val) => `${val}`}
-              />
+              <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                <DownloadIcon className="h-4 w-4" />
+                Экспорт
+              </button>
             </div>
           </div>
-        )}
 
-        {/* Store Order Statistics Table (only for admins) */}
-        {hasPermission(Permission.ANALYTICS_READ) && (
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Store Performance
-            </h2>
-            <AdminOnly>
-              <StoreOrderStatsTable />
-            </AdminOnly>
+          {/* Time Range Selector */}
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600 dark:text-gray-400">Период:</span>
+            <div className="flex bg-white dark:bg-gray-800 rounded-lg p-1 shadow-sm">
+              {[
+                { value: '7d', label: '7 дней' },
+                { value: '30d', label: '30 дней' },
+                { value: '90d', label: '90 дней' },
+                { value: '1y', label: '1 год' }
+              ].map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => setTimeRange(option.value)}
+                  className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${timeRange === option.value
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                    }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
           </div>
-        )}
 
-        {/* Charts Section */}
-        <div className="grid gap-6 lg:grid-cols-7">
-          {/* Sales Trend Chart */}
-          <Card className="lg:col-span-4 bg-white dark:bg-gray-800 border-0 shadow-sm">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
+          {/* Key Metrics Grid */}
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            <MetricCard
+              title="Общий доход"
+              value={safeNumber(analyticsData.totalRevenue || analyticsData.revenue || 0)}
+              icon={DollarSignIcon}
+              growth={12.5}
+              color="bg-green-500"
+              formatValue={(val) => `$${val.toLocaleString()}`}
+            />
+            <MetricCard
+              title="Всего заказов"
+              value={safeNumber(analyticsData.totalOrders)}
+              icon={ShoppingCartIcon}
+              growth={8.2}
+              color="bg-blue-500"
+            />
+            <MetricCard
+              title="Всего продуктов"
+              value={safeNumber(analyticsData.totalProducts)}
+              icon={PackageIcon}
+              growth={6.8}
+              color="bg-indigo-500"
+            />
+            <MetricCard
+              title="Всего пользователей"
+              value={safeNumber(analyticsData.totalUsers)}
+              icon={UsersIcon}
+              growth={15.3}
+              color="bg-purple-500"
+            />
+            <MetricCard
+              title="Всего магазинов"
+              value={safeNumber(analyticsData.totalStores)}
+              icon={StoreIcon}
+              growth={5.1}
+              color="bg-orange-500"
+            />
+          </div>
+
+          {/* Order Statistics Cards */}
+          {orderStats && (
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Статистика заказов
+              </h2>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <OrderStatsCard
+                  title="Общая статистика заказов"
+                  totalOrders={orderStats.totalOrders}
+                  successfulOrders={orderStats.successfulOrders}
+                  failedOrders={orderStats.failedOrders}
+                  pendingOrders={orderStats.pendingOrders}
+                  icon={<ShoppingCartIcon className="h-4 w-4" />}
+                />
+
+                <MetricCard
+                  title="Коэффициент успешности"
+                  value={orderStats.totalOrders > 0 ? (orderStats.successfulOrders / orderStats.totalOrders) * 100 : 0}
+                  icon={TrendingUpIcon}
+                  color="bg-green-500"
+                  formatValue={(val) => `${val.toFixed(1)}%`}
+                />
+
+                <MetricCard
+                  title="Ожидающие заказы"
+                  value={orderStats.pendingOrders + orderStats.confirmedOrders + orderStats.preparingOrders + orderStats.readyOrders}
+                  icon={ActivityIcon}
+                  color="bg-yellow-500"
+                  formatValue={(val) => `${val}`}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Store Order Statistics Table (only for admins) */}
+          {hasPermission(Permission.ANALYTICS_READ) && (
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Эффективность магазинов
+              </h2>
+              <AdminOnly>
+                <StoreOrderStatsTable />
+              </AdminOnly>
+            </div>
+          )}
+
+          {/* Charts Section */}
+          <div className="grid gap-6 lg:grid-cols-7">
+            {/* Sales Trend Chart */}
+            <Card className="lg:col-span-4 bg-white dark:bg-gray-800 border-0 shadow-sm">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                    <TrendingUpIcon className="h-5 w-5 text-blue-500" />
+                    Динамика продаж
+                  </CardTitle>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    Ежемесячная сводка по продажам
+                  </p>
+                </div>
+                <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50">
+                  +12.5% по сравнению с прошлым периодом
+                </Badge>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[350px]">
+                  <LineChartOne
+                    data={(analyticsData.salesByMonth || []).map(item => ({
+                      month: item.month,
+                      amount: item.amount,
+                      orders: item.orders || 0
+                    }))}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Top Categories Chart */}
+            <Card className="lg:col-span-3 bg-white dark:bg-gray-800 border-0 shadow-sm">
+              <CardHeader>
                 <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                  <TrendingUpIcon className="h-5 w-5 text-blue-500" />
-                  Sales Trend
+                  <BarChart3Icon className="h-5 w-5 text-purple-500" />
+                  Топ категории
                 </CardTitle>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Monthly sales performance overview
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Доход по категориям
                 </p>
-              </div>
-              <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50">
-                +12.5% vs last period
-              </Badge>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[350px]">
-                <LineChartOne 
-                  data={(analyticsData.salesByMonth || []).map(item => ({
-                    month: item.month,
-                    amount: item.amount,
-                    orders: item.orders || 0
-                  }))}
-                />
-              </div>
-            </CardContent>
-          </Card>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[350px]">
+                  <BarChartOne
+                    data={(analyticsData.topCategories || []).map(item => ({
+                      name: item.name,
+                      value: item.revenue
+                    }))}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
-          {/* Top Categories Chart */}
-          <Card className="lg:col-span-3 bg-white dark:bg-gray-800 border-0 shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                <BarChart3Icon className="h-5 w-5 text-purple-500" />
-                Top Categories
-              </CardTitle>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Revenue by category
-              </p>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[350px]">
-                <BarChartOne 
-                  data={(analyticsData.topCategories || []).map(item => ({
-                    name: item.name,
-                    value: item.revenue
-                  }))}
-                />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+          {/* Performance Cards */}
+          <div className="grid gap-6 lg:grid-cols-3">
+            {/* Top Products */}
+            <Card className="bg-white dark:bg-gray-800 border-0 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                  <PackageIcon className="h-5 w-5 text-green-500" />
+                  Топ продукты
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {(analyticsData.topProducts || []).slice(0, 5).map((product, index) => (
+                    <div key={product.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                          <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
+                            {index + 1}
+                          </span>
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-white text-sm">
+                            {product.name}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            {product.sales} продаж
+                          </p>
+                        </div>
+                      </div>
+                      <span className="font-semibold text-green-600 dark:text-green-400">
+                        ${product.revenue.toLocaleString()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
 
-        {/* Performance Cards */}
-        <div className="grid gap-6 lg:grid-cols-3">
-          {/* Top Products */}
-          <Card className="bg-white dark:bg-gray-800 border-0 shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                <PackageIcon className="h-5 w-5 text-green-500" />
-                Top Products
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {(analyticsData.topProducts || []).slice(0, 5).map((product, index) => (
-                  <div key={product.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                        <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
-                          {index + 1}
+            {/* Order Status Distribution */}
+            <Card className="bg-white dark:bg-gray-800 border-0 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                  <ActivityIcon className="h-5 w-5 text-orange-500" />
+                  Статус заказов
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {(analyticsData.orderStatusDistribution || []).map((status, index) => (
+                    <div key={status.status} className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                          {status.status}
+                        </span>
+                        <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                          {status.count}
                         </span>
                       </div>
-                      <div>
-                        <p className="font-medium text-gray-900 dark:text-white text-sm">
-                          {product.name}
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          {product.sales} sales
-                        </p>
+                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                        <div
+                          className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"
+                          style={{ width: `${status.percentage}%` }}
+                        />
                       </div>
                     </div>
-                    <span className="font-semibold text-green-600 dark:text-green-400">
-                      ${product.revenue.toLocaleString()}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Order Status Distribution */}
-          <Card className="bg-white dark:bg-gray-800 border-0 shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                <ActivityIcon className="h-5 w-5 text-orange-500" />
-                Order Status
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {(analyticsData.orderStatusDistribution || []).map((status, index) => (
-                  <div key={status.status} className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                        {status.status}
-                      </span>
-                      <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                        {status.count}
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                      <div 
-                        className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"
-                        style={{ width: `${status.percentage}%` }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Payment Methods */}
-          <Card className="bg-white dark:bg-gray-800 border-0 shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                <CreditCardIcon className="h-5 w-5 text-indigo-500" />
-                Payment Methods
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {(analyticsData.paymentMethodDistribution || []).map((method) => (
-                  <div key={method.method} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500" />
-                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                        {method.method}
-                      </span>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm font-semibold text-gray-900 dark:text-white">
-                        {method.count}
-                      </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">
-                        {method.percentage.toFixed(1)}%
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Advanced Metrics */}
-        <div className="space-y-2">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-            Advanced Metrics
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 text-sm">
-            Detailed performance indicators for deeper insights
-          </p>
-        </div>
-        <AdvancedMetrics 
-          data={{
-            averageOrderValue: (analyticsData.totalRevenue || analyticsData.revenue || 0) / Math.max(analyticsData.totalOrders, 1),
-            conversionRate: 0.12, // This would need to be calculated from actual data
-            customerRetention: 0.68, // This would need to be calculated from actual data
-            monthlyRecurringRevenue: (analyticsData.totalRevenue || analyticsData.revenue || 0) * 0.7 // Estimated based on revenue
-          }}
-        />
-
-        {/* Sales Overview */}
-        <SalesOverview 
-          salesData={analyticsData.salesByDay || []}
-          topStores={analyticsData.topStores || []}
-        />
-
-        {/* Additional Analytics Cards */}
-        <div className="grid gap-6 lg:grid-cols-2">
-          <DemographicCard />
-          <MonthlyTarget />
-        </div>
-
-        {/* Daily Sales Analytics - Only for SUPER_ADMIN */}
-        <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                Daily Sales Analytics
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
-                Daily breakdown of sales and orders by store
-              </p>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Label htmlFor="startDate">Start Date</Label>
-                <Input
-                  id="startDate"
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="w-40"
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <Label htmlFor="endDate">End Date</Label>
-                <Input
-                  id="endDate"
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="w-40"
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <Label htmlFor="storeSelect">
-                  Store {user?.role === 'STORE_MANAGER' && "(Your Store)"}
-                </Label>
-                <select
-                  id="storeSelect"
-                  value={selectedStoreId}
-                  onChange={(e) => setSelectedStoreId(e.target.value)}
-                  className={`w-48 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    user?.role === 'STORE_MANAGER' ? 'bg-gray-100 cursor-not-allowed' : ''
-                  }`}
-                  disabled={storesLoading || user?.role === 'STORE_MANAGER'}
-                >
-                  {user?.role !== 'STORE_MANAGER' && (
-                    <option value="all">All Stores</option>
-                  )}
-                  {availableStores.map((store) => (
-                    <option key={store.id} value={store.id.toString()}>
-                      {store.name}
-                    </option>
                   ))}
-                </select>
-              </div>
-              <Button 
-                onClick={fetchDailySalesAnalytics} 
-                disabled={salesLoading || storesLoading}
-                className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2"
-              >
-                {salesLoading ? (
-                  <RefreshCwIcon className="h-4 w-4 animate-spin" />
-                ) : (
-                  <ActivityIcon className="h-4 w-4" />
-                )}
-                {salesLoading ? 'Loading...' : 'Load Data'}
-              </Button>
-              <Button 
-                onClick={exportToExcel} 
-                disabled={salesLoading || dailySalesAnalytics.length === 0}
-                variant="outline"
-                className="bg-green-50 border-green-300 text-green-700 hover:bg-green-100 flex items-center gap-2"
-              >
-                <DownloadIcon className="h-4 w-4" />
-                Export Excel
-              </Button>
-              <Button 
-                onClick={() => {
-                  setDailySalesAnalytics([]);
-                  // Only reset to 'all' if user is not a STORE_MANAGER
-                  if (user?.role !== 'STORE_MANAGER') {
-                    setSelectedStoreId('all');
-                  } else if (availableStores.length > 0) {
-                    setSelectedStoreId(availableStores[0].id.toString());
-                  }
-                }} 
-                variant="outline"
-                disabled={salesLoading}
-                className="border-gray-300 text-gray-700 hover:bg-gray-50"
-              >
-                Clear
-              </Button>
-            </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Payment Methods */}
+            <Card className="bg-white dark:bg-gray-800 border-0 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                  <CreditCardIcon className="h-5 w-5 text-indigo-500" />
+                  Способы оплаты
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {(analyticsData.paymentMethodDistribution || []).map((method) => (
+                    <div key={method.method} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="w-3 h-3 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500" />
+                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                          {method.method}
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                          {method.count}
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          {method.percentage.toFixed(1)}%
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
-          {/* Summary Cards for Daily Sales */}
-          {dailySalesAnalytics.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{totalSalesStats.totalOrders}</div>
-                  <div className="text-xs text-muted-foreground">
-                    Completed: {totalSalesStats.completedOrders} | Canceled: {totalSalesStats.canceledOrders}
-                  </div>
-                </CardContent>
-              </Card>
+          {/* Advanced Metrics */}
+          <div className="space-y-2">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              Расширенные метрики
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 text-sm">
+              Подробные показатели эффективности для глубокого анализа
+            </p>
+          </div>
+          <AdvancedMetrics
+            data={{
+              averageOrderValue: (analyticsData.totalRevenue || analyticsData.revenue || 0) / Math.max(analyticsData.totalOrders, 1),
+              conversionRate: 0.12, // This would need to be calculated from actual data
+              customerRetention: 0.68, // This would need to be calculated from actual data
+              monthlyRecurringRevenue: (analyticsData.totalRevenue || analyticsData.revenue || 0) * 0.7 // Estimated based on revenue
+            }}
+          />
 
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{formatCurrency(totalSalesStats.totalRevenue)}</div>
-                  <div className="text-xs text-muted-foreground">
-                    From all orders
-                  </div>
-                </CardContent>
-              </Card>
+          {/* Sales Overview */}
+          <SalesOverview
+            salesData={analyticsData.salesByDay || []}
+            topStores={analyticsData.topStores || []}
+          />
 
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Canceled Revenue</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-red-600">{formatCurrency(totalSalesStats.canceledRevenue)}</div>
-                  <div className="text-xs text-muted-foreground">
-                    Lost from canceled orders
-                  </div>
-                </CardContent>
-              </Card>
+          {/* Additional Analytics Cards */}
+          <div className="grid gap-6 lg:grid-cols-2">
+            <DemographicCard />
+            <MonthlyTarget />
+          </div>
+
+          {/* Daily Sales Analytics - Only for SUPER_ADMIN */}
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  Ежедневная аналитика продаж
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                  Ежедневное распределение продаж и заказов по магазинам
+                </p>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="startDate">Дата начала</Label>
+                  <Input
+                    id="startDate"
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="w-40"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="endDate">Дата окончания</Label>
+                  <Input
+                    id="endDate"
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="w-40"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="storeSelect">
+                    Магазин {user?.role === 'STORE_MANAGER' && "(Ваш магазин)"}
+                  </Label>
+                  <select
+                    id="storeSelect"
+                    value={selectedStoreId}
+                    onChange={(e) => setSelectedStoreId(e.target.value)}
+                    className={`w-48 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${user?.role === 'STORE_MANAGER' ? 'bg-gray-100 cursor-not-allowed' : ''
+                      }`}
+                    disabled={storesLoading || user?.role === 'STORE_MANAGER'}
+                  >
+                    {user?.role !== 'STORE_MANAGER' && (
+                      <option value="all">Все магазины</option>
+                    )}
+                    {availableStores.map((store) => (
+                      <option key={store.id} value={store.id.toString()}>
+                        {store.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <Button
+                  onClick={fetchDailySalesAnalytics}
+                  disabled={salesLoading || storesLoading}
+                  className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2"
+                >
+                  {salesLoading ? (
+                    <RefreshCwIcon className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <ActivityIcon className="h-4 w-4" />
+                  )}
+                  {salesLoading ? 'Загрузка...' : 'Загрузить данные'}
+                </Button>
+                <Button
+                  onClick={exportToExcel}
+                  disabled={salesLoading || dailySalesAnalytics.length === 0}
+                  variant="outline"
+                  className="bg-green-50 border-green-300 text-green-700 hover:bg-green-100 flex items-center gap-2"
+                >
+                  <DownloadIcon className="h-4 w-4" />
+                  Экспорт в Excel
+                </Button>
+                <Button
+                  onClick={() => {
+                    setDailySalesAnalytics([]);
+                    // Only reset to 'all' if user is not a STORE_MANAGER
+                    if (user?.role !== 'STORE_MANAGER') {
+                      setSelectedStoreId('all');
+                    } else if (availableStores.length > 0) {
+                      setSelectedStoreId(availableStores[0].id.toString());
+                    }
+                  }}
+                  variant="outline"
+                  disabled={salesLoading}
+                  className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                >
+                  Очистить
+                </Button>
+              </div>
             </div>
-          )}            {/* Daily Sales Table */}
+
+            {/* Summary Cards for Daily Sales */}
+            {dailySalesAnalytics.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-medium">Всего заказов</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{totalSalesStats.totalOrders}</div>
+                    <div className="text-xs text-muted-foreground">
+                      Завершенные: {totalSalesStats.completedOrders} | Отмененные: {totalSalesStats.canceledOrders}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-medium">Общий доход</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{formatCurrency(totalSalesStats.totalRevenue)}</div>
+                    <div className="text-xs text-muted-foreground">
+                      По всем заказам
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-medium">Убыток от отмененных заказов</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold text-red-600">{formatCurrency(totalSalesStats.canceledRevenue)}</div>
+                    <div className="text-xs text-muted-foreground">
+                      Потери от отмененных заказов
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}            {/* Daily Sales Table */}
             <Card>
               <CardHeader>
-                <CardTitle>Daily Sales by Store</CardTitle>
+                <CardTitle>Ежедневные продажи по магазинам</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Store</TableHead>
-                        <TableHead>Total Orders</TableHead>
-                        <TableHead>Completed</TableHead>
-                        <TableHead>Canceled</TableHead>
-                        <TableHead>Total Revenue</TableHead>
-                        <TableHead>Completed Revenue</TableHead>
-                        <TableHead>Canceled Revenue</TableHead>
+                        <TableHead>Дата</TableHead>
+                        <TableHead>Магазин</TableHead>
+                        <TableHead>Всего заказов</TableHead>
+                        <TableHead>Завершенные</TableHead>
+                        <TableHead>Отмененные</TableHead>
+                        <TableHead>Общий доход</TableHead>
+                        <TableHead>Доход от завершенных</TableHead>
+                        <TableHead>Убыток от отмененных</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -1052,11 +1055,11 @@ export default function AnalyticsPage() {
                           <TableCell colSpan={8} className="text-center py-8">
                             <div className="flex flex-col items-center gap-2">
                               <p className="text-gray-500 dark:text-gray-400">
-                                {salesLoading ? 'Loading analytics data...' : 'No data loaded yet.'}
+                                {salesLoading ? 'Загрузка аналитических данных...' : 'Данные еще не загружены.'}
                               </p>
                               {!salesLoading && (
                                 <p className="text-sm text-gray-400 dark:text-gray-500">
-                                  Select date range and click &quot;Load Data&quot; to see analytics
+                                  Выберите диапазон дат и нажмите &quot;Загрузить данные&quot;, чтобы увидеть аналитику
                                 </p>
                               )}
                             </div>

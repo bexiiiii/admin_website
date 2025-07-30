@@ -28,31 +28,31 @@ export default function SelectInputs() {
   ];
 
   return (
-    <ComponentCard title="Select Inputs">
+    <ComponentCard title="Выбор вводов">
       <div className="space-y-6">
         <div>
-          <Label>Select Input</Label>
-         <div className="relative">
-           <Select
-            options={options}
-            placeholder="Select Option"
-            onChange={handleSelectChange}
-            className="dark:bg-dark-900"
-          />
-          <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
-              <ChevronDownIcon/>
+          <Label>Выбор ввода</Label>
+          <div className="relative">
+            <Select
+              options={options}
+              placeholder="Выберите опцию"
+              onChange={handleSelectChange}
+              className="dark:bg-dark-900"
+            />
+            <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">
+              <ChevronDownIcon />
             </span>
-         </div>
+          </div>
         </div>
         <div className="relative">
           <MultiSelect
-            label="Multiple Select Options"
+            label="Несколько вариантов выбора"
             options={multiOptions}
             defaultSelected={["1", "3"]}
             onChange={(values) => setSelectedValues(values)}
           />
           <p className="sr-only">
-            Selected Values: {selectedValues.join(", ")}
+            Выбранные значения: {selectedValues.join(", ")}
           </p>
         </div>
       </div>

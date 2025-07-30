@@ -25,7 +25,7 @@ const CartList: React.FC = () => {
         return (
             <Card>
                 <CardHeader>
-                    <CardTitle>Shopping Cart</CardTitle>
+                    <CardTitle>Корзина</CardTitle>
                 </CardHeader>
                 <CardContent>
                     {[1, 2, 3].map((i) => (
@@ -43,7 +43,7 @@ const CartList: React.FC = () => {
         return (
             <Card>
                 <CardHeader>
-                    <CardTitle>Shopping Cart</CardTitle>
+                    <CardTitle>Корзина</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="text-red-500">{error}</div>
@@ -56,30 +56,30 @@ const CartList: React.FC = () => {
         return (
             <Card>
                 <CardHeader>
-                    <CardTitle>Shopping Cart</CardTitle>
+                    <CardTitle>Корзина</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="text-gray-500">Your cart is empty</div>
+                    <div className="text-gray-500">Ваша корзина пуста</div>
                 </CardContent>
             </Card>
         );
-        }
+    }
 
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Shopping Cart</CardTitle>
+                <CardTitle>Корзина</CardTitle>
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">
                     <div className="flex justify-between items-center mb-4">
                         <div>
-                            <h3 className="font-medium">Cart ID: {cart.id}</h3>
-                            <p className="text-sm text-gray-500">User ID: {cart.userId}</p>
-                            <p className="text-sm text-gray-500">Total Items: {cart.totalItems}</p>
+                            <h3 className="font-medium">ID корзины: {cart.id}</h3>
+                            <p className="text-sm text-gray-500">ID пользователя: {cart.userId}</p>
+                            <p className="text-sm text-gray-500">Всего товаров: {cart.totalItems}</p>
                         </div>
                         <div>
-                            <p className="text-sm font-medium">Total Amount</p>
+                            <p className="text-sm font-medium">Общая сумма</p>
                             <p className="text-lg font-bold">${cart.totalAmount.toFixed(2)}</p>
                         </div>
                     </div>
@@ -87,9 +87,9 @@ const CartList: React.FC = () => {
                         {cart.items.map((item) => (
                             <div key={item.id} className="flex items-center justify-between p-3 border rounded-lg">
                                 <div>
-                                    <h4 className="font-medium">{item.productName || `Product ${item.productId}`}</h4>
+                                    <h4 className="font-medium">{item.productName || `Продукт ${item.productId}`}</h4>
                                     <p className="text-sm text-gray-500">
-                                        Quantity: {item.quantity}
+                                        Количество: {item.quantity}
                                     </p>
                                 </div>
                                 <div className="text-right">
@@ -98,7 +98,7 @@ const CartList: React.FC = () => {
                                     </p>
                                     {item.productPrice && (
                                         <p className="text-sm text-gray-500">
-                                            ${item.productPrice.toFixed(2)} each
+                                            ${item.productPrice.toFixed(2)} за шт.
                                         </p>
                                     )}
                                 </div>
@@ -111,4 +111,4 @@ const CartList: React.FC = () => {
     );
 };
 
-export default CartList; 
+export default CartList;
