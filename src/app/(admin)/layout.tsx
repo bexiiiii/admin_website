@@ -3,9 +3,10 @@ import { SidebarProvider } from '@/context/SidebarContext';
 import ClientLayout from "./ClientLayout";
 
 export const metadata: Metadata = {
-  title: "Next.js E-commerce Dashboard | TailAdmin - Next.js Dashboard Template",
-  description: "This is Next.js Home for TailAdmin Dashboard Template",
+  title: "Панель администратора FoodSave",
+  description: "Панель администратора для проекта FoodSave",
 };
+
 
 export default function AdminLayout({
   children,

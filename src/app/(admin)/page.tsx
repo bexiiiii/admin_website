@@ -63,7 +63,7 @@ const Ecommerce = () => {
   }, [isAdmin, hasPermission]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Загрузка...</div>;
   }
 
   return (

@@ -141,9 +141,9 @@ export default function CartsPage() {
         }).format(price);
     };
 
-    const filteredCarts = carts.filter(cart => 
+    const filteredCarts = carts.filter(cart =>
         cart.userId?.toString().includes(searchQuery) ||
-        cart.items.some(item => 
+        cart.items.some(item =>
             item.productName?.toLowerCase().includes(searchQuery.toLowerCase())
         )
     );
@@ -172,7 +172,7 @@ export default function CartsPage() {
     return (
         <div className="p-6 bg-gray-50 dark:bg-gray-900">
             <div className="mb-6 flex justify-between items-center">
-                <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">Shopping Carts</h1>
+                <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">Корзина </h1>
                 <Button
                     onClick={() => {
                         setSelectedCart(undefined);

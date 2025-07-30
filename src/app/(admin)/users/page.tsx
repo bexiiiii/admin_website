@@ -65,7 +65,7 @@ export default function UsersPage() {
             setUsers(response);
         } catch (error) {
             console.error('Failed to fetch users:', error);
-            toast.error('Failed to load users');
+            toast.error('Не удалось загрузить пользователей');
             setUsers([]);
         } finally {
             setLoading(false);
@@ -85,9 +85,9 @@ export default function UsersPage() {
                 role: formData.role,
                 active: formData.active
             };
-            
+
             await userApi.create(userData);
-            toast.success('User created successfully');
+            toast.success('Пользователь успешно создан');
             setIsCreateModalOpen(false);
             setFormData({
                 email: '',
@@ -102,7 +102,7 @@ export default function UsersPage() {
             fetchUsers();
         } catch (error) {
             console.error('Failed to create user:', error);
-            toast.error('Failed to create user');
+            toast.error('Не удалось создать пользователя');
         }
     };
 
@@ -122,26 +122,26 @@ export default function UsersPage() {
                 active: formData.active
             };
             await userApi.update(selectedUser.id, updateData);
-            toast.success('User updated successfully');
+            toast.success('Пользователь успешно обновлен');
             closeModal();
             setSelectedUser(undefined);
             fetchUsers();
         } catch (error) {
             console.error('Failed to update user:', error);
-            toast.error('Failed to update user');
+            toast.error('Не удалось обновить пользователя');
         }
     };
 
     const handleDeleteUser = async (id: number) => {
-        if (!confirm('Are you sure you want to delete this user?')) return;
+        if (!confirm('Вы уверены, что хотите удалить этого пользователя?')) return;
 
         try {
             await userApi.delete(id);
-            toast.success('User deleted successfully');
+            toast.success('Пользователь успешно удален');
             fetchUsers();
         } catch (error) {
             console.error('Failed to delete user:', error);
-            toast.error('Failed to delete user');
+            toast.error('Не удалось удалить пользователя');
         }
     };
 
@@ -163,13 +163,13 @@ export default function UsersPage() {
         try {
             // Note: Avatar upload would need a separate endpoint
             // await userApi.updateAvatar(selectedFile);
-            toast.success('Avatar updated successfully');
+            toast.success('Аватар успешно обновлен');
             setSelectedFile(null);
             setPreviewUrl('');
             fetchUsers();
         } catch (error) {
             console.error('Failed to upload avatar:', error);
-            toast.error('Failed to upload avatar');
+            toast.error('Не удалось загрузить аватар');
         }
     };
 
@@ -180,13 +180,13 @@ export default function UsersPage() {
     const getRoleDisplayName = (role: string) => {
         switch (role) {
             case 'CUSTOMER':
-                return 'Customer';
+                return 'Клиент';
             case 'STORE_MANAGER':
-                return 'Store Manager';
+                return 'Менеджер заведения';
             case 'STORE_OWNER':
-                return 'Store Owner';
+                return 'Владелец заведения';
             case 'SUPER_ADMIN':
-                return 'Super Admin';
+                return 'Супер-администратор';
             default:
                 return role;
         }
@@ -194,14 +194,14 @@ export default function UsersPage() {
 
     const formatDate = (dateString?: string) => {
         if (!dateString) return 'N/A';
-        return new Date(dateString).toLocaleDateString('en-US', {
+        return new Date(dateString).toLocaleDateString('ru-RU', {
             year: 'numeric',
             month: 'short',
             day: 'numeric'
         });
     };
 
-    const filteredUsers = (users || []).filter(user => 
+    const filteredUsers = (users || []).filter(user =>
         user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
         user.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         user.lastName.toLowerCase().includes(searchQuery.toLowerCase())
@@ -232,269 +232,153 @@ export default function UsersPage() {
         <ProtectedRoute allowedRoles={['SUPER_ADMIN']}>
             <div className="p-6 bg-gray-50 dark:bg-gray-900">
                 <div className="mb-6 flex items-center justify-between">
-                    <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">Users Management</h1>
-                    <Button 
+                    <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">Управление пользователями</h1>
+                    <Button
                         className="bg-brand-500 hover:bg-brand-600 text-white"
                         onClick={() => setIsCreateModalOpen(true)}
                     >
                         <span className="mr-2">+</span>
-                        Add User
-                </Button>
-            </div>
-
-            <div className="mb-6">
-                <div className="relative">
-                    <span className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400">🔍</span>
-                    <Input
-                        type="text"
-                        placeholder="Search users by name, email, or username..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-10 bg-white dark:bg-gray-800"
-                    />
+                        Добавить пользователя
+                    </Button>
                 </div>
-            </div>
 
-            <Card className="bg-white dark:bg-gray-800">
-                <CardContent className="p-0">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>User</TableHead>
-                                <TableHead>Email</TableHead>
-                                <TableHead>Role</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Created</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {filteredUsers.length === 0 ? (
+                <div className="mb-6">
+                    <div className="relative">
+                        <span className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400">🔍</span>
+                        <Input
+                            type="text"
+                            placeholder="Поиск по имени, email..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="pl-10 bg-white dark:bg-gray-800"
+                        />
+                    </div>
+                </div>
+
+                <Card className="bg-white dark:bg-gray-800">
+                    <CardContent className="p-0">
+                        <Table>
+                            <TableHeader>
                                 <TableRow>
-                                    <TableCell colSpan={6} className="text-center py-4">
-                                        No users found
-                                    </TableCell>
+                                    <TableHead>Пользователь</TableHead>
+                                    <TableHead>Email</TableHead>
+                                    <TableHead>Роль</TableHead>
+                                    <TableHead>Статус</TableHead>
+                                    <TableHead>Создан</TableHead>
+                                    <TableHead className="text-right">Действия</TableHead>
                                 </TableRow>
-                            ) : (
-                                filteredUsers.map((user) => (
-                                    <TableRow key={user.id}>
-                                        <TableCell>
-                                            <div className="flex items-center gap-3">
-                                                <div className="relative h-10 w-10 rounded-full overflow-hidden">
-                                                    {user.profilePicture ? (
-                                                        <Image
-                                                            src={user.profilePicture}
-                                                            alt={`${user.firstName} ${user.lastName}`}
-                                                            fill
-                                                            className="object-cover"
-                                                        />
-                                                    ) : (
-                                                        <div className="h-full w-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                                                            <span className="text-lg font-semibold text-gray-500 dark:text-gray-400">
-                                                                {user.firstName[0]}{user.lastName[0]}
-                                                            </span>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                <div>
-                                                    <p className="font-medium text-gray-900 dark:text-white">
-                                                        {user.firstName} {user.lastName}
-                                                    </p>
-                                                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                                                        ID: {user.id}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>{user.email}</TableCell>
-                                        <TableCell>{getRoleDisplayName(user.role)}</TableCell>
-                                        <TableCell>
-                                            <Badge variant={getStatusColor(user.active)}>
-                                                {user.active ? 'Active' : 'Inactive'}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell>{formatDate(user.createdAt)}</TableCell>
-                                        <TableCell className="text-right">
-                                            <div className="flex justify-end gap-2">
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => {
-                                                        setSelectedUser(user);
-                                                        setFormData({
-                                                            email: user.email,
-                                                            firstName: user.firstName,
-                                                            lastName: user.lastName,
-                                                            password: '',
-                                                            role: user.role,
-                                                            active: user.active,
-                                                            phone: user.phone || '',
-                                                            address: user.address || ''
-                                                        });
-                                                        openModal();
-                                                    }}
-                                                >
-                                                    Edit
-                                                </Button>
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => handleDeleteUser(user.id)}
-                                                    className="text-red-600 hover:text-red-700"
-                                                >
-                                                    Delete
-                                                </Button>
-                                            </div>
+                            </TableHeader>
+                            <TableBody>
+                                {filteredUsers.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={6} className="text-center py-4">
+                                            Пользователи не найдены
                                         </TableCell>
                                     </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+                                ) : (
+                                    filteredUsers.map((user) => (
+                                        <TableRow key={user.id}>
+                                            <TableCell>
+                                                <div className="flex items-center gap-3">
+                                                    <div className="relative h-10 w-10 rounded-full overflow-hidden">
+                                                        {user.profilePicture ? (
+                                                            <Image
+                                                                src={user.profilePicture}
+                                                                alt={`${user.firstName} ${user.lastName}`}
+                                                                fill
+                                                                className="object-cover"
+                                                            />
+                                                        ) : (
+                                                            <div className="h-full w-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                                                                <span className="text-lg font-semibold text-gray-500 dark:text-gray-400">
+                                                                    {user.firstName[0]}{user.lastName[0]}
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-medium text-gray-900 dark:text-white">
+                                                            {user.firstName} {user.lastName}
+                                                        </p>
+                                                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                            ID: {user.id}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>{user.email}</TableCell>
+                                            <TableCell>{getRoleDisplayName(user.role)}</TableCell>
+                                            <TableCell>
+                                                <Badge variant={getStatusColor(user.active)}>
+                                                    {user.active ? 'Активен' : 'Неактивен'}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell>{formatDate(user.createdAt)}</TableCell>
+                                            <TableCell className="text-right">
+                                                <div className="flex justify-end gap-2">
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => {
+                                                            setSelectedUser(user);
+                                                            setFormData({
+                                                                email: user.email,
+                                                                firstName: user.firstName,
+                                                                lastName: user.lastName,
+                                                                password: '',
+                                                                role: user.role,
+                                                                active: user.active,
+                                                                phone: user.phone || '',
+                                                                address: user.address || ''
+                                                            });
+                                                            openModal();
+                                                        }}
+                                                    >
+                                                        Редактировать
+                                                    </Button>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => handleDeleteUser(user.id)}
+                                                        className="text-red-600 hover:text-red-700"
+                                                    >
+                                                        Удалить
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
 
-            <Modal
-                isOpen={isCreateModalOpen}
-                onClose={() => {
-                    setIsCreateModalOpen(false);
-                    setFormData({
-                        email: '',
-                        firstName: '',
-                        lastName: '',
-                        password: '',
-                        role: 'CUSTOMER',
-                        active: true,
-                        phone: '',
-                        address: ''
-                    });
-                }}
-                className="max-w-2xl mx-auto"
-            >
-                <div className="p-6">
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
-                            Create New User
-                        </h2>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                                setIsCreateModalOpen(false);
-                                setFormData({
-                                    email: '',
-                                    firstName: '',
-                                    lastName: '',
-                                    password: '',
-                                    role: 'CUSTOMER',
-                                    active: true,
-                                    phone: '',
-                                    address: ''
-                                });
-                            }}
-                            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                        >
-                            ✕
-                        </Button>
-                    </div>
-
-                    <form onSubmit={handleCreateUser} className="space-y-6">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="firstName" className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                                    First Name
-                                </Label>
-                                <Input
-                                    id="firstName"
-                                    value={formData.firstName}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
-                                    className="bg-white dark:bg-gray-800"
-                                    required
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="lastName" className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                                    Last Name
-                                </Label>
-                                <Input
-                                    id="lastName"
-                                    value={formData.lastName}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
-                                    className="bg-white dark:bg-gray-800"
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                                Email
-                            </Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                value={formData.email}
-                                onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                                className="bg-white dark:bg-gray-800"
-                                required
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="password" className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                                Password
-                            </Label>
-                            <Input
-                                id="password"
-                                type="password"
-                                value={formData.password}
-                                onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                                className="bg-white dark:bg-gray-800"
-                                required
-                            />
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="role" className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                                    Role
-                                </Label>
-                                <select
-                                    id="role"
-                                    value={formData.role}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value as UserFormData['role'] }))}
-                                    className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
-                                    required
-                                    aria-label="Select user role"
-                                >
-                                    <option value="CUSTOMER">Customer</option>
-                                    <option value="STORE_MANAGER">Store Manager</option>
-                                    <option value="STORE_OWNER">Store Owner</option>
-                                    <option value="SUPER_ADMIN">Super Admin</option>
-                                </select>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="active" className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                                    Status
-                                </Label>
-                                <select
-                                    id="active"
-                                    value={formData.active ? 'true' : 'false'}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, active: e.target.value === 'true' }))}
-                                    className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
-                                    required
-                                    aria-label="Select user status"
-                                >
-                                    <option value="true">Active</option>
-                                    <option value="false">Inactive</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <Modal
+                    isOpen={isCreateModalOpen}
+                    onClose={() => {
+                        setIsCreateModalOpen(false);
+                        setFormData({
+                            email: '',
+                            firstName: '',
+                            lastName: '',
+                            password: '',
+                            role: 'CUSTOMER',
+                            active: true,
+                            phone: '',
+                            address: ''
+                        });
+                    }}
+                    className="max-w-2xl mx-auto"
+                >
+                    <div className="p-6">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+                                Создать нового пользователя
+                            </h2>
                             <Button
-                                type="button"
-                                variant="outline"
+                                variant="ghost"
+                                size="sm"
                                 onClick={() => {
                                     setIsCreateModalOpen(false);
                                     setFormData({
@@ -508,229 +392,345 @@ export default function UsersPage() {
                                         address: ''
                                     });
                                 }}
+                                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                             >
-                                Cancel
-                            </Button>
-                            <Button
-                                type="submit"
-                                className="bg-brand-500 hover:bg-brand-600 text-white"
-                            >
-                                Create User
+                                ✕
                             </Button>
                         </div>
-                    </form>
-                </div>
-            </Modal>
 
-            <Modal
-                isOpen={isOpen}
-                onClose={() => {
-                    closeModal();
-                    setSelectedUser(undefined);
-                    setFormData({
-                        email: '',
-                        firstName: '',
-                        lastName: '',
-                        password: '',
-                        role: 'CUSTOMER',
-                        active: true,
-                        phone: '',
-                        address: ''
-                    });
-                }}
-                className="max-w-2xl mx-auto"
-            >
-                <div className="p-6">
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
-                            Edit User
-                        </h2>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                                closeModal();
-                                setSelectedUser(undefined);
-                                setFormData({
-                                    email: '',
-                                    firstName: '',
-                                    lastName: '',
-                                    password: '',
-                                    role: 'CUSTOMER',
-                                    active: true,
-                                    phone: '',
-                                    address: ''
-                                });
-                            }}
-                            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                        >
-                            ✕
-                        </Button>
-                    </div>
-
-                    {selectedUser && (
-                        <div className="space-y-6">
-                            <div className="flex items-center gap-6">
-                                <div className="relative h-24 w-24 rounded-full overflow-hidden">
-                                    {previewUrl ? (
-                                        <Image
-                                            src={previewUrl}
-                                            alt="Preview"
-                                            fill
-                                            className="object-cover"
-                                        />
-                                    ) : selectedUser.profilePicture ? (
-                                        <Image
-                                            src={selectedUser.profilePicture}
-                                            alt={`${selectedUser.firstName} ${selectedUser.lastName}`}
-                                            fill
-                                            className="object-cover"
-                                        />
-                                    ) : (
-                                        <div className="h-full w-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                                            <span className="text-2xl font-semibold text-gray-500 dark:text-gray-400">
-                                                {selectedUser.firstName[0]}{selectedUser.lastName[0]}
-                                            </span>
-                                        </div>
-                                    )}
-                                </div>
+                        <form onSubmit={handleCreateUser} className="space-y-6">
+                            <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                                        Profile Picture
-                                    </Label>
-                                    <div className="flex gap-2">
-                                        <Input
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={handleFileChange}
-                                            className="bg-white dark:bg-gray-800"
-                                        />
-                                        {selectedFile && (
-                                            <Button
-                                                type="button"
-                                                onClick={handleUploadAvatar}
-                                                className="bg-brand-500 hover:bg-brand-600 text-white"
-                                            >
-                                                Upload
-                                            </Button>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <form onSubmit={handleUpdateUser} className="space-y-6">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="editFirstName" className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                                            First Name
-                                        </Label>
-                                        <Input
-                                            id="editFirstName"
-                                            value={formData.firstName}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
-                                            className="bg-white dark:bg-gray-800"
-                                            required
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="editLastName" className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                                            Last Name
-                                        </Label>
-                                        <Input
-                                            id="editLastName"
-                                            value={formData.lastName}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
-                                            className="bg-white dark:bg-gray-800"
-                                            required
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="editEmail" className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                                        Email
+                                    <Label htmlFor="firstName" className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                        Имя
                                     </Label>
                                     <Input
-                                        id="editEmail"
-                                        type="email"
-                                        value={formData.email}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                                        id="firstName"
+                                        value={formData.firstName}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
                                         className="bg-white dark:bg-gray-800"
                                         required
                                     />
                                 </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="editRole" className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                                            Role
-                                        </Label>
-                                        <select
-                                            id="editRole"
-                                            value={formData.role}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value as UserFormData['role'] }))}
-                                            className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
-                                            required
-                                            aria-label="Select user role"
-                                        >
-                                            <option value="CUSTOMER">Customer</option>
-                                            <option value="STORE_MANAGER">Store Manager</option>
-                                            <option value="STORE_OWNER">Store Owner</option>
-                                            <option value="SUPER_ADMIN">Super Admin</option>
-                                        </select>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="editActive" className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                                            Status
-                                        </Label>
-                                        <select
-                                            id="editActive"
-                                            value={formData.active ? 'true' : 'false'}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, active: e.target.value === 'true' }))}
-                                            className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
-                                            required
-                                            aria-label="Select user status"
-                                        >
-                                            <option value="true">Active</option>
-                                            <option value="false">Inactive</option>
-                                        </select>
-                                    </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="lastName" className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                        Фамилия
+                                    </Label>
+                                    <Input
+                                        id="lastName"
+                                        value={formData.lastName}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
+                                        className="bg-white dark:bg-gray-800"
+                                        required
+                                    />
                                 </div>
+                            </div>
 
-                                <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700">
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        onClick={() => {
-                                            closeModal();
-                                            setSelectedUser(undefined);
-                                            setFormData({
-                                                email: '',
-                                                firstName: '',
-                                                lastName: '',
-                                                password: '',
-                                                role: 'CUSTOMER',
-                                                active: true,
-                                                phone: '',
-                                                address: ''
-                                            });
-                                        }}
+                            <div className="space-y-2">
+                                <Label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                    Email
+                                </Label>
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    value={formData.email}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                                    className="bg-white dark:bg-gray-800"
+                                    required
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="password" className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                    Пароль
+                                </Label>
+                                <Input
+                                    id="password"
+                                    type="password"
+                                    value={formData.password}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                                    className="bg-white dark:bg-gray-800"
+                                    required
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="role" className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                        Роль
+                                    </Label>
+                                    <select
+                                        id="role"
+                                        value={formData.role}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value as UserFormData['role'] }))}
+                                        className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                                        required
+                                        aria-label="Select user role"
                                     >
-                                        Cancel
-                                    </Button>
-                                    <Button
-                                        type="submit"
-                                        className="bg-brand-500 hover:bg-brand-600 text-white"
-                                    >
-                                        Save Changes
-                                    </Button>
+                                        <option value="CUSTOMER">Клиент</option>
+                                        <option value="STORE_MANAGER">Менеджер заведения</option>
+                                        <option value="STORE_OWNER">Владелец заведения</option>
+                                        <option value="SUPER_ADMIN">Супер-администратор</option>
+                                    </select>
                                 </div>
-                            </form>
+                                <div className="space-y-2">
+                                    <Label htmlFor="active" className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                        Статус
+                                    </Label>
+                                    <select
+                                        id="active"
+                                        value={formData.active ? 'true' : 'false'}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, active: e.target.value === 'true' }))}
+                                        className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                                        required
+                                        aria-label="Select user status"
+                                    >
+                                        <option value="true">Активен</option>
+                                        <option value="false">Неактивен</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => {
+                                        setIsCreateModalOpen(false);
+                                        setFormData({
+                                            email: '',
+                                            firstName: '',
+                                            lastName: '',
+                                            password: '',
+                                            role: 'CUSTOMER',
+                                            active: true,
+                                            phone: '',
+                                            address: ''
+                                        });
+                                    }}
+                                >
+                                    Отмена
+                                </Button>
+                                <Button
+                                    type="submit"
+                                    className="bg-brand-500 hover:bg-brand-600 text-white"
+                                >
+                                    Создать пользователя
+                                </Button>
+                            </div>
+                        </form>
+                    </div>
+                </Modal>
+
+                <Modal
+                    isOpen={isOpen}
+                    onClose={() => {
+                        closeModal();
+                        setSelectedUser(undefined);
+                        setFormData({
+                            email: '',
+                            firstName: '',
+                            lastName: '',
+                            password: '',
+                            role: 'CUSTOMER',
+                            active: true,
+                            phone: '',
+                            address: ''
+                        });
+                    }}
+                    className="max-w-2xl mx-auto"
+                >
+                    <div className="p-6">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+                                Редактировать пользователя
+                            </h2>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                    closeModal();
+                                    setSelectedUser(undefined);
+                                    setFormData({
+                                        email: '',
+                                        firstName: '',
+                                        lastName: '',
+                                        password: '',
+                                        role: 'CUSTOMER',
+                                        active: true,
+                                        phone: '',
+                                        address: ''
+                                    });
+                                }}
+                                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                            >
+                                ✕
+                            </Button>
                         </div>
-                    )}
-                </div>
-            </Modal>
+
+                        {selectedUser && (
+                            <div className="space-y-6">
+                                <div className="flex items-center gap-6">
+                                    <div className="relative h-24 w-24 rounded-full overflow-hidden">
+                                        {previewUrl ? (
+                                            <Image
+                                                src={previewUrl}
+                                                alt="Preview"
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        ) : selectedUser.profilePicture ? (
+                                            <Image
+                                                src={selectedUser.profilePicture}
+                                                alt={`${selectedUser.firstName} ${selectedUser.lastName}`}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        ) : (
+                                            <div className="h-full w-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                                                <span className="text-2xl font-semibold text-gray-500 dark:text-gray-400">
+                                                    {selectedUser.firstName[0]}{selectedUser.lastName[0]}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                            Изображение профиля
+                                        </Label>
+                                        <div className="flex gap-2">
+                                            <Input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleFileChange}
+                                                className="bg-white dark:bg-gray-800"
+                                            />
+                                            {selectedFile && (
+                                                <Button
+                                                    type="button"
+                                                    onClick={handleUploadAvatar}
+                                                    className="bg-brand-500 hover:bg-brand-600 text-white"
+                                                >
+                                                    Загрузить
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <form onSubmit={handleUpdateUser} className="space-y-6">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="editFirstName" className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                                Имя
+                                            </Label>
+                                            <Input
+                                                id="editFirstName"
+                                                value={formData.firstName}
+                                                onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
+                                                className="bg-white dark:bg-gray-800"
+                                                required
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="editLastName" className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                                Фамилия
+                                            </Label>
+                                            <Input
+                                                id="editLastName"
+                                                value={formData.lastName}
+                                                onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
+                                                className="bg-white dark:bg-gray-800"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="editEmail" className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                            Email
+                                        </Label>
+                                        <Input
+                                            id="editEmail"
+                                            type="email"
+                                            value={formData.email}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                                            className="bg-white dark:bg-gray-800"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="editRole" className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                                Роль
+                                            </Label>
+                                            <select
+                                                id="editRole"
+                                                value={formData.role}
+                                                onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value as UserFormData['role'] }))}
+                                                className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                                                required
+                                                aria-label="Select user role"
+                                            >
+                                                <option value="CUSTOMER">Клиент</option>
+                                                <option value="STORE_MANAGER">Менеджер заведения</option>
+                                                <option value="STORE_OWNER">Владелец заведения</option>
+                                                <option value="SUPER_ADMIN">Супер-администратор</option>
+                                            </select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="editActive" className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                                Статус
+                                            </Label>
+                                            <select
+                                                id="editActive"
+                                                value={formData.active ? 'true' : 'false'}
+                                                onChange={(e) => setFormData(prev => ({ ...prev, active: e.target.value === 'true' }))}
+                                                className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                                                required
+                                                aria-label="Select user status"
+                                            >
+                                                <option value="true">Активен</option>
+                                                <option value="false">Неактивен</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            onClick={() => {
+                                                closeModal();
+                                                setSelectedUser(undefined);
+                                                setFormData({
+                                                    email: '',
+                                                    firstName: '',
+                                                    lastName: '',
+                                                    password: '',
+                                                    role: 'CUSTOMER',
+                                                    active: true,
+                                                    phone: '',
+                                                    address: ''
+                                                });
+                                            }}
+                                        >
+                                            Отмена
+                                        </Button>
+                                        <Button
+                                            type="submit"
+                                            className="bg-brand-500 hover:bg-brand-600 text-white"
+                                        >
+                                            Сохранить изменения
+                                        </Button>
+                                    </div>
+                                </form>
+                            </div>
+                        )}
+                    </div>
+                </Modal>
             </div>
         </ProtectedRoute>
     );
-} 
+}

@@ -3,8 +3,8 @@ import { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "",
-  description: "",
+  title: "Панель администратора FoodSave",
+  description: "Панель администратора для проекта FoodSave",
 };
 
 export default function BlankPage() {
