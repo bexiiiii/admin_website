@@ -334,8 +334,8 @@ export default function OrderManagementPage() {
             <div className="p-6 bg-gray-50 dark:bg-gray-900">
             <div className="mb-6 flex justify-between items-center">
                 <div>
-                    <h1 className="text-2xl font-semibold text-gray-800 dark:text-white mb-2">Order Management</h1>
-                    <p className="text-gray-600 dark:text-gray-400">Manage and track all customer orders</p>
+                    <h1 className="text-2xl font-semibold text-gray-800 dark:text-white mb-2">Управление заказами</h1>
+                    <p className="text-gray-600 dark:text-gray-400">Управляйте и отслеживайте все заказы клиентов</p>
                 </div>
                 <div className="flex gap-2">
                     <Button
@@ -369,7 +369,7 @@ export default function OrderManagementPage() {
                 <Card className="bg-white dark:bg-gray-800">
                     <CardContent className="p-6">
                         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                            Total Orders {dateFilter !== 'all' && `(${dateFilter === 'today' ? 'Today' : dateFilter === 'week' ? 'Last 7 Days' : 'Last 30 Days'})`}
+                            Все заказы {dateFilter !== 'all' && `(${dateFilter === 'today' ? 'Today' : dateFilter === 'week' ? 'Last 7 Days' : 'Last 30 Days'})`}
                         </h3>
                         <p className="text-2xl font-semibold text-gray-900 dark:text-white">{filteredStats.totalOrders}</p>
                     </CardContent>
@@ -377,7 +377,7 @@ export default function OrderManagementPage() {
                 <Card className="bg-white dark:bg-gray-800">
                     <CardContent className="p-6">
                         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                            Pending Orders {dateFilter !== 'all' && `(${dateFilter === 'today' ? 'Today' : dateFilter === 'week' ? 'Last 7 Days' : 'Last 30 Days'})`}
+                            Ожидающие заказы {dateFilter !== 'all' && `(${dateFilter === 'today' ? 'Today' : dateFilter === 'week' ? 'Last 7 Days' : 'Last 30 Days'})`}
                         </h3>
                         <p className="text-2xl font-semibold text-yellow-600">{filteredStats.pendingOrders}</p>
                     </CardContent>
@@ -385,7 +385,7 @@ export default function OrderManagementPage() {
                 <Card className="bg-white dark:bg-gray-800">
                     <CardContent className="p-6">
                         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                            Completed Orders {dateFilter !== 'all' && `(${dateFilter === 'today' ? 'Today' : dateFilter === 'week' ? 'Last 7 Days' : 'Last 30 Days'})`}
+                            Выполненные заказы {dateFilter !== 'all' && `(${dateFilter === 'today' ? 'Today' : dateFilter === 'week' ? 'Last 7 Days' : 'Last 30 Days'})`}
                         </h3>
                         <p className="text-2xl font-semibold text-green-600">{filteredStats.completedOrders}</p>
                     </CardContent>
@@ -393,7 +393,7 @@ export default function OrderManagementPage() {
                 <Card className="bg-white dark:bg-gray-800">
                     <CardContent className="p-6">
                         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                            Total Revenue {dateFilter !== 'all' && `(${dateFilter === 'today' ? 'Today' : dateFilter === 'week' ? 'Last 7 Days' : 'Last 30 Days'})`}
+                            Общая выручка {dateFilter !== 'all' && `(${dateFilter === 'today' ? 'Today' : dateFilter === 'week' ? 'Last 7 Days' : 'Last 30 Days'})`}
                         </h3>
                         <p className="text-2xl font-semibold text-gray-900 dark:text-white">{formatPrice(filteredStats.totalRevenue)}</p>
                     </CardContent>
@@ -407,7 +407,7 @@ export default function OrderManagementPage() {
                         <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                         <Input
                             type="text"
-                            placeholder="Search orders by ID, customer name, or product..."
+                            placeholder="Ищите заказы по ID, имени клиента или товару..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="pl-10 bg-white dark:bg-gray-800"
@@ -421,14 +421,14 @@ export default function OrderManagementPage() {
                         className="w-full h-10 px-3 rounded-md border border-gray-300 bg-white dark:bg-gray-800 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         aria-label="Filter orders by status"
                     >
-                        <option value="all">All Statuses</option>
-                        <option value="PENDING">Pending</option>
-                        <option value="CONFIRMED">Confirmed</option>
-                        <option value="PREPARING">Preparing</option>
-                        <option value="READY">Ready</option>
-                        <option value="PICKED_UP">Picked Up</option>
-                        <option value="DELIVERED">Delivered</option>
-                        <option value="CANCELLED">Cancelled</option>
+                        <option value="all">Все заказы</option>
+                        <option value="PENDING">Ожидающие</option>
+                        <option value="CONFIRMED">Подтвержденные</option>
+                        <option value="PREPARING">В процессе подготовки</option>
+                        <option value="READY">Готовые</option>
+                        <option value="PICKED_UP">Забраны</option>
+                        <option value="DELIVERED">Доставленные</option>
+                        <option value="CANCELLED">Отмененные</option>
                     </select>
                 </div>
                 <div>
@@ -438,10 +438,10 @@ export default function OrderManagementPage() {
                         className="w-full h-10 px-3 rounded-md border border-gray-300 bg-white dark:bg-gray-800 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         aria-label="Filter orders by date"
                     >
-                        <option value="all">All Time</option>
-                        <option value="today">Today</option>
-                        <option value="week">Last 7 Days</option>
-                        <option value="month">Last 30 Days</option>
+                        <option value="all">За все время</option>
+                        <option value="today">Сегодня</option>
+                        <option value="week">Последние 7 дней</option>
+                        <option value="month">Последние 30 дней</option>
                     </select>
                 </div>
             </div>
@@ -451,7 +451,7 @@ export default function OrderManagementPage() {
                 <CardContent className="p-6 pb-0">
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                            Orders ({filteredOrders.length} 
+                            Заказы ({filteredOrders.length} 
                             {dateFilter !== 'all' && ` - ${dateFilter === 'today' ? 'Today' : dateFilter === 'week' ? 'Last 7 Days' : 'Last 30 Days'}`}
                             {statusFilter !== 'all' && ` - ${statusFilter}`}
                             {searchQuery && ` - Search: "${searchQuery}"`})
@@ -463,7 +463,7 @@ export default function OrderManagementPage() {
                                 onClick={() => setDateFilter('all')}
                                 className="text-xs"
                             >
-                                Show All Time
+                                Показать все заказы
                             </Button>
                         )}
                     </div>
@@ -472,13 +472,13 @@ export default function OrderManagementPage() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Order ID</TableHead>
-                                <TableHead>Customer</TableHead>
-                                <TableHead>Items</TableHead>
-                                <TableHead>Total</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Date</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
+                                <TableHead>Номер заказа</TableHead>
+                                <TableHead>Покупатель</TableHead>
+                                <TableHead>Товары</TableHead>
+                                <TableHead>Итого</TableHead>
+                                <TableHead>Статус</TableHead>
+                                <TableHead>Дата</TableHead>
+                                <TableHead className="text-right">Действия</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>

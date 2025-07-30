@@ -1,17 +1,13 @@
+"use client";
+
 import UserAddressCard from "@/components/user-profile/UserAddressCard";
 import UserInfoCard from "@/components/user-profile/UserInfoCard";
 import UserMetaCard from "@/components/user-profile/UserMetaCard";
-import { Metadata } from "next";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 
-export const metadata: Metadata = {
-  title: "Профиль | FoodSave - Панель администратора",
-  description: "Страница профиля пользователя",
-};
-
 const ProfilePage: React.FC = () => {
-  const { user, loading, error } = useAuth();
+  const { user, loading } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -43,7 +39,6 @@ const ProfilePage: React.FC = () => {
   };
 
   if (loading) return <p>Загрузка...</p>;
-  if (error) return <p>Ошибка: {error}</p>;
   if (!user) return <p>Пользователь не найден.</p>;
 
   return (
