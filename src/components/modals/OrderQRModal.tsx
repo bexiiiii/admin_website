@@ -79,7 +79,7 @@ export function OrderQRModal({ isOpen, onClose, order }: OrderQRModalProps) {
                     <span className="text-gray-500">Customer:</span>
                     <span className="font-medium">{order.userName}</span>
                     <span className="text-gray-500">Phone:</span>
-                    <span>{order.contactPhone}</span>
+                    <span>{order.userPhone || order.contactPhone || 'Не указан'}</span>
                     <span className="text-gray-500">Address:</span>
                     <span className="text-right">{order.deliveryAddress}</span>
                 </div>
@@ -120,6 +120,16 @@ export function OrderQRModal({ isOpen, onClose, order }: OrderQRModalProps) {
                         <p className="mt-1 text-xs text-gray-500">Scan to view order details</p>
                     </div>
                 </div>
+
+                {/* Notes */}
+                {order.notes && order.notes.trim() && (
+                    <div className="border-t pt-2 pb-2">
+                        <div className="text-xs text-gray-500 mb-1">Notes:</div>
+                        <div className="text-xs text-gray-700 bg-gray-50 p-2 rounded">
+                            {order.notes}
+                        </div>
+                    </div>
+                )}
 
                 {/* Footer */}
                 <div className="border-t pt-2 text-center text-xs text-gray-500">

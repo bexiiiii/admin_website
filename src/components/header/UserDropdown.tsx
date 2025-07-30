@@ -3,7 +3,7 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,11 +21,9 @@ export default function UserDropdown() {
   const handleLogout = async () => {
     try {
       await logout();
-      // Redirect to login page
-      window.location.href = '/auth/signin';
     } catch (error) {
       console.error('Logout failed:', error);
-      // Even if logout fails, redirect to login page
+      // Если logout не удался, принудительно перенаправляем
       window.location.href = '/auth/signin';
     }
   };
@@ -40,7 +38,7 @@ export default function UserDropdown() {
           <Image
             width={44}
             height={44}
-            src={user?.profilePicture || "/images/user/owner.jpg"}
+            src={"/images/user/owner.jpg"}
             alt="User"
           />
         </span>

@@ -6,15 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { OrderDTO } from "@/types/api";
 
-interface Order extends OrderDTO {
-    orderNumber: string;
-    qrCode: string;
-    createdAt: string;
-    updatedAt: string;
-}
-
 interface OrderDetailsModalProps {
-    order: Order | null;
+    order: OrderDTO | null;
     isOpen: boolean;
     onClose: () => void;
 }
@@ -26,7 +19,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
 }) => {
     if (!order) return null;
 
-    const getPaymentStatusColor = (status: Order['paymentStatus']) => {
+    const getPaymentStatusColor = (status: OrderDTO['paymentStatus']) => {
         switch (status) {
             case 'PAID':
                 return 'default';
@@ -49,7 +42,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
             <div className="space-y-6">
                 {/* Header */}
                 <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-semibold">Order Details - {order.orderNumber}</h2>
+                    <h2 className="text-2xl font-semibold">Order Details - #{order.id}</h2>
                     <Badge variant={getPaymentStatusColor(order.paymentStatus)}>
                         {order.paymentStatus}
                     </Badge>
@@ -58,10 +51,10 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                 {/* Order Status and Date */}
                 <div>
                     <p className="text-sm text-muted-foreground">
-                        Created: {format(new Date(order.createdAt), 'PPpp')}
+                        Order Date: {order.orderDate ? format(new Date(order.orderDate), 'PPpp') : 'N/A'}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                        Last Updated: {format(new Date(order.updatedAt), 'PPpp')}
+                        Status: <Badge variant={getPaymentStatusColor(order.paymentStatus)}>{order.status}</Badge>
                     </p>
                 </div>
 
@@ -75,7 +68,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                         </div>
                         <div>
                             <p className="text-sm text-muted-foreground">Phone</p>
-                            <p>{order.userPhone}</p>
+                            <p>{order.userPhone || order.contactPhone || 'Не указан'}</p>
                         </div>
                         <div>
                             <p className="text-sm text-muted-foreground">Email</p>
@@ -103,10 +96,10 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                                         <td className="p-3">{item.productName}</td>
                                         <td className="text-right p-3">{item.quantity}</td>
                                         <td className="text-right p-3">
-                                            ${item.unitPrice.toFixed(2)}
+                                            ₸{item.unitPrice.toFixed(0)}
                                         </td>
                                         <td className="text-right p-3">
-                                            ${(item.unitPrice * item.quantity).toFixed(2)}
+                                            ₸{(item.unitPrice * item.quantity).toFixed(0)}
                                         </td>
                                     </tr>
                                 ))}
@@ -117,7 +110,7 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                                         Total Amount:
                                     </td>
                                     <td className="text-right p-3 font-semibold">
-                                        ${order.totalAmount?.toFixed(2) || '0.00'}
+                                        ₸{((order as any).total || order.totalAmount)?.toFixed(0) || '0'}
                                     </td>
                                 </tr>
                             </tfoot>

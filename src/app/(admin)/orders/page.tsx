@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { SearchIcon, FilterIcon, CalendarIcon, PlusIcon, RefreshCwIcon, QrCodeIcon, ScanIcon, PencilIcon } from 'lucide-react';
+import { SearchIcon, FilterIcon, CalendarIcon, PlusIcon, RefreshCwIcon, QrCodeIcon, ScanIcon, PencilIcon, EyeIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { orderApi } from '@/services/api';
@@ -26,6 +26,7 @@ import { CreateOrderModal } from '@/components/modals/CreateOrderModal';
 import { OrderQRModal } from '@/components/modals/OrderQRModal';
 import { QROrderDetailsModal } from '@/components/modals/QROrderDetailsModal';
 import { EditOrderModal } from '@/components/modals/EditOrderModal';
+import OrderDetailsModal from '@/components/History/OrderDetailsModal';
 
 const statusColors = {
     PENDING: 'bg-yellow-100 text-yellow-800',
@@ -42,13 +43,15 @@ export default function OrderManagementPage() {
     const { isOpen: isCreateModalOpen, openModal: openCreateModal, closeModal: closeCreateModal } = useModal();
     const { isOpen: isQRScannerOpen, openModal: openQRScanner, closeModal: closeQRScanner } = useModal();
     const { isOpen: isEditModalOpen, openModal: openEditModal, closeModal: closeEditModal } = useModal();
+    const { isOpen: isViewModalOpen, openModal: openViewModal, closeModal: closeViewModal } = useModal();
     const [selectedOrder, setSelectedOrder] = useState<OrderDTO | null>(null);
     const [orderToEdit, setOrderToEdit] = useState<OrderDTO | null>(null);
+    const [orderToView, setOrderToView] = useState<OrderDTO | null>(null);
     const [orders, setOrders] = useState<OrderDTO[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState<string>('all');
-    const [dateFilter, setDateFilter] = useState<string>('all');
+    const [dateFilter, setDateFilter] = useState<string>('today');
     const [stats, setStats] = useState({
         totalOrders: 0,
         pendingOrders: 0,
@@ -71,8 +74,18 @@ export default function OrderManagementPage() {
             console.log('Orders data from API:', ordersData);
             if (ordersData.length > 0) {
                 console.log('First order sample:', ordersData[0]);
-                console.log('First order total type:', typeof ordersData[0].total);
-                console.log('First order createdAt type:', typeof ordersData[0].createdAt);
+                console.log('First order totalAmount type:', typeof ordersData[0].totalAmount);
+                console.log('First order orderDate type:', typeof ordersData[0].orderDate);
+                console.log('First order orderDate value:', ordersData[0].orderDate);
+                console.log('First order createdAt:', (ordersData[0] as any).createdAt);
+                
+                // Проверяем все возможные поля дат
+                const order = ordersData[0] as any;
+                console.log('Date fields check:');
+                console.log('- orderDate:', order.orderDate);
+                console.log('- createdAt:', order.createdAt);
+                console.log('- updatedAt:', order.updatedAt);
+                console.log('- estimatedPickupTime:', order.estimatedPickupTime);
             }
             
             setOrders(ordersData);
@@ -84,8 +97,9 @@ export default function OrderManagementPage() {
                 completedOrders: ordersData.filter(o => ['DELIVERED', 'PICKED_UP'].includes(o.status)).length,
                 cancelledOrders: ordersData.filter(o => o.status === 'CANCELLED').length,
                 totalRevenue: ordersData.reduce((sum, order) => {
-                    const amount = parseFloat(order.total) || 0;
-                    console.log(`Order ${order.id}: total = ${order.total}, parsed = ${amount}`);
+                    const orderAny = order as any;
+                    const amount = parseFloat((orderAny.total || order.totalAmount)?.toString() || '0') || 0;
+                    console.log(`Order ${order.id}: total = ${orderAny.total}, totalAmount = ${order.totalAmount}, parsed = ${amount}`);
                     return sum + (isNaN(amount) ? 0 : amount);
                 }, 0)
             };
@@ -136,20 +150,47 @@ export default function OrderManagementPage() {
     };
 
     const formatPrice = (price: number | string | null | undefined) => {
+        // Отладочная информация для цены
+        console.log('formatPrice called with:', price, 'type:', typeof price);
+        
         if (price === null || price === undefined) {
-            return '$0.00';
+            console.log('Price is null/undefined, returning ₸0');
+            return '₸0';
         }
         
         const numericPrice = typeof price === 'string' ? parseFloat(price) : price;
+        console.log('Numeric price:', numericPrice);
         
         if (isNaN(numericPrice)) {
-            return '$0.00';
+            console.log('Price is NaN, returning ₸0');
+            return '₸0';
         }
         
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD'
-        }).format(numericPrice);
+        // Временно возвращаем простое форматирование для отладки
+        return `₸${numericPrice}`;
+        
+        // Форматируем в тенге (KZT) - отключено для отладки
+        // const formatted = new Intl.NumberFormat('kk-KZ', {
+        //     style: 'currency',
+        //     currency: 'KZT',
+        //     minimumFractionDigits: 0,
+        //     maximumFractionDigits: 0,
+        // }).format(numericPrice);
+        
+        // console.log('Formatted price:', formatted);
+        // return formatted;
+    };
+
+    // Утилитарная функция для получения даты заказа из различных полей
+    const getOrderDate = (order: OrderDTO) => {
+        const orderAny = order as any;
+        return order.orderDate || orderAny.createdAt || orderAny.updatedAt;
+    };
+
+    // Утилитарная функция для получения цены заказа из различных полей
+    const getOrderTotal = (order: OrderDTO) => {
+        const orderAny = order as any;
+        return orderAny.total || order.totalAmount || 0;
     };
 
     const filteredOrders = orders.filter(order => {
@@ -162,21 +203,99 @@ export default function OrderManagementPage() {
         
         const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
         
-        if (!order.createdAt) return matchesSearch && matchesStatus;
+        // Обработка фильтра по дате
+        let matchesDate = true;
+        const dateField = getOrderDate(order);
         
-        const orderDate = new Date(order.createdAt);
-        const now = new Date();
-        const matchesDate = dateFilter === 'all' || 
-            (dateFilter === 'today' && orderDate.toDateString() === now.toDateString()) ||
-            (dateFilter === 'week' && (now.getTime() - orderDate.getTime()) <= 7 * 24 * 60 * 60 * 1000) ||
-            (dateFilter === 'month' && (now.getTime() - orderDate.getTime()) <= 30 * 24 * 60 * 60 * 1000);
+        if (dateFilter !== 'all' && dateField) {
+            const orderDate = new Date(dateField);
+            const now = new Date();
+            
+            // Отладочная информация для фильтрации дат
+            if (dateFilter === 'today') {
+                console.log('Today filter debug for order', order.id);
+                console.log('- Raw orderDate:', order.orderDate);
+                console.log('- Raw createdAt:', (order as any).createdAt);
+                console.log('- Using date field:', dateField);
+                console.log('- Parsed orderDate:', orderDate);
+                console.log('- Current time:', now);
+                console.log('- OrderDate valid?', !isNaN(orderDate.getTime()));
+            }
+            
+            switch (dateFilter) {
+                case 'today':
+                    // Проверяем, что заказ был создан сегодня (с начала дня до текущего момента)
+                    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+                    const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+                    matchesDate = orderDate >= startOfToday && orderDate <= endOfToday;
+                    
+                    if (dateFilter === 'today') {
+                        console.log('- Start of today:', startOfToday);
+                        console.log('- End of today:', endOfToday);
+                        console.log('- Order is in range?', matchesDate);
+                        console.log('- Order >= start?', orderDate >= startOfToday);
+                        console.log('- Order <= end?', orderDate <= endOfToday);
+                    }
+                    break;
+                case 'week':
+                    const weekAgo = new Date(now);
+                    weekAgo.setDate(weekAgo.getDate() - 7);
+                    matchesDate = orderDate >= weekAgo && orderDate <= now;
+                    break;
+                case 'month':
+                    const monthAgo = new Date(now);
+                    monthAgo.setDate(monthAgo.getDate() - 30);
+                    matchesDate = orderDate >= monthAgo && orderDate <= now;
+                    break;
+                default:
+                    matchesDate = true;
+            }
+        } else if (dateFilter !== 'all' && !dateField) {
+            matchesDate = false;
+        }
 
         return matchesSearch && matchesStatus && matchesDate;
     });
 
+    // Вычисляем статистику на основе отфильтрованных заказов
+    const filteredStats = {
+        totalOrders: filteredOrders.length,
+        pendingOrders: filteredOrders.filter(o => o.status === 'PENDING').length,
+        completedOrders: filteredOrders.filter(o => ['DELIVERED', 'PICKED_UP'].includes(o.status)).length,
+        cancelledOrders: filteredOrders.filter(o => o.status === 'CANCELLED').length,
+        totalRevenue: filteredOrders.reduce((sum, order) => {
+            const orderAny = order as any;
+            const amount = parseFloat((orderAny.total || order.totalAmount)?.toString() || '0') || 0;
+            console.log(`Order ${order.id}: total = ${orderAny.total}, totalAmount = ${order.totalAmount} (type: ${typeof order.totalAmount}), parsed = ${amount}`);
+            return sum + (isNaN(amount) ? 0 : amount);
+        }, 0)
+    };
+
+    // Отладочная информация
+    console.log('Filter settings:', { dateFilter, statusFilter, searchQuery });
+    console.log('Total orders:', orders.length);
+    if (orders.length > 0) {
+        console.log('Sample order dates:');
+        orders.slice(0, 3).forEach((order, index) => {
+            const orderAny = order as any;
+            console.log(`Order ${order.id}:`, {
+                orderDate: order.orderDate,
+                createdAt: orderAny.createdAt,
+                updatedAt: orderAny.updatedAt
+            });
+        });
+    }
+    console.log('Filtered orders:', filteredOrders.length);
+    console.log('Filtered stats:', filteredStats);
+
     const handleEditClick = (order: OrderDTO) => {
         setOrderToEdit(order);
         openEditModal();
+    };
+
+    const handleViewClick = (order: OrderDTO) => {
+        setOrderToView(order);
+        openViewModal();
     };
 
     if (loading) {
@@ -249,26 +368,34 @@ export default function OrderManagementPage() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                 <Card className="bg-white dark:bg-gray-800">
                     <CardContent className="p-6">
-                        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Orders</h3>
-                        <p className="text-2xl font-semibold text-gray-900 dark:text-white">{stats.totalOrders}</p>
+                        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                            Total Orders {dateFilter !== 'all' && `(${dateFilter === 'today' ? 'Today' : dateFilter === 'week' ? 'Last 7 Days' : 'Last 30 Days'})`}
+                        </h3>
+                        <p className="text-2xl font-semibold text-gray-900 dark:text-white">{filteredStats.totalOrders}</p>
                     </CardContent>
                 </Card>
                 <Card className="bg-white dark:bg-gray-800">
                     <CardContent className="p-6">
-                        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Pending Orders</h3>
-                        <p className="text-2xl font-semibold text-yellow-600">{stats.pendingOrders}</p>
+                        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                            Pending Orders {dateFilter !== 'all' && `(${dateFilter === 'today' ? 'Today' : dateFilter === 'week' ? 'Last 7 Days' : 'Last 30 Days'})`}
+                        </h3>
+                        <p className="text-2xl font-semibold text-yellow-600">{filteredStats.pendingOrders}</p>
                     </CardContent>
                 </Card>
                 <Card className="bg-white dark:bg-gray-800">
                     <CardContent className="p-6">
-                        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Completed Orders</h3>
-                        <p className="text-2xl font-semibold text-green-600">{stats.completedOrders}</p>
+                        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                            Completed Orders {dateFilter !== 'all' && `(${dateFilter === 'today' ? 'Today' : dateFilter === 'week' ? 'Last 7 Days' : 'Last 30 Days'})`}
+                        </h3>
+                        <p className="text-2xl font-semibold text-green-600">{filteredStats.completedOrders}</p>
                     </CardContent>
                 </Card>
                 <Card className="bg-white dark:bg-gray-800">
                     <CardContent className="p-6">
-                        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Revenue</h3>
-                        <p className="text-2xl font-semibold text-gray-900 dark:text-white">{formatPrice(stats.totalRevenue)}</p>
+                        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                            Total Revenue {dateFilter !== 'all' && `(${dateFilter === 'today' ? 'Today' : dateFilter === 'week' ? 'Last 7 Days' : 'Last 30 Days'})`}
+                        </h3>
+                        <p className="text-2xl font-semibold text-gray-900 dark:text-white">{formatPrice(filteredStats.totalRevenue)}</p>
                     </CardContent>
                 </Card>
             </div>
@@ -321,6 +448,26 @@ export default function OrderManagementPage() {
 
             {/* Orders Table */}
             <Card className="bg-white dark:bg-gray-800">
+                <CardContent className="p-6 pb-0">
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                            Orders ({filteredOrders.length} 
+                            {dateFilter !== 'all' && ` - ${dateFilter === 'today' ? 'Today' : dateFilter === 'week' ? 'Last 7 Days' : 'Last 30 Days'}`}
+                            {statusFilter !== 'all' && ` - ${statusFilter}`}
+                            {searchQuery && ` - Search: "${searchQuery}"`})
+                        </h2>
+                        {dateFilter !== 'all' && (
+                            <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => setDateFilter('all')}
+                                className="text-xs"
+                            >
+                                Show All Time
+                            </Button>
+                        )}
+                    </div>
+                </CardContent>
                 <CardContent className="p-0">
                     <Table>
                         <TableHeader>
@@ -339,8 +486,25 @@ export default function OrderManagementPage() {
                                 <TableRow>
                                     <TableCell colSpan={7} className="text-center py-8">
                                         <div className="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
-                                            <p className="text-lg font-medium mb-2">No orders found</p>
-                                            <p className="text-sm">Try adjusting your search or filter criteria</p>
+                                            <p className="text-lg font-medium mb-2">
+                                                {orders.length === 0 ? 'No orders available' : 'No orders found'}
+                                            </p>
+                                            <p className="text-sm">
+                                                {orders.length === 0 
+                                                    ? 'No orders have been placed yet' 
+                                                    : `Try adjusting your filters. Currently showing ${dateFilter === 'today' ? 'today\'s' : dateFilter === 'week' ? 'last 7 days\'' : dateFilter === 'month' ? 'last 30 days\'' : 'all'} orders${statusFilter !== 'all' ? ` with status: ${statusFilter}` : ''}`
+                                                }
+                                            </p>
+                                            {dateFilter !== 'all' && (
+                                                <Button 
+                                                    variant="outline" 
+                                                    size="sm"
+                                                    onClick={() => setDateFilter('all')}
+                                                    className="mt-3"
+                                                >
+                                                    Show All Orders
+                                                </Button>
+                                            )}
                                         </div>
                                     </TableCell>
                                 </TableRow>
@@ -367,7 +531,9 @@ export default function OrderManagementPage() {
                                             </div>
                                         </TableCell>
                                         <TableCell>
-                                            <div className="font-medium">{formatPrice(order.total)}</div>
+                                            <div className="font-medium">
+                                                {formatPrice((order as any).total || order.totalAmount)}
+                                            </div>
                                         </TableCell>
                                         <TableCell>
                                             <Badge className={statusColors[order.status]}>
@@ -376,7 +542,12 @@ export default function OrderManagementPage() {
                                         </TableCell>
                                         <TableCell>
                                             <div className="flex flex-col">
-                                                <span className="text-sm">{order.createdAt ? formatDate(order.createdAt) : 'N/A'}</span>
+                                                <span className="text-sm">
+                                                    {(() => {
+                                                        const dateField = getOrderDate(order);
+                                                        return dateField ? formatDate(dateField) : 'N/A';
+                                                    })()}
+                                                </span>
                                             </div>
                                         </TableCell>
                                         <TableCell className="text-right">
@@ -384,7 +555,16 @@ export default function OrderManagementPage() {
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
+                                                    onClick={() => handleViewClick(order)}
+                                                    title="Просмотр деталей"
+                                                >
+                                                    <EyeIcon className="h-4 w-4" />
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
                                                     onClick={() => setSelectedOrder(order)}
+                                                    title="QR код"
                                                 >
                                                     <QrCodeIcon className="h-4 w-4" />
                                                 </Button>
@@ -392,6 +572,7 @@ export default function OrderManagementPage() {
                                                     variant="outline"
                                                     size="sm"
                                                     onClick={() => handleEditClick(order)}
+                                                    title="Редактировать"
                                                 >
                                                     <PencilIcon className="h-4 w-4" />
                                                 </Button>
@@ -452,6 +633,18 @@ export default function OrderManagementPage() {
                     }}
                     order={orderToEdit}
                     onOrderUpdated={fetchOrders}
+                />
+            )}
+
+            {/* View Order Details Modal */}
+            {orderToView && (
+                <OrderDetailsModal
+                    order={orderToView}
+                    isOpen={isViewModalOpen}
+                    onClose={() => {
+                        closeViewModal();
+                        setOrderToView(null);
+                    }}
                 />
             )}
             </div>

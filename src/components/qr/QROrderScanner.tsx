@@ -65,6 +65,14 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ order, onConfirm, onCancel,
                             <p className="text-base">{order.userName || 'Неизвестно'}</p>
                         </div>
                         <div>
+                            <p className="text-sm font-medium text-gray-500">Телефон</p>
+                            <p className="text-base">{order.userPhone || order.contactPhone || 'Не указан'}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm font-medium text-gray-500">Email</p>
+                            <p className="text-base">{order.userEmail || 'Не указан'}</p>
+                        </div>
+                        <div>
                             <p className="text-sm font-medium text-gray-500">Дата создания</p>
                             <p className="text-base">
                                 {order.orderDate ? new Date(order.orderDate).toLocaleString('ru-RU') : 'Неизвестно'}
@@ -77,10 +85,20 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ order, onConfirm, onCancel,
                         <div>
                             <p className="text-sm font-medium text-gray-500">Общая сумма</p>
                             <p className="text-lg font-semibold text-green-600">
-                                {order.totalAmount} ₽
+                                ₸{(order as any).total || order.totalAmount}
                             </p>
                         </div>
                     </div>
+                    
+                    {/* Заметки */}
+                    {order.notes && order.notes.trim() && (
+                        <div className="mt-4 pt-4 border-t">
+                            <p className="text-sm font-medium text-gray-500 mb-2">Заметки к заказу</p>
+                            <p className="text-base bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                                {order.notes}
+                            </p>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
 
@@ -97,12 +115,12 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ order, onConfirm, onCancel,
                                     <div className="flex-1">
                                         <p className="font-medium">{item.productName}</p>
                                         <p className="text-sm text-gray-500">
-                                            {item.unitPrice} ₽ × {item.quantity} шт.
+                                            ₸{item.unitPrice} × {item.quantity} шт.
                                         </p>
                                     </div>
                                     <div className="text-right">
                                         <p className="font-medium">
-                                            {item.totalPrice} ₽
+                                            ₸{item.totalPrice}
                                         </p>
                                     </div>
                                 </div>
@@ -117,7 +135,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ order, onConfirm, onCancel,
                     
                     <div className="flex justify-between items-center text-lg font-semibold">
                         <span>Итого:</span>
-                        <span>{order.totalAmount} ₽</span>
+                        <span>₸{(order as any).total || order.totalAmount}</span>
                     </div>
                 </CardContent>
             </Card>

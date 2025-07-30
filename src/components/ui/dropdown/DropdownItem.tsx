@@ -4,8 +4,8 @@ import Link from "next/link";
 interface DropdownItemProps {
   tag?: "a" | "button";
   href?: string;
-  onClick?: () => void;
-  onItemClick?: () => void;
+  onClick?: () => void | Promise<void>;
+  onItemClick?: () => void | Promise<void>;
   baseClassName?: string;
   className?: string;
   children: React.ReactNode;
@@ -22,12 +22,26 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
 }) => {
   const combinedClasses = `${baseClassName} ${className}`.trim();
 
-  const handleClick = (event: React.MouseEvent) => {
-    if (tag === "button") {
+  const handleClick = async (event: React.MouseEvent) => {
+    console.log('DropdownItem clicked');
+    
+    // Don't prevent default for logout actions, let them execute normally
+    if (tag === "button" && !onItemClick) {
       event.preventDefault();
     }
-    if (onClick) onClick();
-    if (onItemClick) onItemClick();
+    
+    try {
+      if (onClick) {
+        console.log('Calling onClick');
+        await onClick();
+      }
+      if (onItemClick) {
+        console.log('Calling onItemClick');
+        await onItemClick();
+      }
+    } catch (error) {
+      console.error('Error in dropdown item click:', error);
+    }
   };
 
   if (tag === "a" && href) {
