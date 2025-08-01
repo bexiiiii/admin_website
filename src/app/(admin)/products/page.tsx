@@ -34,6 +34,7 @@ import { ProductDTO, ProductCreateRequest, ProductUpdateRequest, ProductStats } 
 import { StoreDTO, CategoryDTO, PageableResponse } from '@/types/api';
 import { ValidationError } from '@/utils/validation';
 import { formatCurrency } from '@/utils/currency';
+import { FileUploadService } from '@/services/fileUploadService';
 import { PlusIcon, MagnifyingGlassIcon, PencilIcon, TrashIcon, ChartBarIcon } from '@heroicons/react/24/outline';
 import { RoleGuard } from '@/components/auth/RoleGuard';
 import { Permission } from '@/types/permission';
@@ -48,6 +49,7 @@ interface ProductFormData {
     storeId: number | null;
     categoryId: number | null;
     images: string[];
+    imageFiles: File[];
     expiryDate: string;
     status: 'AVAILABLE' | 'OUT_OF_STOCK' | 'DISCONTINUED' | 'PENDING';
     active: boolean;
@@ -88,7 +90,8 @@ export default function ProductsPage() {
         stockQuantity: 0,
         storeId: null,
         categoryId: null,
-        images: [''],
+        images: [],
+        imageFiles: [],
         expiryDate: '',
         status: 'AVAILABLE',
         active: true,
@@ -187,6 +190,15 @@ export default function ProductsPage() {
         fetchProducts();
         fetchStores();
         fetchCategories();
+        
+        return () => {
+            // Clean up object URLs when component unmounts
+            formData.images.forEach(image => {
+                if (image && image.startsWith('blob:')) {
+                    URL.revokeObjectURL(image);
+                }
+            });
+        };
     }, [currentPage, filterStore, filterCategory, filterStatus, searchQuery]);
 
     // Don't render anything until mounted
@@ -229,25 +241,49 @@ export default function ProductsPage() {
         });
     };
 
-    const handleImageChange = (index: number, value: string) => {
-        setFormData(prev => ({
-            ...prev,
-            images: prev.images.map((img, i) => i === index ? value : img)
-        }));
+    const handleImageFileChange = (index: number, file: File | null) => {
+        setFormData(prev => {
+            const newImageFiles = [...prev.imageFiles];
+            const newImages = [...prev.images];
+            
+            if (file) {
+                newImageFiles[index] = file;
+                // Create a preview URL for display
+                newImages[index] = URL.createObjectURL(file);
+            } else {
+                newImageFiles.splice(index, 1);
+                newImages.splice(index, 1);
+            }
+            
+            return {
+                ...prev,
+                imageFiles: newImageFiles,
+                images: newImages
+            };
+        });
     };
 
     const addImageField = () => {
         setFormData(prev => ({
             ...prev,
-            images: [...prev.images, '']
+            images: [...prev.images, ''],
+            imageFiles: [...prev.imageFiles]
         }));
     };
 
     const removeImageField = (index: number) => {
-        setFormData(prev => ({
-            ...prev,
-            images: prev.images.filter((_, i) => i !== index)
-        }));
+        setFormData(prev => {
+            // Revoke the object URL to prevent memory leaks
+            if (prev.images[index] && prev.images[index].startsWith('blob:')) {
+                URL.revokeObjectURL(prev.images[index]);
+            }
+            
+            return {
+                ...prev,
+                images: prev.images.filter((_, i) => i !== index),
+                imageFiles: prev.imageFiles.filter((_, i) => i !== index)
+            };
+        });
     };
 
     const validateForm = (): boolean => {
@@ -296,6 +332,13 @@ export default function ProductsPage() {
     };
 
     const resetForm = () => {
+        // Clean up object URLs to prevent memory leaks
+        formData.images.forEach(image => {
+            if (image && image.startsWith('blob:')) {
+                URL.revokeObjectURL(image);
+            }
+        });
+        
         setFormData({
             name: '',
             description: '',
@@ -305,7 +348,8 @@ export default function ProductsPage() {
             stockQuantity: 0,
             storeId: null,
             categoryId: null,
-            images: [''],
+            images: [],
+            imageFiles: [],
             expiryDate: '',
             status: 'AVAILABLE',
             active: true,
@@ -330,13 +374,50 @@ export default function ProductsPage() {
             stockQuantity: product.stockQuantity,
             storeId: product.storeId,
             categoryId: product.categoryId,
-            images: product.images && product.images.length > 0 ? product.images : [''],
+            images: product.images && product.images.length > 0 ? product.images : [],
+            imageFiles: [],
             expiryDate: product.expiryDate ? product.expiryDate.split('T')[0] : '',
             status: product.status,
             active: product.active,
         });
         setErrors([]);
         openModal();
+    };
+
+    const uploadImages = async (files: File[]): Promise<string[]> => {
+        const uploadedUrls: string[] = [];
+        
+        for (const file of files) {
+            if (file) {
+                try {
+                    // Validate file before upload
+                    const validationError = FileUploadService.validateImageFile(file);
+                    if (validationError) {
+                        console.error('File validation error:', validationError);
+                        // Fallback to base64 encoding
+                        const base64 = await FileUploadService.convertToBase64(file);
+                        uploadedUrls.push(base64);
+                        continue;
+                    }
+
+                    // Upload file using the service
+                    const uploadResponse = await FileUploadService.uploadImage(file);
+                    uploadedUrls.push(uploadResponse.url);
+                } catch (error) {
+                    console.error('Error uploading image:', error);
+                    // Fallback to base64 encoding
+                    try {
+                        const base64 = await FileUploadService.convertToBase64(file);
+                        uploadedUrls.push(base64);
+                    } catch (base64Error) {
+                        console.error('Error converting to base64:', base64Error);
+                        // Skip this file if both upload and base64 fail
+                    }
+                }
+            }
+        }
+        
+        return uploadedUrls;
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -356,6 +437,13 @@ export default function ProductsPage() {
                 return;
             }
 
+            // Upload new images if any
+            let imageUrls = formData.images.filter(img => img.trim() && !img.startsWith('blob:'));
+            if (formData.imageFiles.length > 0) {
+                const uploadedUrls = await uploadImages(formData.imageFiles);
+                imageUrls = [...imageUrls, ...uploadedUrls];
+            }
+
             // Format the expiry date to include time if it exists
             // Convert null values to undefined for API compatibility
             const formattedData: ProductUpdateRequest = {
@@ -367,7 +455,7 @@ export default function ProductsPage() {
                 stockQuantity: formData.stockQuantity,
                 storeId: formData.storeId ?? undefined,
                 categoryId: formData.categoryId ?? undefined,
-                images: formData.images.filter(img => img.trim()),
+                images: imageUrls,
                 expiryDate: formData.expiryDate ? `${formData.expiryDate}T00:00:00.000Z` : undefined,
                 status: formData.status,
                 active: formData.active,
@@ -387,7 +475,7 @@ export default function ProductsPage() {
                     stockQuantity: formData.stockQuantity,
                     storeId: formData.storeId ?? undefined,
                     categoryId: formData.categoryId ?? undefined,
-                    images: formData.images.filter(img => img.trim()),
+                    images: imageUrls,
                     expiryDate: formData.expiryDate ? `${formData.expiryDate}T00:00:00.000Z` : undefined,
                     status: formData.status,
                     active: formData.active,
@@ -1000,28 +1088,62 @@ export default function ProductsPage() {
                             <div>
                                 <Label>Изображения товара</Label>
                                 <div className="space-y-3">
-                                    {formData.images.map((image, index) => (
-                                        <div key={index} className="flex items-center space-x-3">
-                                            <Input
-                                                type="url"
-                                                value={image}
-                                                onChange={(e) => handleImageChange(index, e.target.value)}
-                                                placeholder="Введите URL изображения"
-                                                className="flex-1"
-                                            />
-                                            {formData.images.length > 1 && (
-                                                <Button
-                                                    type="button"
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => removeImageField(index)}
-                                                    className="text-red-600 hover:text-red-700"
-                                                >
-                                                    Удалить
-                                                </Button>
-                                            )}
+                                    {formData.images.length === 0 ? (
+                                        <div className="space-y-2">
+                                            <div className="flex items-center space-x-3">
+                                                <Input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={(e) => {
+                                                        const file = e.target.files?.[0] || null;
+                                                        handleImageFileChange(0, file);
+                                                    }}
+                                                    className="flex-1"
+                                                />
+                                            </div>
                                         </div>
-                                    ))}
+                                    ) : (
+                                        formData.images.map((image, index) => (
+                                            <div key={index} className="space-y-2">
+                                                <div className="flex items-center space-x-3">
+                                                    <Input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        onChange={(e) => {
+                                                            const file = e.target.files?.[0] || null;
+                                                            handleImageFileChange(index, file);
+                                                        }}
+                                                        className="flex-1"
+                                                    />
+                                                    {formData.images.length > 1 && (
+                                                        <Button
+                                                            type="button"
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={() => removeImageField(index)}
+                                                            className="text-red-600 hover:text-red-700"
+                                                        >
+                                                            Удалить
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                                {/* Image preview */}
+                                                {image && (
+                                                    <div className="relative w-32 h-32 border border-gray-300 rounded-lg overflow-hidden">
+                                                        <img
+                                                            src={image}
+                                                            alt={`Превью ${index + 1}`}
+                                                            className="w-full h-full object-cover"
+                                                            onError={(e) => {
+                                                                const target = e.target as HTMLImageElement;
+                                                                target.style.display = 'none';
+                                                            }}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))
+                                    )}
                                     <Button
                                         type="button"
                                         variant="outline"

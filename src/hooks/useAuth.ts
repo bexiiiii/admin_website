@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
+import { BASE_URL } from '@/config/api';
+
 interface User {
   id: number;
   firstName: string;
@@ -42,7 +44,7 @@ export const useAuth = () => {
 
   const login = useCallback(async (email: string, password: string) => {
     try {
-      const response = await fetch('https://foodsave.kz/api/auth/login', {
+      const response = await fetch(`${BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -78,7 +80,7 @@ export const useAuth = () => {
       if (token) {
         // Попытаемся вызвать logout на бэкенде
         try {
-          await fetch('https://foodsave.kz/api/auth/logout', {
+          await fetch(`${BASE_URL}/auth/logout`, {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -106,7 +108,7 @@ export const useAuth = () => {
       
       if (token) {
         try {
-          const response = await fetch('https://foodsave.kz/api/auth/me', {
+          const response = await fetch(`${BASE_URL}/auth/me`, {
             headers: {
               'Authorization': `Bearer ${token}`,
             },
@@ -145,7 +147,7 @@ export const useAuth = () => {
   // Функция для смены роли (для разработки)
   const switchRole = useCallback(async (role: string) => {
     try {
-      const response = await fetch(`https://foodsave.kz/api/auth/dev-login?role=${role}`, {
+      const response = await fetch(`${BASE_URL}/auth/dev-login?role=${role}`, {
         method: 'POST',
       });
       
