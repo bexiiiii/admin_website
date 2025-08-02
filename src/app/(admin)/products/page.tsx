@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'react-hot-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
+import { validateImageFile } from '@/utils/fileValidation';
 import {
     Table,
     TableBody,
@@ -242,6 +243,13 @@ export default function ProductsPage() {
     };
 
     const handleImageFileChange = (index: number, file: File | null) => {
+        if (file) {
+            // Валидация файла
+            if (!validateImageFile(file)) {
+                return;
+            }
+        }
+
         setFormData(prev => {
             const newImageFiles = [...prev.imageFiles];
             const newImages = [...prev.images];

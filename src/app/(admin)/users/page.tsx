@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'react-hot-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
+import { validateImageFile } from '@/utils/fileValidation';
 import {
     Table,
     TableBody,
@@ -148,6 +149,12 @@ export default function UsersPage() {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
+            // Валидация файла
+            if (!validateImageFile(file)) {
+                e.target.value = ''; // Очищаем input
+                return;
+            }
+
             setSelectedFile(file);
             const reader = new FileReader();
             reader.onloadend = () => {

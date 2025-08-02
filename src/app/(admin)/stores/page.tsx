@@ -234,6 +234,7 @@ export default function StoresPage() {
             closingHours: store.closingHours || '18:00',
             category: store.category || '',
             active: store.active,
+            managerId: store.managerId || undefined, // Добавляем managerId
             user: {
                 email: store.ownerName || '',
                 role: 'STORE_OWNER'

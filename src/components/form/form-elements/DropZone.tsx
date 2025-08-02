@@ -2,11 +2,57 @@
 import React from "react";
 import ComponentCard from "../../common/ComponentCard";
 import { useDropzone } from "react-dropzone";
+import { validateImageFile, MAX_FILE_SIZE, formatFileSize } from "@/utils/fileValidation";
+import { toast } from "sonner";
 
-const DropzoneComponent: React.FC = () => {
-  const onDrop = (acceptedFiles: File[]) => {
-    console.log("Files dropped:", acceptedFiles);
-    // Handle file uploads here
+interface DropzoneComponentProps {
+  onFilesAccepted?: (files: File[]) => void;
+  maxFiles?: number;
+  title?: string;
+  description?: string;
+}
+
+const DropzoneComponent: React.FC<DropzoneComponentProps> = ({ 
+  onFilesAccepted,
+  maxFiles = 10,
+  title = "Зона сброса",
+  description
+}) => {
+  const onDrop = (acceptedFiles: File[], rejectedFiles: any[]) => {
+    // Валидация принятых файлов
+    const validFiles: File[] = [];
+    
+    acceptedFiles.forEach(file => {
+      if (validateImageFile(file)) {
+        validFiles.push(file);
+      }
+    });
+    
+    // Обработка отклоненных файлов
+    rejectedFiles.forEach(({ file, errors }) => {
+      errors.forEach((error: any) => {
+        switch (error.code) {
+          case 'file-too-large':
+            toast.error(`Файл "${file.name}" слишком большой. Максимальный размер: ${formatFileSize(MAX_FILE_SIZE)}`);
+            break;
+          case 'file-invalid-type':
+            toast.error(`Файл "${file.name}" имеет неподдерживаемый тип. Поддерживаются: JPEG, PNG, GIF, WebP`);
+            break;
+          case 'too-many-files':
+            toast.error(`Слишком много файлов. Максимум: ${maxFiles}`);
+            break;
+          default:
+            toast.error(`Ошибка при загрузке файла "${file.name}": ${error.message}`);
+        }
+      });
+    });
+    
+    // Если есть валидные файлы, передаем их наверх
+    if (validFiles.length > 0) {
+      console.log("Files accepted:", validFiles);
+      onFilesAccepted?.(validFiles);
+      toast.success(`Принято файлов: ${validFiles.length}`);
+    }
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -14,16 +60,20 @@ const DropzoneComponent: React.FC = () => {
     accept: {
       "image/png": [],
       "image/jpeg": [],
+      "image/jpg": [],
       "image/webp": [],
-      "image/svg+xml": [],
+      "image/gif": [],
     },
+    maxFiles,
+    maxSize: MAX_FILE_SIZE,
+    multiple: maxFiles > 1,
   });
   return (
-    <ComponentCard title="Зона сброса">
+    <ComponentCard title={title}>
       <div className="transition border border-gray-300 border-dashed cursor-pointer dark:hover:border-brand-500 dark:border-gray-700 rounded-xl hover:border-brand-500">
         <form
           {...getRootProps()}
-          className={`dropzone rounded-xl   border-dashed border-gray-300 p-7 lg:p-10
+          className={`dropzone rounded-xl border-dashed border-gray-300 p-7 lg:p-10
         ${isDragActive
               ? "border-brand-500 bg-gray-100 dark:bg-gray-800"
               : "border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-gray-900"
@@ -37,7 +87,7 @@ const DropzoneComponent: React.FC = () => {
           <div className="dz-message flex flex-col items-center m-0!">
             {/* Icon Container */}
             <div className="mb-[22px] flex justify-center">
-              <div className="flex h-[68px] w-[68px]  items-center justify-center rounded-full bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-400">
+              <div className="flex h-[68px] w-[68px] items-center justify-center rounded-full bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-400">
                 <svg
                   className="fill-current"
                   width="29"
@@ -56,15 +106,15 @@ const DropzoneComponent: React.FC = () => {
 
             {/* Text Content */}
             <h4 className="mb-3 font-semibold text-gray-800 text-theme-xl dark:text-white/90">
-              {isDragActive ? "Перетащите файлы сюда" : "Перетащите и бросьте файлы сюда"}
+              {isDragActive ? "Отпустите файлы здесь" : "Перетащите файлы сюда"}
             </h4>
 
-            <span className=" text-center mb-5 block w-full max-w-[290px] text-sm text-gray-700 dark:text-gray-400">
-              Перетащите и бросьте ваши изображения PNG, JPG, WebP, SVG сюда или просмотрите
+            <span className="text-center mb-5 block w-full max-w-[320px] text-sm text-gray-700 dark:text-gray-400">
+              {description || `Перетащите изображения (JPEG, PNG, GIF, WebP) сюда или нажмите для выбора. Максимум ${maxFiles} файлов по ${formatFileSize(MAX_FILE_SIZE)} каждый.`}
             </span>
 
             <span className="font-medium underline text-theme-sm text-brand-500">
-              Просмотреть файл
+              Выбрать файлы
             </span>
           </div>
         </form>

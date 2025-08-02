@@ -186,6 +186,8 @@ export interface StoreDTO {
     active: boolean;
     ownerId: number;
     ownerName: string;
+    managerId?: number | null;
+    managerName?: string | null;
     createdAt: string;
     updatedAt: string;
     user: UserDTO;
