@@ -196,6 +196,7 @@ export default function OrderManagementPage() {
     const filteredOrders = orders.filter(order => {
         const matchesSearch = 
             order.id.toString().includes(searchQuery) ||
+            order.orderNumber?.toLowerCase().includes(searchQuery.toLowerCase()) ||
             order.userName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
             order.items.some(item => 
                 item.productName?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -407,7 +408,7 @@ export default function OrderManagementPage() {
                         <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                         <Input
                             type="text"
-                            placeholder="Ищите заказы по ID, имени клиента или товару..."
+                            placeholder="Ищите заказы по ID, номеру заказа, имени клиента или товару..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="pl-10 bg-white dark:bg-gray-800"
@@ -512,7 +513,9 @@ export default function OrderManagementPage() {
                                 filteredOrders.map((order) => (
                                     <TableRow key={order.id}>
                                         <TableCell>
-                                            <div className="font-medium">#{order.id}</div>
+                                            <div className="font-medium">
+                                                {order.orderNumber ? `#${order.orderNumber}` : `#${order.id}`}
+                                            </div>
                                         </TableCell>
                                         <TableCell>
                                             <div>

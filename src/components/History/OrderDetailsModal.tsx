@@ -42,7 +42,9 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
             <div className="space-y-6">
                 {/* Header */}
                 <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-semibold">Детали заказа - #{order.id}</h2>
+                    <h2 className="text-2xl font-semibold">
+                        Детали заказа - {order.orderNumber ? `#${order.orderNumber}` : `#${order.id}`}
+                    </h2>
                     <Badge variant={getPaymentStatusColor(order.paymentStatus)}>
                         {order.paymentStatus}
                     </Badge>
@@ -127,8 +129,8 @@ const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                             <p>{order.paymentMethod}</p>
                         </div>
                         <div>
-                            <p className="text-sm text-muted-foreground">ID Заказа</p>
-                            <p>{order.id}</p>
+                            <p className="text-sm text-muted-foreground">Номер заказа</p>
+                            <p>{order.orderNumber || order.id}</p>
                         </div>
                     </div>
                 </div>

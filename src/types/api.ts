@@ -140,6 +140,7 @@ export interface OrderDTO {
     storeLogo?: string;
     storeAddress?: string;
     storePhone?: string;
+    orderNumber?: string;
     items: OrderItemDTO[];
     status: 'PENDING' | 'CONFIRMED' | 'PREPARING' | 'READY_FOR_PICKUP' | 'OUT_FOR_DELIVERY' | 'DELIVERED' | 'CANCELLED' | 'REFUNDED';
     deliveryAddress: string;
