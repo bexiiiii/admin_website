@@ -199,6 +199,26 @@ export default function UsersPage() {
         }
     };
 
+    const getRegistrationMeta = (user: UserDTO) => {
+        const source = user.registrationSource ?? (user.telegramUser ? 'TELEGRAM' : 'WEB');
+        if (user.telegramUser || source === 'TELEGRAM') {
+            return {
+                label: 'Telegram',
+                className: 'border-blue-400 text-blue-500 bg-blue-500/10 dark:border-blue-500',
+            };
+        }
+        if (source === 'ADMIN') {
+            return {
+                label: 'Админ',
+                className: 'border-purple-400 text-purple-500 bg-purple-500/10 dark:border-purple-500',
+            };
+        }
+        return {
+            label: 'Сайт',
+            className: 'border-gray-300 text-gray-600 bg-gray-100 dark:bg-gray-800/60 dark:text-gray-200',
+        };
+    };
+
     const formatDate = (dateString?: string) => {
         if (!dateString) return 'N/A';
         return new Date(dateString).toLocaleDateString('ru-RU', {
@@ -208,11 +228,16 @@ export default function UsersPage() {
         });
     };
 
-    const filteredUsers = (users || []).filter(user =>
-        user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.lastName.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const normalizedQuery = searchQuery.toLowerCase();
+    const filteredUsers = (users || []).filter(user => {
+        const matchesEmail = user.email.toLowerCase().includes(normalizedQuery);
+        const matchesFirstName = user.firstName.toLowerCase().includes(normalizedQuery);
+        const matchesLastName = user.lastName.toLowerCase().includes(normalizedQuery);
+        const matchesTelegram = user.telegramUsername?.toLowerCase().includes(normalizedQuery) ||
+            user.telegramUserId?.toString().includes(normalizedQuery);
+        const matchesSource = user.registrationSource?.toLowerCase().includes(normalizedQuery);
+        return matchesEmail || matchesFirstName || matchesLastName || !!matchesTelegram || !!matchesSource;
+    });
 
     if (loading) {
         return (
@@ -270,6 +295,7 @@ export default function UsersPage() {
                                     <TableHead>Пользователь</TableHead>
                                     <TableHead>Email</TableHead>
                                     <TableHead>Роль</TableHead>
+                                    <TableHead>Источник</TableHead>
                                     <TableHead>Статус</TableHead>
                                     <TableHead>Создан</TableHead>
                                     <TableHead className="text-right">Действия</TableHead>
@@ -278,19 +304,21 @@ export default function UsersPage() {
                             <TableBody>
                                 {filteredUsers.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={6} className="text-center py-4">
+                                        <TableCell colSpan={7} className="text-center py-4">
                                             Пользователи не найдены
                                         </TableCell>
                                     </TableRow>
                                 ) : (
-                                    filteredUsers.map((user) => (
-                                        <TableRow key={user.id}>
+                                    filteredUsers.map((user) => {
+                                        const registrationMeta = getRegistrationMeta(user);
+                                        return (
+                                            <TableRow key={user.id}>
                                             <TableCell>
                                                 <div className="flex items-center gap-3">
                                                     <div className="relative h-10 w-10 rounded-full overflow-hidden">
-                                                        {user.profilePicture ? (
+                                                        {(user.profilePicture || user.telegramPhotoUrl) ? (
                                                             <Image
-                                                                src={user.profilePicture}
+                                                                src={user.profilePicture || user.telegramPhotoUrl || ''}
                                                                 alt={`${user.firstName} ${user.lastName}`}
                                                                 fill
                                                                 className="object-cover"
@@ -298,7 +326,7 @@ export default function UsersPage() {
                                                         ) : (
                                                             <div className="h-full w-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
                                                                 <span className="text-lg font-semibold text-gray-500 dark:text-gray-400">
-                                                                    {user.firstName[0]}{user.lastName[0]}
+                                                                    {`${user.firstName?.[0] ?? ''}${user.lastName?.[0] ?? ''}` || 'U'}
                                                                 </span>
                                                             </div>
                                                         )}
@@ -315,6 +343,26 @@ export default function UsersPage() {
                                             </TableCell>
                                             <TableCell>{user.email}</TableCell>
                                             <TableCell>{getRoleDisplayName(user.role)}</TableCell>
+                                            <TableCell>
+                                                <div className="flex flex-col gap-1">
+                                                    <Badge
+                                                        variant="outline"
+                                                        className={`w-fit text-xs ${registrationMeta.className}`}
+                                                    >
+                                                        {registrationMeta.label}
+                                                    </Badge>
+                                                    {user.telegramUsername && (
+                                                        <span className="text-xs text-blue-500 dark:text-blue-400">
+                                                            @{user.telegramUsername}
+                                                        </span>
+                                                    )}
+                                                    {user.telegramUserId && (
+                                                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                            TG ID: {user.telegramUserId}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </TableCell>
                                             <TableCell>
                                                 <Badge variant={getStatusColor(user.active)}>
                                                     {user.active ? 'Активен' : 'Неактивен'}
@@ -353,8 +401,9 @@ export default function UsersPage() {
                                                     </Button>
                                                 </div>
                                             </TableCell>
-                                        </TableRow>
-                                    ))
+                                            </TableRow>
+                                        );
+                                    })
                                 )}
                             </TableBody>
                         </Table>

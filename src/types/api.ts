@@ -43,6 +43,13 @@ export interface UserDTO {
     active: boolean;
     createdAt?: string;
     updatedAt?: string;
+    telegramUser?: boolean;
+    telegramUserId?: number;
+    telegramUsername?: string;
+    telegramPhotoUrl?: string;
+    telegramLanguageCode?: string;
+    telegramRegisteredAt?: string;
+    registrationSource?: string;
 }
 
 export interface UserCreateRequest {
@@ -238,7 +245,7 @@ export interface NotificationDTO {
     id: string;
     title: string;
     message: string;
-    type: 'INFO' | 'SUCCESS' | 'WARNING' | 'ERROR' | 'ORDER_UPDATE' | 'PROMOTION';
+    type: 'INFO' | 'SUCCESS' | 'WARNING' | 'ERROR' | 'ORDER_UPDATE' | 'PROMOTION' | 'TELEGRAM';
     status: 'read' | 'unread';
     userId: number;
     relatedEntityId?: number;

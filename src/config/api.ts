@@ -1,4 +1,7 @@
-export const BASE_URL = 'https://foodsave.kz/api';
+export const BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL?.trim() && process.env.NEXT_PUBLIC_API_URL.trim().length > 0
+    ? process.env.NEXT_PUBLIC_API_URL.trim()
+    : 'http://localhost:8080/api';
 
 export const API_ENDPOINTS = {
   AUTH: {
@@ -56,6 +59,7 @@ export const API_ENDPOINTS = {
     MARK_READ: '/notifications/mark-read',
     MARK_ALL_READ: '/notifications/mark-all-read',
     UNREAD_COUNT: '/api/notifications/unread-count',
+    TELEGRAM_BROADCAST: '/notifications/telegram/broadcast',
   },
   ANALYTICS: {
     BASE: '/analytics',

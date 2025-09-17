@@ -9,6 +9,10 @@ export interface UserDTO {
   enabled: boolean;
   createdAt: string;
   updatedAt: string;
+  telegramUser?: boolean;
+  telegramUserId?: number;
+  telegramUsername?: string;
+  registrationSource?: string;
 }
 
 export interface PageableResponse<T> {
