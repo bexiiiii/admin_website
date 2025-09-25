@@ -20,6 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { storeApi } from '@/services/api';
 import { categoryApi } from '@/services/api/categories';
 import { userApi } from '@/services/api/users';
+import { FileUploadService } from '@/services/fileUploadService';
 import { useModal } from '@/hooks/useModal';
 import { useToast } from "@/components/ui/use-toast";
 import { StoreDTO, PageableResponse, CategoryDTO } from '@/types/api';
@@ -66,6 +67,9 @@ export default function StoresPage() {
     const [submitting, setSubmitting] = useState(false);
     const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
     const [error, setError] = useState<string>('');
+    const [logoUploadError, setLogoUploadError] = useState<string | null>(null);
+    const [logoUploading, setLogoUploading] = useState(false);
+    const [logoFilename, setLogoFilename] = useState<string>('');
     const { toast } = useToast();
     const [searchQuery, setSearchQuery] = useState('');
     const { isOpen, openModal, closeModal } = useModal();
@@ -219,6 +223,18 @@ export default function StoresPage() {
         }
     };
 
+    const getFileNameFromUrl = (url?: string | null) => {
+        if (!url) {
+            return '';
+        }
+        try {
+            const pathname = new URL(url).pathname;
+            return pathname.split('/').pop() ?? '';
+        } catch (e) {
+            return url.split('/').pop() ?? '';
+        }
+    };
+
     const handleEdit = (store: StoreDTO) => {
         console.log('Editing store:', store);
         setSelectedStore(store);
@@ -240,6 +256,8 @@ export default function StoresPage() {
                 role: 'STORE_OWNER'
             }
         });
+        setLogoFilename(getFileNameFromUrl(store.logo));
+        setLogoUploadError(null);
         openModal();
     };
 
@@ -250,6 +268,15 @@ export default function StoresPage() {
             toast({
                 title: 'Ошибка валидации',
                 description: 'Пожалуйста, исправьте ошибки валидации',
+                variant: 'destructive',
+            });
+            return;
+        }
+
+        if (logoUploading) {
+            toast({
+                title: 'Загрузка логотипа',
+                description: 'Дождитесь окончания загрузки изображения перед сохранением.',
                 variant: 'destructive',
             });
             return;
@@ -328,6 +355,57 @@ export default function StoresPage() {
         }
     };
 
+    const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) {
+            return;
+        }
+
+        const validationError = FileUploadService.validateImageFile(file);
+        if (validationError) {
+            setLogoUploadError(validationError);
+            event.target.value = '';
+            return;
+        }
+
+        setLogoUploadError(null);
+        setLogoUploading(true);
+
+        try {
+            const uploadResult = await FileUploadService.uploadStoreLogo(file);
+            setFormData(prev => ({
+                ...prev,
+                logo: uploadResult.url,
+            }));
+            setLogoFilename(uploadResult.filename || file.name);
+            setValidationErrors(prev => prev.filter(error => error.field !== 'logo'));
+            toast({
+                title: 'Успешная загрузка',
+                description: 'Логотип успешно загружен.',
+            });
+        } catch (uploadError) {
+            console.error('Logo upload failed:', uploadError);
+            setLogoUploadError('Не удалось загрузить изображение. Попробуйте позже.');
+            toast({
+                title: 'Ошибка загрузки',
+                description: 'Не удалось загрузить изображение. Попробуйте позже.',
+                variant: 'destructive',
+            });
+        } finally {
+            setLogoUploading(false);
+            event.target.value = '';
+        }
+    };
+
+    const handleRemoveLogo = () => {
+        setFormData(prev => ({
+            ...prev,
+            logo: '',
+        }));
+        setLogoFilename('');
+        setLogoUploadError(null);
+    };
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         console.log('Form field changed:', name, value);
@@ -391,6 +469,9 @@ export default function StoresPage() {
             }
         });
         setValidationErrors([]);
+        setLogoUploadError(null);
+        setLogoFilename('');
+        setLogoUploading(false);
     };
 
     if (loading) {
@@ -454,6 +535,9 @@ export default function StoresPage() {
                                 role: 'STORE_OWNER'
                             }
                         });
+                        setLogoFilename('');
+                        setLogoUploadError(null);
+                        setLogoUploading(false);
                         openModal();
                     }}
                 >
@@ -831,21 +915,50 @@ export default function StoresPage() {
                             )}
                         </div>
 
-                        {/* Logo URL */}
+                        {/* Logo Upload */}
                         <div>
-                            <Label htmlFor="logo">URL логотипа</Label>
-                            <Input
-                                id="logo"
-                                name="logo"
-                                type="url"
-                                value={formData.logo}
-                                onChange={handleChange}
-                                placeholder="Введите URL логотипа"
-                                className={getFieldError('logo') ? 'border-red-500' : ''}
-                            />
-                            {getFieldError('logo') && (
-                                <p className="mt-1 text-sm text-red-500">{getFieldError('logo')}</p>
-                            )}
+                            <Label htmlFor="logo">Логотип заведения</Label>
+                            <div className="mt-2 space-y-3">
+                                {formData.logo && (
+                                    <div className="flex items-center space-x-4">
+                                        <div className="h-16 w-16 overflow-hidden rounded-md border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
+                                            <img
+                                                src={formData.logo}
+                                                alt="Предпросмотр логотипа"
+                                                className="h-full w-full object-cover"
+                                            />
+                                        </div>
+                                        <div className="text-sm text-gray-600 dark:text-gray-300">
+                                            <p className="font-medium break-all">{logoFilename || 'Загруженный логотип'}</p>
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={handleRemoveLogo}
+                                                disabled={logoUploading}
+                                            >
+                                                Удалить логотип
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
+                                <Input
+                                    id="logo"
+                                    type="file"
+                                    accept={FileUploadService.ALLOWED_IMAGE_TYPES.join(',')}
+                                    onChange={handleLogoUpload}
+                                    disabled={logoUploading}
+                                />
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    Поддерживаемые форматы: {FileUploadService.SUPPORTED_FORMATS_LABEL}. Максимальный размер 5MB.
+                                </p>
+                                {logoUploading && (
+                                    <p className="text-sm text-gray-500">Загружается логотип...</p>
+                                )}
+                                {logoUploadError && (
+                                    <p className="text-sm text-red-500">{logoUploadError}</p>
+                                )}
+                            </div>
                         </div>
 
                         {/* Active Toggle */}
@@ -876,7 +989,7 @@ export default function StoresPage() {
                             </Button>
                             <Button
                                 type="submit"
-                                disabled={submitting}
+                                disabled={submitting || logoUploading}
                                 className="bg-blue-600 hover:bg-blue-700"
                             >
                                 {submitting ? 'Сохранение...' : selectedStore ? 'Обновить заведение' : 'Создать заведение'}

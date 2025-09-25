@@ -18,6 +18,8 @@ export interface MultipleUploadResponse {
 
 export class FileUploadService {
     private static readonly UPLOAD_ENDPOINT = '/api/upload';
+    static readonly ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'] as const;
+    static readonly SUPPORTED_FORMATS_LABEL = 'JPEG, PNG, GIF, WebP';
 
     /**
      * Upload a single image file
@@ -62,6 +64,26 @@ export class FileUploadService {
     }
 
     /**
+     * Upload a store logo image
+     */
+    static async uploadStoreLogo(file: File): Promise<UploadResponse> {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await axiosInstance.post<UploadResponse>(
+            `${this.UPLOAD_ENDPOINT}/store-logo`,
+            formData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            }
+        );
+
+        return response.data;
+    }
+
+    /**
      * Delete an uploaded image
      */
     static async deleteImage(filename: string): Promise<void> {
@@ -75,14 +97,14 @@ export class FileUploadService {
      */
     static validateImageFile(file: File): string | null {
         const maxSize = 5 * 1024 * 1024; // 5MB
-        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
 
         if (file.size > maxSize) {
             return 'Размер файла не должен превышать 5MB';
         }
 
-        if (!allowedTypes.includes(file.type.toLowerCase())) {
-            return 'Разрешены только изображения (JPEG, PNG, GIF, WebP)';
+        const fileType = file.type?.toLowerCase();
+        if (!fileType || !this.ALLOWED_IMAGE_TYPES.includes(fileType)) {
+            return `Разрешены только изображения (${this.SUPPORTED_FORMATS_LABEL})`;
         }
 
         return null;
