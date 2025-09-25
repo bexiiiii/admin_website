@@ -950,7 +950,7 @@ export default function StoresPage() {
                                     disabled={logoUploading}
                                 />
                                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                                    Поддерживаемые форматы: {FileUploadService.SUPPORTED_FORMATS_LABEL}. Максимальный размер 5MB.
+                                    Поддерживаемые форматы: {FileUploadService.SUPPORTED_FORMATS_LABEL}. Максимальный размер 10MB.
                                 </p>
                                 {logoUploading && (
                                     <p className="text-sm text-gray-500">Загружается логотип...</p>

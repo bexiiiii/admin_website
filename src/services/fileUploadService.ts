@@ -16,8 +16,10 @@ export interface MultipleUploadResponse {
     errorCount?: number;
 }
 
+const TEN_MB = 10 * 1024 * 1024;
+
 export class FileUploadService {
-    private static readonly UPLOAD_ENDPOINT = '/api/upload';
+    private static readonly UPLOAD_ENDPOINT = '/upload';
     static readonly ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'] as const;
     static readonly SUPPORTED_FORMATS_LABEL = 'JPEG, PNG, GIF, WebP';
 
@@ -96,10 +98,10 @@ export class FileUploadService {
      * Validate file before upload
      */
     static validateImageFile(file: File): string | null {
-        const maxSize = 5 * 1024 * 1024; // 5MB
+        const maxSize = TEN_MB; // 10MB
 
         if (file.size > maxSize) {
-            return 'Размер файла не должен превышать 5MB';
+            return 'Размер файла не должен превышать 10MB';
         }
 
         const fileType = file.type?.toLowerCase();
