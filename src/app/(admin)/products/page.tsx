@@ -43,7 +43,6 @@ import { Permission } from '@/types/permission';
 interface ProductFormData {
     name: string;
     description: string;
-    price: number;
     originalPrice: number;
     discountPercentage: number;
     stockQuantity: number;
@@ -85,7 +84,6 @@ export default function ProductsPage() {
     const [formData, setFormData] = useState<ProductFormData>({
         name: '',
         description: '',
-        price: 0,
         originalPrice: 0,
         discountPercentage: 0,
         stockQuantity: 0,
@@ -307,8 +305,8 @@ export default function ProductsPage() {
             validationErrors.push({ field: 'description', message: 'Описание не может превышать 1000 символов' });
         }
 
-        if (formData.price <= 0) {
-            validationErrors.push({ field: 'price', message: 'Цена должна быть больше 0' });
+        if (formData.originalPrice <= 0) {
+            validationErrors.push({ field: 'originalPrice', message: 'Оригинальная цена должна быть больше 0' });
         }
 
         if (formData.stockQuantity < 0) {
@@ -321,10 +319,6 @@ export default function ProductsPage() {
 
         if (!formData.categoryId) {
             validationErrors.push({ field: 'categoryId', message: 'Категория обязательна' });
-        }
-
-        if (formData.originalPrice && formData.originalPrice < formData.price) {
-            validationErrors.push({ field: 'originalPrice', message: 'Оригинальная цена не может быть меньше текущей' });
         }
 
         if (formData.discountPercentage && (formData.discountPercentage < 0 || formData.discountPercentage > 100)) {
@@ -376,7 +370,6 @@ export default function ProductsPage() {
         setFormData({
             name: product.name,
             description: product.description || '',
-            price: Number(product.price),
             originalPrice: Number(product.originalPrice) || 0,
             discountPercentage: product.discountPercentage || 0,
             stockQuantity: product.stockQuantity,
@@ -457,7 +450,6 @@ export default function ProductsPage() {
             const formattedData: ProductUpdateRequest = {
                 name: formData.name,
                 description: formData.description,
-                price: formData.price,
                 originalPrice: formData.originalPrice,
                 discountPercentage: formData.discountPercentage,
                 stockQuantity: formData.stockQuantity,
@@ -477,7 +469,6 @@ export default function ProductsPage() {
                 const createData: ProductCreateRequest = {
                     name: formData.name,
                     description: formData.description,
-                    price: formData.price,
                     originalPrice: formData.originalPrice,
                     discountPercentage: formData.discountPercentage,
                     stockQuantity: formData.stockQuantity,
@@ -963,25 +954,7 @@ export default function ProductsPage() {
                             {/* Price and Category */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div>
-                                    <Label htmlFor="price">Цена *</Label>
-                                    <Input
-                                        id="price"
-                                        name="price"
-                                        type="number"
-                                        step="0.01"
-                                        min="0"
-                                        value={formData.price}
-                                        onChange={handleInputChange}
-                                        placeholder="0.00"
-                                        className={getFieldError('price') ? 'border-red-500' : ''}
-                                    />
-                                    {getFieldError('price') && (
-                                        <p className="mt-1 text-sm text-red-500">{getFieldError('price')}</p>
-                                    )}
-                                </div>
-
-                                <div>
-                                    <Label htmlFor="originalPrice">Оригинальная цена</Label>
+                                    <Label htmlFor="originalPrice">Оригинальная цена *</Label>
                                     <Input
                                         id="originalPrice"
                                         name="originalPrice"
@@ -1015,6 +988,24 @@ export default function ProductsPage() {
                                     {getFieldError('discountPercentage') && (
                                         <p className="mt-1 text-sm text-red-500">{getFieldError('discountPercentage')}</p>
                                     )}
+                                </div>
+
+                                <div>
+                                    <Label htmlFor="calculatedPrice">Цена со скидкой (авто)</Label>
+                                    <Input
+                                        id="calculatedPrice"
+                                        name="calculatedPrice"
+                                        type="text"
+                                        value={
+                                            formData.originalPrice && formData.discountPercentage > 0
+                                                ? (formData.originalPrice * (1 - formData.discountPercentage / 100)).toFixed(2)
+                                                : formData.originalPrice.toFixed(2)
+                                        }
+                                        readOnly
+                                        disabled
+                                        className="bg-gray-100 dark:bg-gray-800 cursor-not-allowed"
+                                    />
+                                    <p className="mt-1 text-xs text-gray-500">Автоматически рассчитывается</p>
                                 </div>
                             </div>
 
