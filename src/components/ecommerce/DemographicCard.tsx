@@ -59,7 +59,7 @@ export default function DemographicCard() {
         };
 
         fetchDemographics();
-    }, [getAnalytics, toast]);
+    }, [getAnalytics]); // toast не нужен в dependencies
 
     if (loading) {
         return (

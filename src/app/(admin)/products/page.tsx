@@ -184,21 +184,27 @@ export default function ProductsPage() {
     };
 
     useEffect(() => {
-        console.log('ProductsPage useEffect triggered');
         setMounted(true);
-        fetchProducts();
         fetchStores();
         fetchCategories();
-        
+    }, []); // Загружаем stores и categories только 1 раз
+
+    useEffect(() => {
+        if (mounted) {
+            fetchProducts();
+        }
+    }, [currentPage, filterStore, filterCategory, filterStatus, searchQuery, mounted]);
+
+    useEffect(() => {
+        // Clean up object URLs when component unmounts
         return () => {
-            // Clean up object URLs when component unmounts
             formData.images.forEach(image => {
                 if (image && image.startsWith('blob:')) {
                     URL.revokeObjectURL(image);
                 }
             });
         };
-    }, [currentPage, filterStore, filterCategory, filterStatus, searchQuery]);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Don't render anything until mounted
     if (!mounted) {

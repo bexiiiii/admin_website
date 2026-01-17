@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import { UserRole, getAvailableRoutes, getRolePermissions } from '@/types/roles';
 import { Permission } from '@/types/permission';
 import { useAuth } from '@/contexts/AuthContext';
@@ -17,7 +17,7 @@ export const useRoleBasedRoutes = () => {
         return getAvailableRoutes(user.role, userPermissions);
     }, [user]);
 
-    const hasPermission = (permission: Permission): boolean => {
+    const hasPermission = useCallback((permission: Permission): boolean => {
         if (!user) return false;
         
         // Используем права по умолчанию для роли, если у пользователя нет прав в массиве
@@ -26,27 +26,27 @@ export const useRoleBasedRoutes = () => {
             : getRolePermissions(user.role);
             
         return userPermissions.includes(permission);
-    };
+    }, [user]);
 
-    const hasRole = (role: UserRole): boolean => {
+    const hasRole = useCallback((role: UserRole): boolean => {
         if (!user) return false;
         return user.role === role;
-    };
+    }, [user]);
 
-    const canAccessRoute = (routePath: string): boolean => {
+    const canAccessRoute = useCallback((routePath: string): boolean => {
         if (!user) return false;
         
         const route = availableRoutes.find(r => r.path === routePath);
         return !!route;
-    };
+    }, [user, availableRoutes]);
 
-    const getUserRole = (): UserRole | null => {
+    const getUserRole = useCallback((): UserRole | null => {
         return user?.role || null;
-    };
+    }, [user]);
 
-    const isAdmin = (): boolean => {
+    const isAdmin = useCallback((): boolean => {
         return user?.role === UserRole.ADMIN;
-    };
+    }, [user]);
 
     const isStoreOwner = (): boolean => {
         return user?.role === UserRole.STORE_OWNER;

@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { UserRole } from '@/types/roles';
 import { Permission } from '@/types/permission';
+import { safeLocalStorage } from '@/utils/storage';
 
 interface User {
   id: number;
@@ -34,11 +35,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const checkAuthStatus = async () => {
     try {
       // Check both token and admin_token for compatibility
-      const token = localStorage.getItem('token') || localStorage.getItem('admin_token');
-      console.log('Auth token:', token);
+      const token = safeLocalStorage.getItem('token') || safeLocalStorage.getItem('admin_token');
       
       if (!token) {
-        console.log('No token found');
         setIsLoading(false);
         return;
       }
@@ -52,7 +51,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (response.ok) {
         const userData = await response.json();
-        console.log('User data from API:', userData);
         
         setUser({
           id: userData.id,
@@ -64,15 +62,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           storeId: userData.storeId
         });
       } else {
-        console.log('Auth response not ok:', response.status);
-        localStorage.removeItem('admin_token');
-        localStorage.removeItem('token');
+        safeLocalStorage.removeItem('admin_token');
+        safeLocalStorage.removeItem('token');
         setUser(null);
       }
     } catch (error) {
       console.error('Auth check failed:', error);
-      localStorage.removeItem('admin_token');
-      localStorage.removeItem('token');
+      safeLocalStorage.removeItem('admin_token');
+      safeLocalStorage.removeItem('token');
       setUser(null);
     } finally {
       setIsLoading(false);
@@ -100,8 +97,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const data = await response.json();
       // Store token in both locations for compatibility
       const token = data.accessToken || data.token;
-      localStorage.setItem('admin_token', token);
-      localStorage.setItem('token', token);
+      safeLocalStorage.setItem('admin_token', token);
+      safeLocalStorage.setItem('token', token);
       
       setUser({
         id: data.user.id,
@@ -118,14 +115,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
-    console.log('AuthContext logout called');
     try {
       // Попытаться вызвать API logout если токен есть
-      const token = localStorage.getItem('token') || localStorage.getItem('admin_token');
-      console.log('Token found for logout:', !!token);
+      const token = safeLocalStorage.getItem('token') || safeLocalStorage.getItem('admin_token');
       
       if (token) {
-        console.log('Calling backend logout API');
         try {
           const response = await fetch('/api/auth/logout', {
             method: 'POST',
@@ -146,15 +140,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     console.log('Clearing local storage and redirecting...');
     // Всегда очищаем локальное состояние
-    localStorage.removeItem('admin_token');
-    localStorage.removeItem('token');
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('user');
+    safeLocalStorage.removeItem('admin_token');
+    safeLocalStorage.removeItem('token');
+    safeLocalStorage.removeItem('userRole');
+    safeLocalStorage.removeItem('user');
     
     // Также очищаем cookies
-    document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    document.cookie = 'userRole=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    document.cookie = 'admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    if (typeof document !== 'undefined') {
+      document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      document.cookie = 'userRole=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      document.cookie = 'admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    }
     
     setUser(null);
     

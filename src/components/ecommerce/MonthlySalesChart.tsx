@@ -61,7 +61,7 @@ export default function MonthlySalesChart() {
         };
 
         fetchSalesData();
-    }, [getAnalytics, toast]);
+    }, [getAnalytics]); // toast не нужен в dependencies
 
     if (loading) {
         return (

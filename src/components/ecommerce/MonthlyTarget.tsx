@@ -39,7 +39,7 @@ export default function MonthlyTarget() {
         };
 
         fetchTargets();
-    }, [toast]);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     function toggleDropdown() {
         setIsOpen(!isOpen);

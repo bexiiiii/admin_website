@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 import { NotificationDTO, DiscountDTO, AnalyticsData, LoginRequest, AuthResponse, OrderDTO, StoreDTO, StoreCreateRequest, StoreUpdateRequest, PageableResponse, UserDTO, UserCreateRequest, UserUpdateRequest, ReviewDTO, CartDTO, CartAddItemRequest, CartUpdateItemRequest, OrderStatsDTO, StoreOrderStatsDTO } from '@/types/api';
 import { BASE_URL, API_ENDPOINTS, DEFAULT_HEADERS } from '../config/api';
+import { safeLocalStorage } from '@/utils/storage';
 
 const api = axios.create({
     baseURL: BASE_URL,
@@ -9,13 +10,11 @@ const api = axios.create({
 
 // Add request interceptor for authentication
 api.interceptors.request.use((config) => {
-    if (typeof window !== 'undefined') {
-        const token = localStorage.getItem('token');
-        if (token) {
-            config.headers = config.headers || {};
-            config.headers['Authorization'] = `Bearer ${token}`;
-            console.log('Request headers:', config.headers); // Debug log
-        }
+    const token = safeLocalStorage.getItem('token');
+    if (token) {
+        config.headers = config.headers || {};
+        config.headers['Authorization'] = `Bearer ${token}`;
+        console.log('Request headers:', config.headers); // Debug log
     }
     return config;
 }, (error) => {
@@ -37,15 +36,12 @@ api.interceptors.response.use(
                     // и не является ли это ответом на запрос логина
                     const isLoginRequest = error.config?.url?.includes('/auth/login');
                     const isLoginPage = typeof window !== 'undefined' && window.location.pathname.includes('/login');
-                    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-                    
-                    console.log('401 Error - Token:', token); // Debug log
-                    console.log('401 Error - Headers:', error.config?.headers); // Debug log
+                    const token = safeLocalStorage.getItem('token');
                     
                     // Если нет токена и мы не на странице логина - редирект
                     if (!token && !isLoginPage && !isLoginRequest && typeof window !== 'undefined') {
-                        localStorage.removeItem('token');
-                        localStorage.removeItem('user');
+                        safeLocalStorage.removeItem('token');
+                        safeLocalStorage.removeItem('user');
                         window.location.href = '/login';
                     }
                     break;
@@ -80,8 +76,7 @@ class ApiService {
     private token: string | null = null;
 
     private constructor() {
-        if (typeof window !== 'undefined') {
-            this.token = localStorage.getItem('token');
+        this.token = safeLocalStorage.getItem('token');
         }
     }
 
@@ -94,17 +89,12 @@ class ApiService {
 
     public setToken(token: string) {
         this.token = token;
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('token', token);
-        }
-        console.log('Token set:', token); // Debug log
+        safeLocalStorage.setItem('token', token);
     }
 
     public clearToken() {
         this.token = null;
-        if (typeof window !== 'undefined') {
-            localStorage.removeItem('token');
-        }
+        safeLocalStorage.removeItem('token');
     }
 
     private async request<T>(
@@ -112,7 +102,7 @@ class ApiService {
         options: AxiosRequestConfig = {}
     ): Promise<T> {
         try {
-            const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+            const token = safeLocalStorage.getItem('token');
             const headers = {
                 ...options.headers,
                 ...(token ? { 'Authorization': `Bearer ${token}` } : {})

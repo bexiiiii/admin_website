@@ -55,10 +55,10 @@ export default function HealthPage() {
     };
 
     fetchMetrics();
-    const interval = setInterval(fetchMetrics, 30000); // Обновляем каждые 30 секунд
+    const interval = setInterval(fetchMetrics, 300000); // Обновляем каждые 5 минут
 
     return () => clearInterval(interval);
-  }, [toast]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading) {
     return (
