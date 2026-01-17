@@ -77,7 +77,6 @@ class ApiService {
 
     private constructor() {
         this.token = safeLocalStorage.getItem('token');
-        }
     }
 
     public static getInstance(): ApiService {
