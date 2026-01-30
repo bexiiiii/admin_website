@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'react-hot-toast';
 import { orderApi } from '@/services/api';
 import { useRouter } from 'next/navigation';
+import { BASE_URL } from '@/config/api';
 
 interface Product {
     id: number;
@@ -55,7 +56,7 @@ export default function CreateOrderPage() {
 
     const fetchProducts = async () => {
         try {
-            const response = await fetch('/api/products');
+            const response = await fetch(`${BASE_URL}/api/products`);
             const data = await response.json();
             setProducts(data);
         } catch (error) {

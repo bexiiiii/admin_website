@@ -4,6 +4,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Heart } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { BASE_URL } from '@/config/api';
 
 interface AddToFavoritesProps {
     userId: number;
@@ -16,7 +17,7 @@ export function AddToFavorites({ userId, productId, onSuccess }: AddToFavoritesP
 
     const addToFavorites = async () => {
         try {
-            const response = await fetch('/api/favorites', {
+            const response = await fetch(`${BASE_URL}/api/favorites`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
