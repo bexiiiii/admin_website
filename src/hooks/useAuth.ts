@@ -26,7 +26,7 @@ export const useAuth = () => {
       return;
     }
     
-    fetch(`${BASE_URL}/api/auth/me`, {
+    fetch(`${BASE_URL}/auth/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
