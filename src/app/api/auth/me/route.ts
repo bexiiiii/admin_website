@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://foodsave.kz';
+// API_URL должен быть https://foodsave.kz/api (с /api на конце)
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://foodsave.kz/api';
 
 export async function GET(request: Request) {
     try {
@@ -12,7 +13,7 @@ export async function GET(request: Request) {
         }
 
         // Forward the request to the backend
-        const response = await fetch(`${API_URL}/api/auth/me`, {
+        const response = await fetch(`${API_URL}/auth/me`, {
             method: 'GET',
             headers: {
                 'Authorization': authHeader,

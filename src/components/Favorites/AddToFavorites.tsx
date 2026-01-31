@@ -17,7 +17,7 @@ export function AddToFavorites({ userId, productId, onSuccess }: AddToFavoritesP
 
     const addToFavorites = async () => {
         try {
-            const response = await fetch(`${BASE_URL}/api/favorites`, {
+            const response = await fetch(`${BASE_URL}/favorites`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

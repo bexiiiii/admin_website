@@ -56,7 +56,7 @@ export default function CreateOrderPage() {
 
     const fetchProducts = async () => {
         try {
-            const response = await fetch(`${BASE_URL}/api/products`);
+            const response = await fetch(`${BASE_URL}/products`);
             const data = await response.json();
             setProducts(data);
         } catch (error) {
